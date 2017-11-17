@@ -16,7 +16,7 @@
       <li><a href="http://vuex.vuejs.org/" target="_blank">vuex</a></li>
       <li><a href="http://vue-loader.vuejs.org/" target="_blank">vue-loader</a></li>
       <li><a href="https://github.com/vuejs/awesome-vue" target="_blank">awesome-vue</a></li>
-      <li v-on:click="greet">点击我</li>
+      <li v-on:click="greet" class="click-me">点击我</li>
     </ul>
   </div>
 </template>
@@ -31,17 +31,19 @@ export default {
   },
   methods: {
     greet () {
-      this.axios.get('/apis/getAdmin', {}).then(res => {
-        console.log(res.data)
-        alert('请看控制台信息！')
-      })
+      alert('还没什么东西看哦！')
+      // this.axios.get('/apis/getAdmin', {}).then(res => {
+      //   console.log(res)
+      //   alert('请看控制台信息！')
+      // })
     }
   }
 }
 </script>
 
 <!-- Add "scoped" attribute to limit CSS to this component only -->
-<style scoped>
+<style lang="scss" scoped>
+@import '../assets/css/function';
 h1, h2 {
   font-weight: normal;
 }
@@ -58,5 +60,12 @@ li {
 
 a {
   color: #42b983;
+}
+.click-me {
+  width: px2rem(120px);
+  height: 30px;
+  background-color: yellowgreen;
+  text-align: center;
+  line-height: 30px;
 }
 </style>
