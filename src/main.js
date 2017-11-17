@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import '../static/css/reset.scss'
 
 Vue.prototype.axios = axios
 
