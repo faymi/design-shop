@@ -16,7 +16,11 @@
           </div>
       </div>
       <div class="content">
-          i am content
+        <canvas id="c" style="width:400px;height:400px;border:1px solid #ececec;"></canvas>
+        <div style="width:300px;height:150px;">
+          <img style="width:100%;height:100%;background-size: cover;" :src="img_src" id="vue-img">      
+        </div>
+        <button @click="showSrc">生成图片</button>
       </div>
       <div class="footer" v-on:click="sayHi()">
           i am footer
@@ -25,16 +29,43 @@
 </template>
 
 <script>
+import {fabric} from 'fabric'
 export default {
   data () {
     return {
-      msg: 'hello world'
+      msg: 'hello world',
+      img_src: require('../assets/logo.png'),
+      cavans: {}, // 画布
+      imgElement: {},
+      imgInstance: {}
     }
   },
   methods: {
     sayHi () {
       alert('hi,i am hhh')
+    },
+    showSrc () {
+      console.log(this.canvas.toDataURL({format: 'png', multiplier: 0.5}))
+      this.img_src = this.canvas.toDataURL({format: 'png', multiplier: 0.5})
+    },
+    create_cavans () {
+      this.canvas = new fabric.Canvas('c') // 利用fabric找到我们的画布
+      this.imgElement = document.getElementById('vue-img')
+      this.imgInstance = new fabric.Image(this.imgElement, {  // 设置图片在canvas中的位置和样子
+        left: 10,
+        top: 10,
+        width: 200,
+        height: 200,
+        angle: 30,
+        scaleX: 0.5,
+        scaleY: 0.5,
+        backgroundColor: '#ececec'
+      })
+      this.canvas.add(this.imgInstance) // 加入到canvas中
     }
+  },
+  mounted () {
+    this.create_cavans()
   }
 }
 </script>
@@ -42,6 +73,7 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/function';
 @import '../../static/com-icon/style';
+
 .wrap {
   width: 100%;
   color: #959595;
@@ -68,6 +100,9 @@ export default {
       float: left;     
       width: 30%;
     }
+  }
+  .content {
+    margin-left: 1rem;
   }
 }
 </style>
