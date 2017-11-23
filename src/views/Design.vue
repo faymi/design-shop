@@ -37,7 +37,9 @@ export default {
       img_src: require('../assets/logo.png'),
       cavans: {}, // 画布
       imgElement: {},
-      imgInstance: {}
+      Text: {},
+      imgInstance: {},
+      fonts: ['Pacifico', 'VT323', 'Quicksand', 'Inconsolata', 'microsoft yahei']
     }
   },
   methods: {
@@ -45,8 +47,8 @@ export default {
       alert('hi,i am hhh')
     },
     showSrc () {
-      console.log(this.canvas.toDataURL({format: 'png', multiplier: 0.5}))
-      this.img_src = this.canvas.toDataURL({format: 'png', multiplier: 0.5})
+      // console.log(this.canvas.toDataURL({format: 'png', multiplier: 1}))
+      this.img_src = this.canvas.toDataURL({format: 'png', multiplier: 1})
     },
     create_cavans () {
       this.canvas = new fabric.Canvas('c') // 利用fabric找到我们的画布
@@ -61,11 +63,23 @@ export default {
         scaleY: 0.5,
         backgroundColor: '#ececec'
       })
-      this.canvas.add(this.imgInstance) // 加入到canvas中
+      this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
+
+      this.canvas.add(this.imgInstance, this.Text) // 加入到canvas中
+      // 事件监听
+      this.canvas.on('mouse:down', function (options) {
+        // alert(options)
+      })
     }
   },
   mounted () {
     this.create_cavans()
+    var canvasObj = document.getElementById('vue-img')
+    // 监听touchmove时间
+    canvasObj.addEventListener('touchmove', function (event) {
+      var touches = event.touches
+      console.log(touches)
+    }, false)
   }
 }
 </script>
