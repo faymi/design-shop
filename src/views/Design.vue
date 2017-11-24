@@ -45,7 +45,16 @@ export default {
       Text: {},
       textbox: {},
       imgInstance: {},
-      fonts: [{v: 'Jolly Lodger'}, {v: 'OpenSansCondensed'}, {v: 'IndieFlower'}, {v: 'Lobster'}, {v: 'AlexBrush'}]
+      fonts: [
+        {v: 'Jolly Lodger'},
+        {v: 'OpenSansCondensed'},
+        {v: 'IndieFlower'},
+        {v: 'Lobster'},
+        {v: 'AlexBrush'},
+        {v: 'Pacifico'},
+        {v: 'Special Elite'},
+        {v: 'Gloria Hallelujah'}
+      ]
     }
   },
   methods: {
