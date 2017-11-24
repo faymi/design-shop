@@ -22,29 +22,47 @@
         </div>
         <button @click="showSrc">生成图片</button>
       </div>
-      <div class="footer" v-on:click="sayHi()">
-          i am footer
+      <div class="footer">
+          <button>选择字体</button>
+          <select @change="changeFonts">
+            <option v-for="v in fonts" v-model="v.v">{{v.v}}</option>
+          </select>
       </div>
   </div>
 </template>
 
 <script>
 import {fabric} from 'fabric'
+import * as FontFaceObserver from 'fontfaceobserver'
 export default {
   data () {
     return {
       msg: 'hello world',
       img_src: require('../assets/logo.png'),
+      selected: 'Jolly Lodger',
       cavans: {}, // 画布
       imgElement: {},
       Text: {},
+      textbox: {},
       imgInstance: {},
-      fonts: ['Pacifico', 'VT323', 'Quicksand', 'Inconsolata', 'microsoft yahei']
+      fonts: [{v: 'Jolly Lodger'}, {v: 'OpenSansCondensed'}, {v: 'IndieFlower'}, {v: 'Lobster'}, {v: 'AlexBrush'}]
     }
   },
   methods: {
-    sayHi () {
-      alert('hi,i am hhh')
+    changeFonts (e) {
+      console.log(e)
+      // console.log(this.selected)
+      var myfont = new FontFaceObserver(e.target.value)
+      var _this = this
+      myfont.load()
+        .then(function () {
+          // when font is loaded, use it.
+          _this.canvas.getActiveObject().set('fontFamily', e.target.value)
+          _this.canvas.requestRenderAll()
+        }).catch(function (e) {
+          console.log(e)
+          alert('font loading failed ' + e.target.value)
+        })
     },
     showSrc () {
       // console.log(this.canvas.toDataURL({format: 'png', multiplier: 1}))
@@ -63,9 +81,15 @@ export default {
         scaleY: 0.5,
         backgroundColor: '#ececec'
       })
-      this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
+      // this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
+      this.textbox = new fabric.Textbox('i am 字体！', {
+        left: 50,
+        top: 50,
+        width: 150,
+        fontSize: 20
+      })
 
-      this.canvas.add(this.imgInstance, this.Text) // 加入到canvas中
+      this.canvas.add(this.imgInstance, this.textbox).setActiveObject(this.textbox) // 加入到canvas中
       // 事件监听
       this.canvas.on('mouse:down', function (options) {
         // alert(options)
@@ -87,6 +111,7 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/function';
 @import '../../static/com-icon/style';
+@import '../assets/css/fonts';
 
 .wrap {
   width: 100%;
