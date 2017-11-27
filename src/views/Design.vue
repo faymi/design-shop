@@ -27,6 +27,11 @@
           <select @change="changeFonts">
             <option v-for="v in fonts" v-model="v.v">{{v.v}}</option>
           </select>
+          <div>
+            <button @click="rotateFont">旋转字体</button>
+            <button @click="clearCanvas">clear</button>
+            <button @click="addFont">addFont</button>
+          </div>
       </div>
   </div>
 </template>
@@ -45,6 +50,7 @@ export default {
       Text: {},
       textbox: {},
       imgInstance: {},
+      angle: 0,
       fonts: [
         {v: 'Jolly Lodger'},
         {v: 'OpenSansCondensed'},
@@ -54,7 +60,8 @@ export default {
         {v: 'Pacifico'},
         {v: 'Special Elite'},
         {v: 'Gloria Hallelujah'}
-      ]
+      ],
+      colors: ['red', 'green', 'yellowgreen', 'pink', 'black', 'purple']
     }
   },
   methods: {
@@ -66,16 +73,37 @@ export default {
       myfont.load()
         .then(function () {
           // when font is loaded, use it.
-          _this.canvas.getActiveObject().set('fontFamily', e.target.value)
+          _this.canvas.getActiveObject().set({
+            'fontFamily': e.target.value, // 设置font-family
+            'fill': 'yellowgreen'  // 设置字体颜色
+          })
           _this.canvas.requestRenderAll()
         }).catch(function (e) {
           console.log(e)
           alert('font loading failed ' + e.target.value)
         })
     },
+    rotateFont () {
+      this.angle += 10
+      this.textbox.set('angle', parseInt(this.angle, 10)).setCoords()
+      this.textbox.set('fill', this.colors[parseInt(Math.random() * 5)]).setCoords()
+      this.canvas.requestRenderAll()
+    },
+    clearCanvas () {
+      this.canvas.clear()
+    },
+    addFont () {
+      this.textbox = new fabric.Textbox('i am 字体！', {
+        left: 50,
+        top: 50,
+        width: 150,
+        fontSize: 20
+      })
+      this.canvas.add(this.textbox)
+    },
     showSrc () {
       // console.log(this.canvas.toDataURL({format: 'png', multiplier: 1}))
-      this.img_src = this.canvas.toDataURL({format: 'png', multiplier: 1})
+      this.img_src = this.canvas.toDataURL({format: 'png', multiplier: 1})  // 将canvas生成base64格式
     },
     create_cavans () {
       this.canvas = new fabric.Canvas('c') // 利用fabric找到我们的画布
