@@ -21,6 +21,7 @@
           <img style="width:100%;height:100%;background-size: cover;" :src="img_src" id="vue-img">      
         </div>
         <button @click="showSrc">生成图片</button>
+        <input type="text" v-model="value" @input="onInput">
       </div>
       <div class="footer">
           <button>选择字体</button>
@@ -44,6 +45,7 @@ export default {
   data () {
     return {
       msg: 'hello world',
+      value: '',
       img_src: require('../assets/logo.png'),
       selected: 'Jolly Lodger',
       cavans: {}, // 画布
@@ -66,6 +68,13 @@ export default {
     }
   },
   methods: {
+    onInput () {
+      // console.log(this.value)
+      this.textbox.set({
+        'text': this.value
+      }).setCoords()
+      this.canvas.requestRenderAll()
+    },
     changeFonts (e) {
       console.log(e)
       // console.log(this.selected)
@@ -191,6 +200,9 @@ export default {
   }
   .content {
     margin-left: 1rem;
+    input {
+      border: px2rem(2px) solid #ececec;
+    }
   }
 }
 </style>
