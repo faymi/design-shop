@@ -31,6 +31,7 @@
             <button @click="rotateFont">旋转字体</button>
             <button @click="clearCanvas">clear</button>
             <button @click="addFont">addFont</button>
+            <button @click="remove">移除</button>
           </div>
       </div>
   </div>
@@ -84,13 +85,24 @@ export default {
         })
     },
     rotateFont () {
+      // console.log(this.canvas.getActiveObject().text)
       this.angle += 10
-      this.textbox.set('angle', parseInt(this.angle, 10)).setCoords()
-      this.textbox.set('fill', this.colors[parseInt(Math.random() * 5)]).setCoords()
+      this.textbox.set({
+        'text': 'the text had changed!',
+        'angle': parseInt(this.angle, 10),
+        'fill': this.colors[parseInt(Math.random() * 5)]
+      }).setCoords()
+      // this.textbox.set('angle', parseInt(this.angle, 10)).setCoords()
+      // this.textbox.set('fill', this.colors[parseInt(Math.random() * 5)]).setCoords()
       this.canvas.requestRenderAll()
     },
     clearCanvas () {
       this.canvas.clear()
+    },
+    remove () {
+      // remove currently selected object
+      console.log(this.canvas.getActiveObject())
+      this.canvas.remove(this.canvas.getActiveObject())
     },
     addFont () {
       this.textbox = new fabric.Textbox('i am 字体！', {
