@@ -34,6 +34,9 @@
             <button @click="addFont">addFont</button>
             <button @click="remove">移除</button>
           </div>
+          <div>
+            <router-link :to="{ name: 'List', params: {}}">跳转</router-link>
+          </div>
       </div>
   </div>
 </template>

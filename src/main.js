@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import '../static/css/reset.scss'
+import 'font-awesome/css/font-awesome.css'
 
 Vue.prototype.axios = axios
 
