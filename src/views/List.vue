@@ -87,18 +87,17 @@ export default {
     min-height: 100%;
     width: 96%;
     text-align: center;
-    display: flex;
-    justify-content: space-between;
     ul {
       margin: 0 auto;
-      text-align: left;
       padding-bottom: px2rem(120px);
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
       li {
         width: px2rem(320px);
         height: px2rem(430px);
         margin: px2rem(16px);
         border: px2rem(2px) solid #ececec;
-        display: inline-block;
         .cloth-img {
           width: 100%;
           height: px2rem(320px);
