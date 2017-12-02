@@ -9,7 +9,9 @@
         <li></li>
       </ul>
       <div class="done-btn">
-        <button>完成</button>
+        <router-link to="/total">
+          <button>完成</button>        
+        </router-link>
       </div>
     </div>
     <div class="tools-bar">
