@@ -39,6 +39,14 @@ $setPath: '../assets/fonts/';
     font-weight: normal;
     font-style: normal;  
 }
+
+@font-face {  
+    font-family: 'huakang-haibao';  
+    src: url($setPath+'huakang-haibao.ttf') format('truetype');  
+    font-weight: normal;
+    font-style: normal;  
+}
+
 @import url(http://fonts.font.im/css?family=Pacifico);
 @import url(http://fonts.font.im/css?family=Special+Elite);
 @import url(https://fonts.googleapis.com/css?family=Gloria+Hallelujah);

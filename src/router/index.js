@@ -3,6 +3,7 @@ import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld'
 import design from '@/views/design'
 import List from '@/views/List'
+import Customized from '@/views/Customized'
 
 Vue.use(Router)
 
@@ -17,6 +18,11 @@ export default new Router({
       path: '/list',
       name: 'List',
       component: List
+    },
+    {
+      path: '/customized',
+      name: 'Customized',
+      component: Customized
     }
   ]
 })

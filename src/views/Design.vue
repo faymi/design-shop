@@ -51,7 +51,7 @@ export default {
       value: '',
       img_src: require('../assets/logo.png'),
       selected: 'Jolly Lodger',
-      cavans: {}, // 画布
+      canvas: {}, // 画布
       imgElement: {},
       Text: {},
       textbox: {},
@@ -65,7 +65,8 @@ export default {
         {v: 'AlexBrush'},
         {v: 'Pacifico'},
         {v: 'Special Elite'},
-        {v: 'Gloria Hallelujah'}
+        {v: 'Gloria Hallelujah'},
+        {v: 'huakang-haibao'}
       ],
       colors: ['red', 'green', 'yellowgreen', 'pink', 'black', 'purple']
     }

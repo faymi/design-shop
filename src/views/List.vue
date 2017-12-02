@@ -10,7 +10,9 @@
               <span>￥{{item.price}}</span>
             </div>
             <div class="item-btm">
-              <button>定制此款</button>
+              <router-link to="/customized">
+                <button>定制此款</button>
+              </router-link>
             </div>
           </div>
         </li>
@@ -117,12 +119,12 @@ export default {
           }
           button {
             border: none;
-            background-color: #578ffe;
+            background-color: $btn-color;
             border-radius: px2rem(30px);
             width: px2rem(160px);
             height: px2rem(46px);
-            color: #fff;
-            font-size: 12px;
+            color: $btn-font-color;
+            font-size: $btn-font-size;
           }
         }
       }
