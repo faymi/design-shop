@@ -11,6 +11,8 @@ Vue.prototype.axios = axios
 
 Vue.config.productionTip = false
 
+router.push('/list')
+
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
