@@ -36,6 +36,7 @@ export default {
   position: fixed;
   bottom: 0;
   left: 0;
+  font-size: 14px;
   .product, .user {
     width: 50%;
     text-align: center;
