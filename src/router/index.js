@@ -6,6 +6,8 @@ import List from '@/views/List'
 import Customized from '@/views/Customized'
 import Total from '@/views/Total'
 import Address from '@/views/Address'
+import AddAddress from '@/views/AddAddress'
+import Pay from '@/views/Pay'
 
 Vue.use(Router)
 
@@ -35,6 +37,16 @@ export default new Router({
       path: '/address',
       name: 'Address',
       component: Address
+    },
+    {
+      path: '/add-address',
+      name: 'AddAddress',
+      component: AddAddress
+    },
+    {
+      path: '/pay',
+      name: 'Pay',
+      component: Pay
     }
   ]
 })

@@ -7,3 +7,18 @@ $btn-del-color: #fb0f32;
 $btn-color: #578ffe;
 $btn-font-size: 12px;
 $border: px2rem(2px) solid #ececec;
+
+.bottom-btn {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  button {
+    border: none;
+    width: 100%;
+    height: px2rem(110px);
+    background-color: $btn-color;
+    color: $btn-font-color;
+    font-size: 20px;
+  }
+}

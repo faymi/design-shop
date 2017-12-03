@@ -9,17 +9,19 @@
             <button class="del-btn">删除</button>
           </div>
           <div class="postcode">518053</div>
-        </li>
+        </li> 
       </ul>
     </div>
     <div class="add-address">
-      <button>添加收货地址</button>
+      <router-link to="/add-address">
+        <button>添加收货地址</button>
+      </router-link>
     </div>
-    <div class="order">
-        <router-link to="/pay">
-          <button>确认下单</button>
-        </router-link>
-      </div>
+    <div class="bottom-btn">
+      <router-link to="/pay">
+        <button>确认下单</button>
+      </router-link>
+    </div>
   </div>
 </template>
 
@@ -85,20 +87,6 @@ export default {
       background-color: #fe6c00;
       color: $btn-font-color;
       font-size: 16px;
-    }
-  }
-  .order {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 100%;
-    button {
-      border: none;
-      width: 100%;
-      height: px2rem(110px);
-      background-color: $btn-color;
-      color: $btn-font-color;
-      font-size: 20px;
     }
   }
 }
