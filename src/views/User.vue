@@ -35,7 +35,7 @@
         </div>
       </div>
     </div>
-    <Footer></Footer>
+    <v-footer></v-footer>
   </div>
 </template>
 
@@ -45,7 +45,7 @@ import Footer from '@/components/Footer'
 export default {
   name: 'User',
   components: {
-    Footer
+    'v-footer': Footer
   },
   data () {
     return {}
