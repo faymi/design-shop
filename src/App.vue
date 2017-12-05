@@ -20,9 +20,10 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      const toDepth = to.path.split('/').length
-      const fromDepth = from.path.split('/').length
-      this.transitionName = toDepth < fromDepth ? 'slide-right' : 'slide-left'
+      const list = ['list', 'customized', 'total', 'address', 'add-address', 'pay', 'user']
+      const toDepth = to.path.split('/')
+      const fromDepth = from.path.split('/')
+      this.transitionName = list.indexOf(toDepth[1]) < list.indexOf(fromDepth[1]) ? 'slide-right' : 'slide-left'
     }
   }
 }
