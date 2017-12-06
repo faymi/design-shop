@@ -3,7 +3,7 @@
     <div class="container">
       <div class="header">
         <div class="left">idea2t</div>
-        <div class="right">faymi</div>
+        <div class="right" @click="showDialog">faymi</div>
       </div>
       <div class="aside">
         <el-menu default-active="/home" class="el-menu-vertical-demo" :router="true">
@@ -18,13 +18,31 @@
       <div class="main">
         <router-view/>
       </div>
+      <v-dialog :outer-visible="outerVisible" :inner-visible="innerVisible"></v-dialog>
     </div>
   </div>
 </template>
 
 <script>
+import dialog from '@/components/ChangeAccount'
+
 export default {
-  name: 'app'
+  name: 'app',
+  components: {
+    'v-dialog': dialog
+  },
+  data () {
+    return {
+      outerVisible: false,
+      innerVisible: false
+    }
+  },
+  methods: {
+    showDialog () {
+      console.log(this.outerVisible)
+      this.outerVisible = true
+    }
+  }
 }
 </script>
 
