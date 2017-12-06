@@ -1,3 +1,16 @@
 @function px2rem($px, $base-font-size: 75px) {
   @return ($px / $base-font-size) * 1rem;
 }
+
+$card-bg-color: #409EFF;
+
+.content-wrap {
+  width: 86%;
+  height: 100%;
+  margin: 0 auto;
+  padding-top: 40px;
+}
+.page-wrap {
+  margin-top: 20px;
+  text-align: right;
+}
