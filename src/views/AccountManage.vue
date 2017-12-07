@@ -22,7 +22,7 @@
         <el-table-column  prop="order_total" label="成交额"></el-table-column>
         <el-table-column label="状态">
           <template  slot-scope="scope">
-            <el-select v-model="value" placeholder="请选择">
+            <el-select v-model="scope.row.value" placeholder="请选择">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -62,6 +62,10 @@ export default {
   name: 'GoodsManage',
   data () {
     return {
+      currentPage1: 5,
+      currentPage2: 5,
+      currentPage3: 5,
+      currentPage4: 4,
       searchInput: '',
       tableData: [
         {
@@ -170,6 +174,14 @@ export default {
           value: ''
         }
       ]
+    }
+  },
+  methods: {
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
     }
   }
 }

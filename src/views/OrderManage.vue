@@ -51,6 +51,10 @@ export default {
   name: 'OrderManage',
   data () {
     return {
+      currentPage1: 5,
+      currentPage2: 5,
+      currentPage3: 5,
+      currentPage4: 4,
       searchInput: '',
       tableData: [
         {
@@ -104,6 +108,14 @@ export default {
           date: '2016-05-02'
         }
       ]
+    }
+  },
+  methods: {
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
     }
   }
 }
