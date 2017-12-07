@@ -1,11 +1,11 @@
 <template>
   <div id="app">
     <div class="container">
-      <div class="header">
+      <div class="header" v-show="header_show">
         <div class="left">idea2t</div>
         <div class="right">faymi</div>
       </div>
-      <div class="aside">
+      <div class="aside" v-show="aside_show">
         <el-menu default-active="/home" class="el-menu-vertical-demo" :router="true">
           <el-menu-item index="/home" :class="{'isActive': active}">首页</el-menu-item>
           <el-menu-item index="/orderManage" :class="{'isActive': !active}">订单管理</el-menu-item>
@@ -13,9 +13,10 @@
           <el-menu-item index="/accountManage" :class="{'isActive': !active}">账号管理</el-menu-item>
           <el-menu-item index="/customManage" :class="{'isActive': !active}">客户列表</el-menu-item>
           <el-menu-item index="/incomeManage" :class="{'isActive': !active}">收益明细</el-menu-item>
+          <el-menu-item index="/accountInfo" :class="{'isActive': !active}">账号资料</el-menu-item>
         </el-menu>
       </div>
-      <div class="main">
+      <div :class="{'main': ismain}">
         <router-view/>
       </div>
     </div>
@@ -24,7 +25,41 @@
 
 <script>
 export default {
-  name: 'app'
+  name: 'app',
+  data () {
+    return {
+      active: true,
+      header_show: true,
+      aside_show: true,
+      path: '',
+      ismain: false
+    }
+  },
+  watch: {
+    '$route' (to, from) {
+      if (to.path.split('/')[1] === 'login') {
+        this.header_show = false
+        this.aside_show = false
+        this.ismain = false
+      } else {
+        this.header_show = true
+        this.aside_show = true
+        this.ismain = true
+      }
+    }
+  },
+  created () {
+    this.path = this.$route.path
+    if (this.path === '/login') {
+      this.header_show = false
+      this.aside_show = false
+      this.ismain = false
+    } else {
+      this.header_show = true
+      this.aside_show = true
+      this.ismain = true
+    }
+  }
 }
 </script>
 
