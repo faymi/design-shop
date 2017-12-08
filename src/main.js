@@ -6,10 +6,12 @@ import router from './router'
 import axios from 'axios'
 import '../static/css/reset.scss'
 import 'font-awesome/css/font-awesome.css'
+import colorPicker from '../static/js/vue-color-picker'
 
 Vue.prototype.axios = axios
 
 Vue.config.productionTip = false
+Vue.use(colorPicker)
 
 router.push('/list')
 
