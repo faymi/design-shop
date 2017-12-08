@@ -82,7 +82,7 @@ export default {
       default: false
     },
     // 颜色面板控制
-    openStatus: {
+    openToggle: {
       type: Boolean,
       default: false
     },
@@ -95,7 +95,8 @@ export default {
   data () {
     return {
       // 面板打开状态
-      openStatus: false,
+      // openStatus: false,
+      openStatus: this.openToggle,
       // 鼠标经过的颜色块
       hoveColor: null,
       // 主题颜色
@@ -116,6 +117,15 @@ export default {
       // 标准颜色
       bColor: ['#c21401', '#ff1e02', '#ffc12a', '#ffff3a', '#90cf5b', '#00af57', '#00afee', '#0071be', '#00215f', '#72349d'],
       html5Color: this.value
+    }
+  },
+  // 组件间openStatus双向通信
+  watch: {
+    openToggle (val) {
+      this.openStatus = val
+    },
+    openStatus (val) {
+      this.$emit("on_openStatus_change",val)
     }
   },
   computed: {

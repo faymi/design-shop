@@ -41,7 +41,7 @@
             </li>
           </ul>
           <div class="color-div" v-show="color_toggle">
-            <color-picker v-model="color":openStatus="openStatus" v-on:change="headleChangeColor"></color-picker>
+            <color-picker v-model="color":openToggle="openStatus" v-on:change="headleChangeColor"></color-picker>
           </div>
         </div>
       </div>
@@ -55,13 +55,17 @@
       </div> 
     </div>
     <div class="footer">
-      <div class="product">
+      <div class="product" @click="add_pic">
         <i class="fa fa-picture-o"></i>
-        <router-link class="" :to="{ name: 'List', params: {}}">添加图片</router-link>
+        <router-link :to="{}">添加图片</router-link>        
+        <input id="add_pic_ipt" type="file" name="image" accept="image/*" :onchange='handleInputChange' style="display: none;">
       </div>
       <div class="user" @click="add_font">
         <i class="fa fa-font"></i>
         <router-link :to="{}">添加文字</router-link>
+      </div>
+      <div class="delete-btn" @click="delete_item">
+        <i class="fa fa-trash-o fa-lg"></i>
       </div>
     </div>
   </div>
@@ -103,11 +107,16 @@ export default {
       imgElement: {},
       Text: {},
       textbox: {},
-      imgInstance: {}
+      imgInstance: {},
+      imgFile: {}
     }
   },
   methods: {
-    // 颜色面板选择颜色事件  字体颜色
+    // 组件间openStatus双向通信
+    on_openStatus_change (val) {
+      this.openStatus = val
+    },
+    // 颜色面板选择颜色  字体颜色
     headleChangeColor () {
       this.textbox.set({
         'fill': this.color
@@ -125,6 +134,136 @@ export default {
       this.size_toggle = false
       this.color_toggle = !this.color_toggle
     },
+    add_pic () {
+      let tag = document.getElementById('add_pic_ipt')
+      tag.click()
+    },
+    // handleInputChange (event) {
+    //   // let file = obj.files[0]
+    //   // 获取当前选中的文件
+    //   const file = event.target.files[0]
+    //   const imgMasSize = 1024 * 1024 * 10 // 10MB
+    //   // 检查文件类型
+    //   if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
+    //       // 自定义报错方式
+    //       // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+    //     return
+    //   }
+    //   // 文件大小限制
+    //   if (file.size > imgMasSize) {
+    //     // 文件大小自定义限制
+    //     // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+    //     return
+    //   }
+    //   // 判断是否是ios
+    //   if (!window.navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
+    //       // iOS
+    //     this.transformFileToFormData(file)
+    //     return
+    //   }
+    //   // 图片压缩之旅
+    //   this.transformFileToDataUrl(file)
+    // },
+    // transformFileToFormData (file) {
+    //   const formData = new FormData()
+    //   // 自定义formData中的内容
+    //   // type
+    //   formData.append('type', file.type)
+    //   // size
+    //   formData.append('size', file.size || 'image/jpeg')
+    //   // name
+    //   formData.append('name', file.name)
+    //   // lastModifiedDate
+    //   formData.append('lastModifiedDate', file.lastModifiedDate)
+    //   // append 文件
+    //   formData.append('file', file)
+    //   // 上传图片
+    //   // uploadImg(formData)
+    // },
+    // transformFileToDataUrl (file) {
+    //   const imgCompassMaxSize = 200 * 1024 // 超过 200k 就压缩
+    //   // 存储文件相关信息
+    //   this.imgFile.type = file.type || 'image/jpeg'   // 部分安卓出现获取不到type的情况
+    //   this.imgFile.size = file.size
+    //   this.imgFile.name = file.name
+    //   this.imgFile.lastModifiedDate = file.lastModifiedDate
+
+    //   // 封装好的函数
+    //   const reader = new FileReader()
+
+    //   // file转dataUrl是个异步函数，要将代码写在回调里
+    //   reader.onload = function (e) {
+    //     const result = e.target.result
+
+    //     if (result.length < imgCompassMaxSize) {
+    //       compress(result, processData, false )    // 图片不压缩
+    //     } else {
+    //       compress(result, processData)            // 图片压缩
+    //     }
+    //   }
+    //   reader.readAsDataURL(file)
+    // },
+    // compress (dataURL, callback, shouldCompress = true) {
+    //   const img = new window.Image()
+    //   img.src = dataURL
+    //   img.onload = function () {
+    //     const canvas = document.createElement('canvas')
+    //     const ctx = canvas.getContext('2d')
+    //     canvas.width = img.width
+    //     canvas.height = img.height
+    //     ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    //     let compressedDataUrl
+    //     if (shouldCompress) {
+    //       compressedDataUrl = canvas.toDataURL(this.imgFile.type, 0.2)
+    //     } else {
+    //       compressedDataUrl = canvas.toDataURL(this.imgFile.type, 1)
+    //     }
+    //     callback(compressedDataUrl)
+    //   }
+    // },
+    // processData (dataURL) {
+    //   // 这里使用二进制方式处理dataUrl
+    //   const binaryString = window.atob(dataUrl.split(',')[1])
+    //   const arrayBuffer = new ArrayBuffer(binaryString.length)
+    //   const intArray = new Uint8Array(arrayBuffer)
+    //   const imgFile = this.imgFile
+
+    //   for (let i = 0, j = binaryString.length; i < j; i++) {
+    //     intArray[i] = binaryString.charCodeAt(i)
+    //   }
+    //   const data = [intArray]
+    //   let blob
+    //   try {
+    //     blob = new Blob(data, { type: imgFile.type })
+    //   } catch (error) {
+    //     window.BlobBuilder = window.BlobBuilder ||
+    //     window.WebKitBlobBuilder ||
+    //     window.MozBlobBuilder ||
+    //     window.MSBlobBuilder
+    //     if (error.name === 'TypeError' && window.BlobBuilder) {
+    //       const builder = new BlobBuilder()
+    //       builder.append(arrayBuffer)
+    //       blob = builder.getBlob(imgFile.type)
+    //     } else {
+    //       // Toast.error("版本过低，不支持上传图片", 2000, undefined, false);
+    //       throw new Error('版本过低，不支持上传图片')
+    //     }
+    //   }
+    //   // blob 转file
+    //   const fileOfBlob = new File([blob], imgFile.name)
+    //   const formData = new FormData()
+    //   // type
+    //   formData.append('type', imgFile.type)
+    //   // size
+    //   formData.append('size', fileOfBlob.size)
+    //   // name
+    //   formData.append('name', imgFile.name)
+    //   // lastModifiedDate
+    //   formData.append('lastModifiedDate', imgFile.lastModifiedDate)
+    //   // append 文件
+    //   formData.append('file', fileOfBlob)
+    //   // uploadImg(formData)
+    // },
     // 添加字体
     add_font () {
       this.textbox = new fabric.Textbox('双击输入文字', {
@@ -139,6 +278,10 @@ export default {
       this.color_toggle = false
       this.size_toggle = false
       this.font_toggle = !this.font_toggle
+    },
+    // 清除active图层
+    delete_item () {
+      this.canvas.remove(this.canvas.getActiveObject())
     },
     // 选择字体
     select_font (font) {
@@ -336,6 +479,18 @@ export default {
       a {
         color: #2f333c;
       }
+    }
+    .delete-btn {
+      position: absolute;
+      right: px2rem(20px);
+      bottom: px2rem(130px);
+      width: px2rem(80px);
+      height: px2rem(80px);
+      line-height: px2rem(80px);
+      text-align: center;
+      border-radius: px2rem(40px);
+      background-color: $btn-color;
+      color: $btn-font-color;
     }
   }
 }
