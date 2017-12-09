@@ -58,7 +58,7 @@
       <div class="product" @click="add_pic">
         <i class="fa fa-picture-o"></i>
         <router-link :to="{}">添加图片</router-link>        
-        <input id="add_pic_ipt" type="file" name="image" accept="image/*" style="display: none;">
+        <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
       </div>
       <div class="user" @click="add_font">
         <i class="fa fa-font"></i>
@@ -108,7 +108,8 @@ export default {
       Text: {},
       textbox: {},
       imgInstance: {},
-      imgFile: {}
+      imgFile: {},
+      dataUrl: ''
     }
   },
   methods: {
@@ -138,71 +139,91 @@ export default {
       let tag = document.getElementById('add_pic_ipt')
       tag.click()
     },
-    // handleInputChange (event) {
-    //   // let file = obj.files[0]
-    //   // 获取当前选中的文件
-    //   const file = event.target.files[0]
-    //   const imgMasSize = 1024 * 1024 * 10 // 10MB
-    //   // 检查文件类型
-    //   if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
-    //       // 自定义报错方式
-    //       // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
-    //     return
-    //   }
-    //   // 文件大小限制
-    //   if (file.size > imgMasSize) {
-    //     // 文件大小自定义限制
-    //     // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
-    //     return
-    //   }
-    //   // 判断是否是ios
-    //   if (!window.navigator.userAgent.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)) {
-    //       // iOS
-    //     this.transformFileToFormData(file)
-    //     return
-    //   }
-    //   // 图片压缩之旅
-    //   this.transformFileToDataUrl(file)
-    // },
-    // transformFileToFormData (file) {
-    //   const formData = new FormData()
-    //   // 自定义formData中的内容
-    //   // type
-    //   formData.append('type', file.type)
-    //   // size
-    //   formData.append('size', file.size || 'image/jpeg')
-    //   // name
-    //   formData.append('name', file.name)
-    //   // lastModifiedDate
-    //   formData.append('lastModifiedDate', file.lastModifiedDate)
-    //   // append 文件
-    //   formData.append('file', file)
-    //   // 上传图片
-    //   // uploadImg(formData)
-    // },
-    // transformFileToDataUrl (file) {
-    //   const imgCompassMaxSize = 200 * 1024 // 超过 200k 就压缩
-    //   // 存储文件相关信息
-    //   this.imgFile.type = file.type || 'image/jpeg'   // 部分安卓出现获取不到type的情况
-    //   this.imgFile.size = file.size
-    //   this.imgFile.name = file.name
-    //   this.imgFile.lastModifiedDate = file.lastModifiedDate
-
-    //   // 封装好的函数
-    //   const reader = new FileReader()
-
-    //   // file转dataUrl是个异步函数，要将代码写在回调里
-    //   reader.onload = function (e) {
-    //     const result = e.target.result
-
-    //     if (result.length < imgCompassMaxSize) {
-    //       compress(result, processData, false )    // 图片不压缩
-    //     } else {
-    //       compress(result, processData)            // 图片压缩
-    //     }
-    //   }
-    //   reader.readAsDataURL(file)
-    // },
+    handleInputChange (event) {
+      // let file = obj.files[0]
+      // 获取当前选中的文件
+      const file = event.target.files[0]
+      const imgMasSize = 1024 * 1024 * 10 // 10MB
+      // 检查文件类型
+      if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
+          // 自定义报错方式
+          // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+        return
+      }
+      // 文件大小限制
+      if (file.size > imgMasSize) {
+        // 文件大小自定义限制
+        // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+        return
+      }
+      // 判断是否是ios
+      // let u = navigator.userAgent
+      // let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+      // if (isiOS) {
+      //     // iOS
+      //   this.transformFileToFormData(file)
+      //   return
+      // }
+      // 图片压缩之旅
+      this.transformFileToDataUrl(file)
+    },
+    transformFileToFormData (file) {
+      const formData = new FormData()
+      // 自定义formData中的内容
+      // type
+      formData.append('type', file.type)
+      // size
+      formData.append('size', file.size || 'image/jpeg')
+      // name
+      formData.append('name', file.name)
+      // lastModifiedDate
+      formData.append('lastModifiedDate', file.lastModifiedDate)
+      // append 文件
+      formData.append('file', file)
+      // 上传图片
+      // uploadImg(formData)
+    },
+    transformFileToDataUrl (file) {
+      let _this = this
+      const imgCompassMaxSize = 200 * 1024 // 超过 200k 就压缩
+      // 存储文件相关信息
+      this.imgFile.type = file.type || 'image/jpeg'   // 部分安卓出现获取不到type的情况
+      this.imgFile.size = file.size
+      this.imgFile.name = file.name
+      this.imgFile.lastModifiedDate = file.lastModifiedDate
+      // console.log(file)
+      // 封装好的函数
+      const reader = new FileReader()
+      // file转dataUrl是个异步函数，要将代码写在回调里(onload)
+      reader.onload = function (e) {
+        const result = e.target.result
+        let image = new Image()
+        let width, scale
+        image.onload = function () {
+          width = image.width
+          // height = image.height
+          // 固定150宽度，等比例缩放
+          scale = (150 / width)
+          this.dataUrl = reader.result
+          fabric.Image.fromURL(this.dataUrl, function (oImg) {
+            _this.canvas.centerObject(oImg)
+            _this.canvas.add(oImg)
+          }, {
+            originX: 'center',
+            originY: 'center',
+            scaleX: scale,
+            scaleY: scale
+          })
+        }
+        image.src = result
+        if (result.length < imgCompassMaxSize) {
+          // compress(result, processData, false )    // 图片不压缩
+        } else {
+          // compress(result, processData)            // 图片压缩
+        }
+      }
+      reader.readAsDataURL(file)
+    },
     // compress (dataURL, callback, shouldCompress = true) {
     //   const img = new window.Image()
     //   img.src = dataURL
@@ -270,7 +291,8 @@ export default {
         left: 30,
         top: 100,
         width: 150,
-        fontSize: 20
+        fontSize: 20,
+        textAlign: 'center'
       })
       this.canvas.add(this.textbox)
     },
@@ -314,26 +336,27 @@ export default {
       this.canvas = new fabric.Canvas('c') // 利用fabric找到我们的画布
       this.canvas.setWidth(200)
       this.canvas.setHeight(300)
-      this.imgElement = document.getElementById('vue-img')
-      this.imgInstance = new fabric.Image(this.imgElement, {  // 设置图片在canvas中的位置和样子
-        left: 10,
-        top: 10,
-        width: 200,
-        height: 200,
-        angle: 30,
-        scaleX: 0.5,
-        scaleY: 0.5,
-        backgroundColor: '#ececec'
-      })
+      // this.imgElement = document.getElementById('vue-img')
+      // this.imgInstance = new fabric.Image(this.dataUrl, {  // 设置图片在canvas中的位置和样子
+      //   left: 10,
+      //   top: 10,
+      //   width: 200,
+      //   height: 200,
+      //   angle: 30,
+      //   scaleX: 0.5,
+      //   scaleY: 0.5,
+      //   backgroundColor: '#ececec'
+      // })
       // this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
       this.textbox = new fabric.Textbox('双击输入文字', {
         left: 30,
         top: 50,
         width: 150,
-        fontSize: 20
+        fontSize: 20,
+        textAlign: 'center'
       })
 
-      this.canvas.add(this.imgInstance, this.textbox).setActiveObject(this.textbox) // 加入到canvas中
+      this.canvas.add(this.textbox).setActiveObject(this.textbox) // 加入到canvas中
     }
   },
   mounted () {
