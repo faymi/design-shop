@@ -125,7 +125,7 @@ export default {
       this.openStatus = val
     },
     openStatus (val) {
-      this.$emit("on_openStatus_change",val)
+      this.$emit('on_openStatus_change', val)
     }
   },
   computed: {

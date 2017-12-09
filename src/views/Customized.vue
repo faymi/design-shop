@@ -58,7 +58,7 @@
       <div class="product" @click="add_pic">
         <i class="fa fa-picture-o"></i>
         <router-link :to="{}">添加图片</router-link>        
-        <input id="add_pic_ipt" type="file" name="image" accept="image/*" :onchange='handleInputChange' style="display: none;">
+        <input id="add_pic_ipt" type="file" name="image" accept="image/*" style="display: none;">
       </div>
       <div class="user" @click="add_font">
         <i class="fa fa-font"></i>

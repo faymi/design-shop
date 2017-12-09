@@ -4,9 +4,9 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
-import '../static/css/reset.scss'
+import './assets/css/reset.scss'
 import 'font-awesome/css/font-awesome.css'
-import colorPicker from '../static/js/vue-color-picker'
+import colorPicker from './assets/js/vue-color-picker'
 
 Vue.prototype.axios = axios
 
