@@ -78,6 +78,7 @@ export default {
               })
               return
             }
+            sessionStorage.setItem('username', username)
             _this.$router.push('/home')
           })
           .catch(function (error) {

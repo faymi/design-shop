@@ -201,6 +201,22 @@ export default {
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
     }
+  },
+  mounted () {
+    let username = sessionStorage.getItem('username')
+    let data = {userId: username}
+    let params = JSON.stringify(data)
+    this.axios.get('/ideat/goodsManage/getGoodsList', {
+      params: {
+        params: params
+      }
+    })
+    .then(function (response) {
+      console.log(response)
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>

@@ -52,7 +52,7 @@
       </div>
       
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="centerDialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="savePwd">确 定</el-button>
         <el-button @click="centerDialogVisible = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -76,6 +76,40 @@ export default {
     upload () {
     },
     copy () {
+    },
+    savePwd () {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let username = sessionStorage.getItem('username')
+      this.axios.post('ideat/userManage/editPwd', {
+        userId: username,
+        pwd: this.new_pwd,
+        updateTime: time
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
   }
 }
