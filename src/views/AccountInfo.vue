@@ -6,8 +6,12 @@
     <div class="main-wrap">
       <div class="logo-info">
         <span>Logo:</span>
-        <img src="../assets/logo.png" alt="">
-        <el-button class="upload-cls" type="primary" size="small" @click="upload">上传LOGO</el-button>
+        <div class="img-wrap" @click="upload">
+          <img v-if="dataUrl" :src="dataUrl" alt="">
+          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+        </div>
+        <!-- <el-button class="upload-cls" type="primary" size="small" @click="upload">上传LOGO</el-button> -->
+        <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
       </div>
       <div class="domian-cls">
         <span>域名：</span>
@@ -99,8 +103,8 @@ export default {
     }
     return {
       centerDialogVisible: false,
-      domain: '',
-      phone: '',
+      domain: 'make',
+      phone: '400-800-100',
       pwdForm: {
         old_pwd: '',
         new_pwd: '',
@@ -116,11 +120,15 @@ export default {
         rep_pwd: [
           { validator: validateRepPass, trigger: 'blur' }
         ]
-      }
+      },
+      imgFile: {},
+      dataUrl: ''
     }
   },
   methods: {
     upload () {
+      let tag = document.getElementById('add_pic_ipt')
+      tag.click()
     },
     copy () {
       let ipt = document.getElementById('ipt_domain')
@@ -179,6 +187,66 @@ export default {
     cancel (formName) {
       this.$refs[formName].resetFields()
       this.centerDialogVisible = false
+    },
+    handleInputChange (event) {
+      // let file = obj.files[0]
+      // 获取当前选中的文件
+      const file = event.target.files[0]
+      const imgMasSize = 1024 * 1024 * 10 // 10MB
+      // 检查文件类型
+      if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
+          // 自定义报错方式
+          // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+        return
+      }
+      // 文件大小限制
+      if (file.size > imgMasSize) {
+        // 文件大小自定义限制
+        // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+        return
+      }
+      // 判断是否是ios
+      // let u = navigator.userAgent
+      // let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+      // if (isiOS) {
+      //     // iOS
+      //   this.transformFileToFormData(file)
+      //   return
+      // }
+      // 图片压缩之旅
+      this.transformFileToDataUrl(file)
+    },
+    transformFileToFormData (file) {
+      const formData = new FormData()
+      // 自定义formData中的内容
+      // type
+      formData.append('type', file.type)
+      // size
+      formData.append('size', file.size || 'image/jpeg')
+      // name
+      formData.append('name', file.name)
+      // lastModifiedDate
+      formData.append('lastModifiedDate', file.lastModifiedDate)
+      // append 文件
+      formData.append('file', file)
+      // 上传图片
+      // uploadImg(formData)
+    },
+    transformFileToDataUrl (file) {
+      // 存储文件相关信息
+      let _this = this
+      this.imgFile.type = file.type || 'image/jpeg'   // 部分安卓出现获取不到type的情况
+      this.imgFile.size = file.size
+      this.imgFile.name = file.name
+      this.imgFile.lastModifiedDate = file.lastModifiedDate
+      // console.log(file)
+      // 封装好的函数
+      const reader = new FileReader()
+      // file转dataUrl是个异步函数，要将代码写在回调里(onload)
+      reader.onload = function (e) {
+        _this.dataUrl = reader.result
+      }
+      reader.readAsDataURL(file)
     }
   }
 }
@@ -219,10 +287,28 @@ export default {
     text-align: left;
     display: flex;
     align-items: flex-start;
-    img {
+    .img-wrap {
       width: 100px;
       height: 100px;
       margin-right: 40px;
+      border: 1px dashed #d9d9d9;
+      text-align: center;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      img {
+        width: 98%;
+        height: 98%;
+      }
+      .avatar-uploader-icon {
+        font-size: 28px;
+        color: #8c939d;
+        width: 98%;
+        height: 98%;
+        line-height: 100px;
+        text-align: center;
+      }
     }
     .upload-cls {
       align-self:flex-end;
