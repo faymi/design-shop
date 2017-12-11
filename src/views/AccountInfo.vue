@@ -11,7 +11,7 @@
       </div>
       <div class="domian-cls">
         <span>域名：</span>
-        <el-input placeholder="请输入内容" v-model="domain" class="domain-ipt">
+        <el-input placeholder="请输入内容" id="ipt_domain" v-model="domain" class="domain-ipt">
           <template slot="prepend">http://</template>
           <el-button slot="append"></el-button>
           <template slot="append">.vesstack.com</template>
@@ -34,27 +34,34 @@
     <el-dialog
       title="修改密码"
       :visible.sync="centerDialogVisible"
-      width="30%"
+      width="550px"
       center>
-      <div class="changePwd-wrap">
-        <div class="changePwd">
-          <span>旧密码：</span>
-          <el-input placeholder="请输入旧密码" type="password" v-model="old_pwd" class=" domain-ipt"></el-input>
+        <div class="changePwd-wrap">
+          <el-form :model="pwdForm" status-icon :rules="pwdRules" ref="pwdForm" label-width="100px">
+            <div class="changePwd">
+              <!-- <span>旧密码：</span> -->
+              <el-form-item label="旧密码：" prop="old_pwd">
+                <el-input placeholder="请输入旧密码" type="password" v-model="pwdForm.old_pwd"></el-input>
+              </el-form-item>
+            </div>
+            <div class="changePwd">
+              <!-- <span>新密码：</span> -->
+              <el-form-item label="新密码：" prop="new_pwd">
+                <el-input placeholder="请输入新密码" type="password" v-model="pwdForm.new_pwd"></el-input>
+              </el-form-item>
+            </div>
+            <div class="changePwd">
+              <!-- <span>确认新密码：</span> -->
+              <el-form-item label="确认新密码：" prop="rep_pwd">
+                <el-input placeholder="请确认新密码" type="password" v-model="pwdForm.rep_pwd"></el-input>
+              </el-form-item>
+            </div>
+          </el-form>
         </div>
-        <div class="changePwd">
-          <span>新密码：</span>
-          <el-input placeholder="请输入新密码" type="password" v-model="new_pwd" class=" domain-ipt"></el-input>
-        </div>
-        <div class="changePwd">
-          <span>确认新密码：</span>
-          <el-input placeholder="请确认新密码" type="password" v-model="rep_pwd" class=" domain-ipt"></el-input>
-        </div>
-      </div>
-      
-      <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="savePwd">确 定</el-button>
-        <el-button @click="centerDialogVisible = false">取 消</el-button>
-      </span>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="savePwd('pwdForm')">确 定</el-button>
+          <el-button @click="cancel('pwdForm')">取 消</el-button>
+        </span>
     </el-dialog>
   </div>
 </template>
@@ -63,21 +70,71 @@
 export default {
   name: 'AccountInfo',
   data () {
+    // 校验字段
+    let validateOldPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入旧密码'))
+      } else {
+        callback()
+      }
+    }
+    let validateNewPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.pwdForm.rep_pwd !== '') {
+          this.$refs.pwdForm.validateField('rep_pwd')
+        }
+        callback()
+      }
+    }
+    let validateRepPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请确认新密码'))
+      } else if (value !== this.pwdForm.new_pwd) {
+        callback(new Error('两次输入密码不一致'))
+      } else {
+        callback()
+      }
+    }
     return {
       centerDialogVisible: false,
       domain: '',
       phone: '',
-      old_pwd: '',
-      new_pwd: '',
-      rep_pwd: ''
+      pwdForm: {
+        old_pwd: '',
+        new_pwd: '',
+        rep_pwd: ''
+      },
+      pwdRules: {
+        old_pwd: [
+            { validator: validateOldPass, trigger: 'blur' }
+        ],
+        new_pwd: [
+          { validator: validateNewPass, trigger: 'blur' }
+        ],
+        rep_pwd: [
+          { validator: validateRepPass, trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
     upload () {
     },
     copy () {
+      let ipt = document.getElementById('ipt_domain')
+      ipt.select()
+      let tag = document.execCommand('Copy')
+      if (tag) {
+        this.$message({
+          message: '复制内容成功！',
+          type: 'success',
+          center: true
+        })
+      }
     },
-    savePwd () {
+    savePwd (formName) {
       let _this = this
       let date = new Date()
       let year = date.getFullYear()
@@ -88,28 +145,40 @@ export default {
       let second = date.getSeconds()
       let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
       let username = sessionStorage.getItem('username')
-      this.axios.post('ideat/userManage/editPwd', {
-        userId: username,
-        pwd: this.new_pwd,
-        updateTime: time
-      })
-      .then(function (response) {
-        let data = response.data
-        if (data.code !== 0) {
-          _this.$notify.error({
-            title: '温馨提示',
-            message: data.msg
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.axios.post('ideat/userManage/editPwd', {
+            userId: username,
+            pwd: this.pwdForm.new_pwd,
+            updateTime: time
           })
-          return
+          .then(function (response) {
+            let data = response.data
+            if (data.code !== 0) {
+              _this.$notify.error({
+                title: '温馨提示',
+                message: data.msg
+              })
+              return
+            }
+            _this.$notify.success({
+              title: '温馨提示',
+              message: data.msg
+            })
+            _this.$refs[formName].resetFields()
+            _this.centerDialogVisible = false
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+        } else {
+          return false
         }
-        _this.$notify.success({
-          title: '温馨提示',
-          message: data.msg
-        })
       })
-      .catch(function (error) {
-        console.log(error)
-      })
+    },
+    cancel (formName) {
+      this.$refs[formName].resetFields()
+      this.centerDialogVisible = false
     }
   }
 }
@@ -180,15 +249,7 @@ export default {
   width: 80%;
   margin: 0 auto;
   .changePwd {
-    display: flex;
-    justify-content: flex-start;
     margin: 20px;
-    >span {
-      display: inline-block;
-      width: 110px;
-      height: 40px;
-      line-height: 40px;
-    }
   }
 }
 
