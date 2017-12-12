@@ -4,7 +4,7 @@
       <div class="left">商品管理</div>
       <div class="right">
         <div class="search-btn">
-          <el-button type="primary">添加商品</el-button>
+          <el-button type="primary" @click="dialogFormVisible = true">添加商品</el-button>
         </div>
       </div>
     </div>
@@ -28,7 +28,17 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column  prop="total" label="设置单价">
+        <el-table-column  prop="print_cost" label="零售价格">
+          <template slot-scope="scope">
+            <div class="ipt-wrap">
+              <p>单面：</p>{{scope.row.print_cost}}
+            </div>
+            <div class="ipt-wrap">
+              <p>双面：</p>{{scope.row.print_cost}}
+            </div>
+          </template>
+        </el-table-column>
+        <!-- <el-table-column  prop="total" label="设置单价">
           <template slot-scope="scope">
             <div class="ipt-wrap">
               <p>单面：</p><input type="text" placeholder="单面">
@@ -37,7 +47,7 @@
               <p>双面：</p><input type="text" placeholder="双面">
             </div>
           </template>
-        </el-table-column>
+        </el-table-column> -->
         <el-table-column label="状态">
           <template  slot-scope="scope">
             <el-select v-model="scope.row.value" placeholder="请选择">
@@ -50,11 +60,11 @@
             </el-select>
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120">
+        <!-- <el-table-column label="操作" width="120">
           <template slot-scope="scope">
             <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">详情</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <div class="page-wrap">
@@ -72,6 +82,27 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" width="900px">
+      <div class="dialog-wrap">
+        <div class="dialog-left">
+          <ul>
+            <li><span>商品名称：</span><el-input size="small" v-model="input" placeholder="请输入内容"></el-input></li>
+            <li>
+              <span>成本/元：</span>
+            </li>
+            <li><span>印花工艺：</span></li>
+            <li><span>定制区域：</span></li>
+            <li><span>效果图：</span></li>
+          </ul>
+        </div>
+        <div class="dialog-right"></div>
+      </div>
+      
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogFormVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -105,7 +136,7 @@ export default {
               label: '已上架'
             }
           ],
-          value: ''
+          value: '1'
         },
         {
           order_num: 20171206125010,
@@ -126,7 +157,7 @@ export default {
               label: '已上架'
             }
           ],
-          value: ''
+          value: '2'
         },
         {
           order_num: 20171206125010,
@@ -147,7 +178,7 @@ export default {
               label: '已上架'
             }
           ],
-          value: ''
+          value: '1'
         },
         {
           order_num: 20171206125010,
@@ -168,7 +199,7 @@ export default {
               label: '已上架'
             }
           ],
-          value: ''
+          value: '2'
         },
         {
           order_num: 20171206125010,
@@ -189,9 +220,21 @@ export default {
               label: '已上架'
             }
           ],
-          value: ''
+          value: '2'
         }
-      ]
+      ],
+      dialogFormVisible: false,
+      form: {
+        name: '',
+        region: '',
+        date1: '',
+        date2: '',
+        delivery: false,
+        type: [],
+        resource: '',
+        desc: ''
+      },
+      formLabelWidth: '120px'
     }
   },
   methods: {
@@ -290,6 +333,29 @@ export default {
       color: #b4bccc;
       opacity:1;
       font-size: 12px;
+  }
+}
+.dialog-wrap {
+  width: 80%;
+  height: 100%;
+  display: flex;
+  justify-content: space-between;
+  .dialog-left, .dialog-right {
+    width: 50%;
+    text-align: left;
+  }
+  .dialog-left {
+    ul > li {
+      margin: 10px;
+      display: flex;
+      justify-content: flex-start;
+      span {
+        display: block;
+        width: 100px;
+        height: 32px;
+        line-height: 32px;
+      }
+    }
   }
 }
 </style>
