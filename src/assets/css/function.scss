@@ -5,7 +5,7 @@
 $card-bg-color: #409EFF;
 
 .content-wrap {
-  width: 90%;
+  width: 96%;
   height: 100%;
   margin: 0 auto;
   padding-top: 20px;
@@ -13,4 +13,11 @@ $card-bg-color: #409EFF;
 .page-wrap {
   margin-top: 20px;
   text-align: right;
+}
+.wrap-all {
+  position: absolute;
+  top: 0;
+  left: 0;
+  bottom: 0;
+  right: 0;
 }

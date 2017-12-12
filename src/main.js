@@ -59,7 +59,10 @@ Vue.prototype.axios = axios
 Vue.config.productionTip = false
 Vue.use(ElementUI)
 
-router.push('/login')
+let userId = sessionStorage.getItem('username')
+if (userId === '') {
+  router.push('/login')
+}
 
 /* eslint-disable no-new */
 new Vue({

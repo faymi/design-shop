@@ -4,6 +4,10 @@
       <div class="left">账号资料</div>
     </div>
     <div class="main-wrap">
+      <div class="domian-cls">
+        <span>账号：</span>
+        <span>admin</span>
+      </div>
       <div class="logo-info">
         <span>Logo:</span>
         <div class="img-wrap" @click="upload">
@@ -13,22 +17,18 @@
         <!-- <el-button class="upload-cls" type="primary" size="small" @click="upload">上传LOGO</el-button> -->
         <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
       </div>
-      <div class="domian-cls">
+      <div class="domain-cls">
+        <span>店名：</span>
+        <el-input placeholder="请输入店名" id="shopName" v-model="shopName" class="domain-ipt"></el-input>
+      </div>
+      <div class="domain-cls">
         <span>域名：</span>
-        <el-input placeholder="请输入内容" id="ipt_domain" v-model="domain" class="domain-ipt">
-          <template slot="prepend">http://</template>
-          <el-button slot="append"></el-button>
-          <template slot="append">.vesstack.com</template>
-        </el-input>
+        <el-input id="ipt_domain" v-model="domain" readonly="readonly" class="domain-ipt"></el-input>
         <el-button class="copy-cls" type="primary" size="small" @click="copy">点击复制</el-button>
       </div>
-      <div class="domian-cls">
-        <span>账号：</span>
-        <span>admin</span>
-      </div>
-      <div class="domian-cls">
+      <div class="domain-cls">
         <span>客服电话：</span>
-        <el-input placeholder="请输入内容" v-model="phone" class=" domain-ipt"></el-input>
+        <el-input placeholder="请输入内容" v-model="phone" class="domain-ipt"></el-input>
       </div>
       <div class="div-btn">
         <el-button type="primary">保存修改</el-button>
@@ -103,7 +103,8 @@ export default {
     }
     return {
       centerDialogVisible: false,
-      domain: 'make',
+      shopName: '狗迷会',
+      domain: 'http://idea.vesstack.com/sdds2531524sdsd',
       phone: '400-800-100',
       pwdForm: {
         old_pwd: '',
@@ -281,6 +282,15 @@ export default {
       line-height: 40px;
       display: inline-block;
     }
+    >p {
+      border: 1px solid #D8DCE5;
+      background-color: #f5f7fa;
+      padding-left: 10px;
+      padding-right: 10px;
+      border-radius: 4px;
+      color: #878d99;
+      line-height: 40px;
+    }
   }
   .logo-info {
     height: 100px;
@@ -314,7 +324,7 @@ export default {
       align-self:flex-end;
     }
   }
-  .domian-cls {
+  .domain-cls {
     display: flex;
     justify-content: flex-start;
     .domain-ipt {

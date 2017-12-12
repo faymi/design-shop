@@ -11,21 +11,22 @@
         </div>
       </div>
     </div>
+    <div class="search-bar">搜索“2017”关键字结果：</div>
     <div class="table">
-      <el-table stripe :data="tableData" align="left" style="width: 100%">
+      <el-table @row-dblclick="rowClick" :data="tableData" align="left" style="width: 100%">
         <el-table-column prop="order_num" label="订单号" width="180"></el-table-column>
-        <el-table-column prop="name" label="姓名" width="180"></el-table-column>
-        <el-table-column  prop="phone" label="联系电话"></el-table-column>
-        <el-table-column  prop="address" label="地址"></el-table-column>
+        <el-table-column prop="name" label="客户" width="100"></el-table-column>
+        <el-table-column  prop="phone" label="联系电话" width="116"></el-table-column>
+        <el-table-column  prop="address" label="收货地址"></el-table-column>
         <el-table-column  prop="goods" label="商品"></el-table-column>
         <el-table-column  prop="total" label="总价"></el-table-column>
         <el-table-column  prop="status" label="状态"></el-table-column>
         <el-table-column prop="date" label="日期" width="180"></el-table-column>
-        <el-table-column label="操作" width="120">
+        <!-- <el-table-column label="操作" width="80">
           <template slot-scope="scope">
             <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">详情</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
     </div>
     <div class="page-wrap">
@@ -61,7 +62,7 @@ export default {
           order_num: 20171206125010,
           name: '王小虎',
           phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
+          address: '上海市普陀区金沙江路 1518 号200房阿斯顿发生动感',
           goods: '纯棉T恤',
           total: '99',
           status: '代签收',
@@ -111,6 +112,15 @@ export default {
     }
   },
   methods: {
+    rowClick (row, event, column) {
+      console.log(row)
+      // this.$router.push({name: 'OrderDetail', params: { orderId: '' }})
+      const {href} = this.$router.resolve({
+        name: 'OrderDetail',
+        query: { orderId: row.order_num }
+      })
+      window.open(href, '_blank')
+    },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
@@ -148,10 +158,15 @@ export default {
     }
   }
 }
+.search-bar {
+  margin-top: 20px;
+  text-align: left;
+  font-size: 14px;
+}
 .table {
   border: 1px solid #ececec;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
-  padding: 20px 20px 50px 20px;
+  padding: 0px 20px 50px 20px;
   margin-top: 20px;
 }
 </style>

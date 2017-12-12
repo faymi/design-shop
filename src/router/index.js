@@ -9,6 +9,7 @@ import CustomManage from '@/views/CustomManage'
 import IncomeManage from '@/views/IncomeManage'
 import GoodsManage from '@/views/GoodsManage'
 import AccountInfo from '@/views/AccountInfo'
+import OrderDetail from '@/views/OrderDetail'
 
 Vue.use(Router)
 
@@ -58,6 +59,11 @@ export default new Router({
       path: '/accountInfo',
       name: 'AccountInfo',
       component: AccountInfo
+    },
+    {
+      path: '/orderDetail',
+      name: 'OrderDetail',
+      component: OrderDetail
     }
   ]
 })
