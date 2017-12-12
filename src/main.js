@@ -60,7 +60,7 @@ Vue.config.productionTip = false
 Vue.use(ElementUI)
 
 let userId = sessionStorage.getItem('username')
-if (userId === '') {
+if (userId === '' || userId === null) {
   router.push('/login')
 }
 

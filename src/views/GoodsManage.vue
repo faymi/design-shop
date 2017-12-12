@@ -86,13 +86,58 @@
       <div class="dialog-wrap">
         <div class="dialog-left">
           <ul>
-            <li><span>商品名称：</span><el-input size="small" v-model="input" placeholder="请输入内容"></el-input></li>
+            <li><span>商品名称：</span><el-input size="small" v-model="input" placeholder="请输入商品名称"></el-input></li>
             <li>
               <span>成本/元：</span>
+              <el-input style="width: 100px;height:32px;" v-model="input3">
+                <template slot="prepend">单面</template>
+              </el-input>
+              <el-input v-model="input3" style="width: 100px;margin-left: 24px;">
+                <template slot="prepend">双面</template>
+              </el-input>
             </li>
-            <li><span>印花工艺：</span></li>
-            <li><span>定制区域：</span></li>
-            <li><span>效果图：</span></li>
+            <li><span>印花工艺：</span><el-input size="small" v-model="input"></el-input></li>
+            <li>
+              <span>定制区域：</span>
+              <el-input style="width: 100px;height:32px;" v-model="input3">
+                <template slot="prepend">X</template>
+                <template slot="append">cm</template>
+              </el-input>
+              <el-input style="width: 100px;height:32px;margin-left: 24px;" v-model="input3">
+                <template slot="prepend">Y</template>
+                <template slot="append">cm</template>
+              </el-input>
+              <a>正面</a>
+            </li>
+            <li>
+              <span></span>
+              <el-input style="width: 100px;height:32px;" v-model="input3">
+                <template slot="prepend">X</template>
+                <template slot="append">cm</template>
+              </el-input>
+              <el-input style="width: 100px;height:32px;margin-left: 24px;" v-model="input3">
+                <template slot="prepend">Y</template>
+                <template slot="append">cm</template>
+              </el-input>
+              <a>反面</a>
+            </li>
+            <li>
+              <span>效果图：</span>
+              <div class="img-cloth">
+                <img src="../assets/logo.png" alt="">
+                <div class="img-bottom">
+                  <p>正面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                  <input id="front_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
+                </div>
+              </div>
+              <div class="img-cloth">
+                <img src="../assets/logo.png" alt="">
+                <div class="img-bottom">
+                  <p>正面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                  <input id="back_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
+                </div>
+              </div>
+            </li>
           </ul>
         </div>
         <div class="dialog-right"></div>
@@ -336,10 +381,11 @@ export default {
   }
 }
 .dialog-wrap {
-  width: 80%;
+  width: 100%;
   height: 100%;
   display: flex;
   justify-content: space-between;
+  margin: 0 auto;
   .dialog-left, .dialog-right {
     width: 50%;
     text-align: left;
@@ -354,8 +400,46 @@ export default {
         width: 100px;
         height: 32px;
         line-height: 32px;
+        text-align: right;
+        flex: none;
+      }
+      a {
+        display: inline-block;
+        height: 32px;
+        line-height: 32px;
+        margin-left: 10px;
+      }
+      .img-cloth {
+        margin-right: 20px;
+        img {
+          width: 140px;
+          height: 160px;
+        }
+        .img-bottom {
+          display: flex;
+          justify-content: space-around;
+          .upload-btn {
+            height:26px;
+            line-height: 24px;
+            padding:0px 4px;
+            font-size: 12px;
+          }
+        }
       }
     }
   }
+}
+// 修改element组件的样式 /deep/
+.el-input-group--prepend /deep/ div.el-input-group__prepend,
+.el-input-group--append /deep/ div.el-input-group__append {
+  padding: 0 4px;
+  height: 30px;
+  line-height: 30px;
+}
+.el-input-group--prepend /deep/ input {
+  height: 32px;
+}
+.el-input /deep/ input.el-input__inner {
+  padding: 0px 4px;
 }
 </style>
