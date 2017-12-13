@@ -82,22 +82,42 @@
         </el-pagination>
       </div>
     </div>
-    <el-dialog title="收货地址" :visible.sync="dialogFormVisible" width="900px">
+    <el-dialog title="添加商品" :visible.sync="dialogFormVisible" width="900px">
       <div class="dialog-wrap">
         <div class="dialog-left">
           <ul>
-            <li><span>商品名称：</span><el-input size="small" v-model="input" placeholder="请输入商品名称"></el-input></li>
+            <li><span>商品名称：</span><el-input size="small" v-model="goodName" placeholder="请输入商品名称"></el-input></li>
             <li>
-              <span>成本/元：</span>
-              <el-input style="width: 100px;height:32px;" v-model="input3">
+              <span>商品类型：</span>
+              <el-select v-model="value" placeholder="请选择" size="small">
+                <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
+              </el-option>
+            </el-select>
+            </li>
+            <li><span>印花工艺：</span><el-input size="small" v-model="skill"></el-input></li>
+            <li>
+              <span>成本价格：</span>
+              <el-input style="width: 100px;height:32px;" v-model="singleCost">
                 <template slot="prepend">单面</template>
+                <template slot="append">元</template>
               </el-input>
-              <el-input v-model="input3" style="width: 100px;margin-left: 24px;">
+              <el-input v-model="doubleCost" style="width: 100px;margin-left: 24px;">
                 <template slot="prepend">双面</template>
+                <template slot="append">元</template>
               </el-input>
             </li>
-            <li><span>印花工艺：</span><el-input size="small" v-model="input"></el-input></li>
             <li>
+              <span>零售价格：</span>
+              <el-input style="width: 100px;height:32px;" v-model="singlePrice">
+                <template slot="prepend">单面</template>
+                <template slot="append">元</template>
+              </el-input>
+              <el-input v-model="doublePrice" style="width: 100px;margin-left: 24px;">
+                <template slot="prepend">双面</template>
+                <template slot="append">元</template>
+              </el-input>
+            </li>
+            <!-- <li>
               <span>定制区域：</span>
               <el-input style="width: 100px;height:32px;" v-model="input3">
                 <template slot="prepend">X</template>
@@ -108,8 +128,8 @@
                 <template slot="append">cm</template>
               </el-input>
               <a>正面</a>
-            </li>
-            <li>
+            </li> -->
+            <!-- <li>
               <span></span>
               <el-input style="width: 100px;height:32px;" v-model="input3">
                 <template slot="prepend">X</template>
@@ -120,8 +140,22 @@
                 <template slot="append">cm</template>
               </el-input>
               <a>反面</a>
-            </li>
-            <li>
+            </li> -->
+            <li><span>商品简介：</span><el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea"></el-input></li>
+            <li><span>商品图片：</span><el-upload
+              class="upload-card"
+              ref="upload"
+              action="https://jsonplaceholder.typicode.com/posts/"
+              :on-preview="handlePreview"
+              :on-remove="handleRemove"
+              :file-list="fileList"
+              list-type="picture-card"
+              :auto-upload="false">
+              <i class="el-icon-plus avatar-uploader-icon"></i>
+              <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
+              <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
+            </el-upload></li>
+            <!-- <li>
               <span>效果图：</span>
               <div class="img-cloth">
                 <img src="../assets/logo.png" alt="">
@@ -137,15 +171,15 @@
                   <input id="back_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
                 </div>
               </div>
-            </li>
+            </li> -->
           </ul>
         </div>
         <div class="dialog-right"></div>
       </div>
       
       <div slot="footer" class="dialog-footer">
-        <el-button @click="dialogFormVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogFormVisible = false">确 定</el-button>
+        <el-button type="primary" @click="addGoods">完成添加</el-button>
+        <el-button @click="dialogFormVisible = false">取  消</el-button>
       </div>
     </el-dialog>
   </div>
@@ -161,6 +195,28 @@ export default {
       currentPage3: 5,
       currentPage4: 4,
       searchInput: '',
+      goodName: '',
+      skill: '',
+      singleCost: '',
+      doubleCost: '',
+      singlePrice: '',
+      doublePrice: '',
+      textarea: '',
+      fileList: [],
+      options: [
+        {
+          value: '1',
+          label: 'T恤'
+        },
+        {
+          value: '2',
+          label: '卫衣'
+        },
+        {
+          value: '3',
+          label: 'POLO衫'
+        }],
+      value: '1',
       tableData: [
         {
           order_num: 20171206125010,
@@ -283,6 +339,16 @@ export default {
     }
   },
   methods: {
+    addGoods () {
+      this.$refs.upload.submit()
+      this.dialogFormVisible = false
+    },
+    handleRemove (file, fileList) {
+      console.log(file, fileList)
+    },
+    handlePreview (file) {
+      console.log(file)
+    },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
@@ -441,5 +507,15 @@ export default {
 }
 .el-input /deep/ input.el-input__inner {
   padding: 0px 4px;
+}
+.upload-card /deep/ ul.el-upload-list--picture-card /deep/ li.el-upload-list__item {
+  width: 80px;
+  height: 80px;
+}
+.upload-card /deep/ .el-upload--picture-card {
+  width: 80px;
+  height: 80px;
+  text-align: center;
+  line-height: 90px;
 }
 </style>
