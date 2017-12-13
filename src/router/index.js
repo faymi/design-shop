@@ -9,6 +9,7 @@ import IncomeManage from '@/views/IncomeManage'
 import GoodsManage from '@/views/GoodsManage'
 import AccountInfo from '@/views/AccountInfo'
 import OrderDetail from '@/views/OrderDetail'
+import AccountDetail from '@/views/AccountDetail'
 
 Vue.use(Router)
 
@@ -16,8 +17,9 @@ export default new Router({
   routes: [
     {
       path: '/',
-      name: 'Home',
-      component: Home
+      redirect: {
+        name: 'Home'
+      }
     },
     {
       path: '/login',
@@ -63,6 +65,11 @@ export default new Router({
       path: '/orderDetail',
       name: 'OrderDetail',
       component: OrderDetail
+    },
+    {
+      path: '/accountDetail',
+      name: 'AccountDetail',
+      component: AccountDetail
     }
   ]
 })

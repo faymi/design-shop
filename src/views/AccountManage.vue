@@ -4,23 +4,28 @@
       <div class="left">账号管理</div>
       <div class="right">
         <div class="search-btn">
-          <el-button type="primary">添加账号</el-button>
+          <el-button type="primary" @click="centerDialogVisible = true">添加账号</el-button>
         </div>
       </div>
     </div>
     <div class="table">
-      <el-table stripe :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="num" label="编号" width="180"></el-table-column>
+      <el-table stripe @row-dblclick="row_DbClick" :data="tableData" align="left" style="width: 100%">
+        <el-table-column prop="num" label="编号" width="100"></el-table-column>
+        <el-table-column prop="account" label="账号" width="180"></el-table-column>
+        <el-table-column  prop="shopName" label="店名" width="120"></el-table-column>
         <el-table-column  prop="picture" label="LOGO">
             <template slot-scope="scope">
                 <img class="row-img" :src="scope.row.picture" alt="">
             </template>
-        </el-table-column>
-        <el-table-column prop="account" label="账号" width="180"></el-table-column>        
+        </el-table-column>        
         <el-table-column  prop="domain" label="域名"></el-table-column>
-        <el-table-column  prop="order_num" label="订单数"></el-table-column>
-        <el-table-column  prop="order_total" label="成交额"></el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="余额">
+          <template slot-scope="scope">
+            <span>{{ scope.row.balance}}</span>
+            <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">提现</el-button>
+          </template>
+        </el-table-column>
+        <el-table-column label="状态" width="120">
           <template  slot-scope="scope">
             <el-select v-model="scope.row.value" placeholder="请选择">
               <el-option
@@ -30,11 +35,6 @@
                 :value="item.value">
               </el-option>
             </el-select>
-          </template>
-        </el-table-column>
-        <el-table-column label="操作" width="120">
-          <template slot-scope="scope">
-            <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -54,6 +54,35 @@
         </el-pagination>
       </div>
     </div>
+    <el-dialog
+      title="添加账号"
+      :visible.sync="centerDialogVisible"
+      width="550px"
+      center>
+        <div class="changePwd-wrap">
+          <el-form :model="accountForm" status-icon :rules="accountRules" ref="accountForm" label-width="100px">
+            <div class="changePwd">
+              <el-form-item label="账号：" prop="account">
+                <el-input placeholder="请输入账号" type="text" v-model="accountForm.account"></el-input>
+              </el-form-item>
+            </div>
+            <div class="changePwd">
+              <el-form-item label="密码：" prop="new_pwd">
+                <el-input placeholder="请输入密码" type="password" v-model="accountForm.new_pwd"></el-input>
+              </el-form-item>
+            </div>
+            <div class="changePwd">
+              <el-form-item label="确认密码：" prop="rep_pwd">
+                <el-input placeholder="请确认密码" type="password" v-model="accountForm.rep_pwd"></el-input>
+              </el-form-item>
+            </div>
+          </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="saveAccount('accountForm')">确 定</el-button>
+          <el-button @click="cancel('accountForm')">取 消</el-button>
+        </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -61,122 +90,219 @@
 export default {
   name: 'GoodsManage',
   data () {
+    let validateAccount = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入账号'))
+      } else {
+        callback()
+      }
+    }
+    let validateNewPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入密码'))
+      } else {
+        if (this.accountForm.rep_pwd !== '') {
+          this.$refs.accountForm.validateField('rep_pwd')
+        }
+        callback()
+      }
+    }
+    let validateRepPass = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请确认新密码'))
+      } else if (value !== this.accountForm.new_pwd) {
+        callback(new Error('两次输入密码不一致'))
+      } else {
+        callback()
+      }
+    }
     return {
       currentPage1: 5,
       currentPage2: 5,
       currentPage3: 5,
       currentPage4: 4,
       searchInput: '',
+      centerDialogVisible: false,
+      accountForm: {
+        account: '',
+        new_pwd: '',
+        rep_pwd: ''
+      },
+      accountRules: {
+        account: [
+            { validator: validateAccount, trigger: 'blur' }
+        ],
+        new_pwd: [
+          { validator: validateNewPass, trigger: 'blur' }
+        ],
+        rep_pwd: [
+          { validator: validateRepPass, trigger: 'blur' }
+        ]
+      },
       tableData: [
         {
           num: 20171206125010,
-          name: '纯棉T恤',
+          shopName: '狗迷会',
           picture: require('../assets/logo.png'),
           account: 'admin',
           domain: 'www.baidu.com',
           order_num: '99',
-          order_total: '15461',
+          balance: '15461',
           date: '2016-05-02',
           options: [
             {
               value: '1',
-              label: '未上架'
+              label: '运营中'
             },
             {
               value: '2',
-              label: '已上架'
+              label: '已关闭'
             }
           ],
-          value: ''
+          value: '1'
         },
         {
           num: 20171206125010,
-          name: '纯棉T恤',
+          shopName: '鸿兴会',
           picture: require('../assets/logo.png'),
           account: 'admin',
           domain: 'www.baidu.com',
           order_num: '99',
-          order_total: '15461',
+          balance: '15461',
           date: '2016-05-02',
           options: [
             {
               value: '1',
-              label: '未上架'
+              label: '运营中'
             },
             {
               value: '2',
-              label: '已上架'
+              label: '已关闭'
             }
           ],
-          value: ''
+          value: '1'
         },
         {
           num: 20171206125010,
-          name: '纯棉T恤',
+          shopName: '狮子会',
           picture: require('../assets/logo.png'),
           account: 'admin',
           domain: 'www.baidu.com',
           order_num: '99',
-          order_total: '15461',
+          balance: '15461',
           date: '2016-05-02',
           options: [
             {
               value: '1',
-              label: '未上架'
+              label: '运营中'
             },
             {
               value: '2',
-              label: '已上架'
+              label: '已关闭'
             }
           ],
-          value: ''
+          value: '1'
         },
         {
           num: 20171206125010,
-          name: '纯棉T恤',
+          shopName: '学生会',
           picture: require('../assets/logo.png'),
           account: 'admin',
           domain: 'www.baidu.com',
           order_num: '99',
-          order_total: '15461',
+          balance: '15461',
           date: '2016-05-02',
           options: [
             {
               value: '1',
-              label: '未上架'
+              label: '运营中'
             },
             {
               value: '2',
-              label: '已上架'
+              label: '已关闭'
             }
           ],
-          value: ''
+          value: '2'
         },
         {
           num: 20171206125010,
-          name: '纯棉T恤',
+          shopName: '猫迷会',
           picture: require('../assets/logo.png'),
           account: 'admin',
           domain: 'www.baidu.com',
           order_num: '99',
-          order_total: '15461',
+          balance: '15461',
           date: '2016-05-02',
           options: [
             {
               value: '1',
-              label: '未上架'
+              label: '运营中'
             },
             {
               value: '2',
-              label: '已上架'
+              label: '已关闭'
             }
           ],
-          value: ''
+          value: '2'
         }
       ]
     }
   },
   methods: {
+    row_DbClick (row, event) {
+      console.log(row)
+      const {href} = this.$router.resolve({
+        name: 'AccountDetail',
+        query: { accountId: row.account }
+      })
+      window.open(href, '_blank')
+    },
+    saveAccount (formName) {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let username = sessionStorage.getItem('username')
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.axios.post('ideat/userManage/editPwd', {
+            userId: username,
+            pwd: this.accountForm.new_pwd,
+            updateTime: time
+          })
+          .then(function (response) {
+            let data = response.data
+            if (data.code !== 0) {
+              _this.$notify.error({
+                title: '温馨提示',
+                message: data.msg
+              })
+              return
+            }
+            _this.$notify.success({
+              title: '温馨提示',
+              message: data.msg
+            })
+            _this.$refs[formName].resetFields()
+            _this.centerDialogVisible = false
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    cancel (formName) {
+      this.$refs[formName].resetFields()
+      this.centerDialogVisible = false
+    },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
@@ -256,6 +382,13 @@ export default {
       color: #b4bccc;
       opacity:1;
       font-size: 12px;
+  }
+}
+.changePwd-wrap {
+  width: 80%;
+  margin: 0 auto;
+  .changePwd {
+    margin: 20px;
   }
 }
 </style>

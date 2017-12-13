@@ -39,7 +39,7 @@ export default {
   watch: {
     '$route' (to, from) {
       let path = to.path.split('/')[1]
-      if (path === 'login' || path === 'orderDetail') {
+      if (path === 'login' || path === 'orderDetail' || path === 'accountDetail') {
         this.header_show = false
         this.aside_show = false
         this.ismain = false
@@ -52,7 +52,7 @@ export default {
   },
   created () {
     this.path = this.$route.path
-    if (this.path === '/login' || this.path === '/orderDetail') {
+    if (this.path === '/login' || this.path === '/orderDetail' || this.path === '/accountDetail') {
       this.header_show = false
       this.aside_show = false
       this.ismain = false
