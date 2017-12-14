@@ -178,7 +178,7 @@
           <div class="color-box">
             <span>商品颜色：</span>
             <ul class="color">
-              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index" :class="{selected:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
             </ul>
           </div>
           <div class="color-detail">
@@ -186,13 +186,13 @@
               <li>
                 <span>尺寸：</span>
                 <ul class="size">
-                  <li @click="clickS" :class="{selected:flagS}"><div>S</div></li>
-                  <li @click="clickM" :class="{selected:flagM}"><div>M</div></li>
-                  <li @click="clickL" :class="{selected:flagL}"><div>L</div></li>
-                  <li @click="click1L" :class="{selected:flag1L}"><div>XL</div></li>
-                  <li @click="click2L" :class="{selected:flag2L}"><div>2XL</div></li>
-                  <li @click="click3L" :class="{selected:flag3L}"><div>3XL</div></li>
-                  <!-- <li v-for="(size, index) in size" @click="tabSizeClick(index, size.key, $event)" :class="{selected:flag}"><div :style="{backgroundColor: size.key}">{{size.key}}</div></li> -->
+                  <li @click="clickS" :class="{selectedItem:flagS}"><div>S</div></li>
+                  <li @click="clickM" :class="{selectedItem:flagM}"><div>M</div></li>
+                  <li @click="clickL" :class="{selectedItem:flagL}"><div>L</div></li>
+                  <li @click="click1L" :class="{selectedItem:flag1L}"><div>XL</div></li>
+                  <li @click="click2L" :class="{selectedItem:flag2L}"><div>2XL</div></li>
+                  <li @click="click3L" :class="{selectedItem:flag3L}"><div>3XL</div></li>
+                  <!-- <li v-for="(size, index) in size" @click="tabSizeClick(index, size.key, $event)" :class="{selectedItem:flag}"><div :style="{backgroundColor: size.key}">{{size.key}}</div></li> -->
                 </ul>
               </li>
               <li>
@@ -791,7 +791,7 @@ export default {
     }
   }
 }
-.selected {
+.selectedItem {
   border: 2px solid #e3393c !important;
   color: #e3393c;
 }

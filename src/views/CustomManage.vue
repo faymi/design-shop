@@ -13,12 +13,15 @@
     </div>
     <div class="table">
       <el-table stripe :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="index" label="序号" width="180"></el-table-column>
-        <el-table-column prop="name" label="用户名" width="180"></el-table-column>
+        <el-table-column prop="index" label="序号" width="80"></el-table-column>
+        <el-table-column prop="name" label="用户名" width="100"></el-table-column>
         <el-table-column  prop="phone" label="联系电话"></el-table-column>
         <el-table-column  prop="address" label="地址"></el-table-column>
-        <el-table-column  prop="order_num" label="订单数"></el-table-column>
-        <el-table-column  prop="total" label="成交额"></el-table-column>
+        <el-table-column prop="firstLoginTime" label="首次登陆时间"></el-table-column>
+        <el-table-column  prop="recentLoginTime" label="最近登录时间"></el-table-column>
+        <el-table-column  prop="IP" label="最近登录IP"></el-table-column>
+        <!-- <el-table-column  prop="order_num" label="订单数"></el-table-column>
+        <el-table-column  prop="total" label="成交额"></el-table-column> -->
       </el-table>
     </div>
     <div class="page-wrap">
@@ -59,7 +62,10 @@ export default {
           total: '99',
           order_num: 123,
           status: '代签收',
-          date: '2016-05-02'
+          date: '2016-05-02',
+          firstLoginTime: '2017-12-12 08:45:12',
+          recentLoginTime: '2017-12-12 09:35:24',
+          IP: '192.168.0.1'
         },
         {
           index: 1,
@@ -70,7 +76,10 @@ export default {
           total: '99',
           order_num: 123,
           status: '代签收',
-          date: '2016-05-02'
+          date: '2016-05-02',
+          firstLoginTime: '2017-12-12 08:45:12',
+          recentLoginTime: '2017-12-12 09:35:24',
+          IP: '192.168.0.1'
         },
         {
           index: 2,
@@ -81,7 +90,10 @@ export default {
           total: '99',
           order_num: 123,
           status: '代签收',
-          date: '2016-05-02'
+          date: '2016-05-02',
+          firstLoginTime: '2017-12-12 08:45:12',
+          recentLoginTime: '2017-12-12 09:35:24',
+          IP: '192.168.0.1'
         },
         {
           index: 3,
@@ -92,7 +104,10 @@ export default {
           total: '99',
           order_num: 123,
           status: '代签收',
-          date: '2016-05-02'
+          date: '2016-05-02',
+          firstLoginTime: '2017-12-12 08:45:12',
+          recentLoginTime: '2017-12-12 09:35:24',
+          IP: '192.168.0.1'
         },
         {
           index: 4,
@@ -103,7 +118,10 @@ export default {
           total: '99',
           order_num: 123,
           status: '代签收',
-          date: '2016-05-02'
+          date: '2016-05-02',
+          firstLoginTime: '2017-12-12 08:45:12',
+          recentLoginTime: '2017-12-12 09:35:24',
+          IP: '192.168.0.1'
         }
       ]
     }

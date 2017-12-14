@@ -1,75 +1,138 @@
 <template>
   <div class="content-wrap">
     <div class="top">
+      <div class="title">收益明细</div>
       <el-row :gutter="40">
-          <el-col :span="8">
-            <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
+          <el-col :span="12">
+            <div class="left">
+              <span>总收益</span><span class="font-bold">￥26042</span>
               <br>
-              <span>今日成交额</span>
+              <span>成交额</span><span class="font-bold">￥26042</span>
             </div>
           </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
-              <br>
-              <span>今日订单数</span>
-            </div>
-          </el-col>
-          <el-col :span="8">
-            <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
-              <br>
-              <span>今日总成交额</span>
+          <el-col :span="12">
+            <div class="right">
+              <span>可提现</span><span class="font-bold">￥26042</span>
+              <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">提现</el-button>
             </div>
           </el-col>
       </el-row>
     </div>
-    <div class="text-box"></div>
+    <div class="table-box">
+      <el-table @row-dblclick="rowClick" :data="tableData" align="left" style="width: 100%">
+        <el-table-column prop="order_num" label="订单号"></el-table-column>
+        <el-table-column  prop="goods" label="交易内容"></el-table-column>
+        <el-table-column prop="name" label="客户"></el-table-column>
+        <el-table-column prop="date" label="交易时间"></el-table-column>
+        <el-table-column  prop="total" label="总价"></el-table-column>
+        <el-table-column  prop="gainsharing" label="分成"></el-table-column>        
+        <el-table-column  prop="status" label="状态"></el-table-column>
+        
+      </el-table>
+    </div>
+    <div class="page-wrap">
+      <!-- <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination> -->
+      <div class="block">
+        <el-pagination
+          background
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+          :current-page="currentPage4"
+          :page-sizes="[100, 200, 300, 400]"
+          :page-size="100"
+          layout="total, sizes, prev, pager, next, jumper"
+          :total="400">
+        </el-pagination>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Home'
+  name: 'IncomeManage',
+  data () {
+    return {
+      currentPage1: 5,
+      currentPage2: 5,
+      currentPage3: 5,
+      currentPage4: 4,
+      tableData: [
+        {
+          order_num: 20171206125010,
+          name: '王小虎',
+          goods: '纯棉T恤',
+          total: '99',
+          status: '已到账',
+          date: '2016-05-02 09:12:36',
+          gainsharing: '29'
+        },
+        {
+          order_num: 20171206125010,
+          name: '王小虎',
+          goods: '纯棉T恤',
+          total: '99',
+          status: '已到账',
+          date: '2016-05-02 09:12:36',
+          gainsharing: '29'
+        },
+        {
+          order_num: 20171206125010,
+          name: '王小虎',
+          goods: '纯棉T恤',
+          total: '99',
+          status: '已到账',
+          date: '2016-05-02 09:12:36',
+          gainsharing: '29'
+        },
+        {
+          order_num: 20171206125010,
+          name: '王小虎',
+          goods: '纯棉T恤',
+          total: '99',
+          status: '已到账',
+          date: '2016-05-02 09:12:36',
+          gainsharing: '29'
+        },
+        {
+          order_num: 20171206125010,
+          name: '王小虎',
+          goods: '纯棉T恤',
+          total: '99',
+          status: '已到账',
+          date: '2016-05-02 09:12:36',
+          gainsharing: '29'
+        }
+      ]
+    }
+  },
+  methods: {
+    rowClick (row, event, column) {},
+    handleSizeChange (val) {
+      console.log(`每页 ${val} 条`)
+    },
+    handleCurrentChange (val) {
+      console.log(`当前页: ${val}`)
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '../assets/css/function';
-.el-row {
-  margin-bottom: 20px;
-  &:last-child {
-    margin-bottom: 0;
+.title, .left, .right {
+  text-align: left;
+}
+.left, .right {
+  margin-top: 10px;
+  span {
+    margin-top: 10px;
+    display: inline-block;
+    margin-left: 20px;
+    font-size: 14px;
   }
 }
-.el-col {
-  border-radius: 4px;
-}
-.bg-purple-dark {
-  background: #99a9bf;
-}
-.bg-purple {
-  background: #d3dce6;
-}
-.bg-blue {
-  background-color: $card-bg-color;
-}
-.grid-content {
-  border-radius: 4px;
-  height: 140px;
-  color: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-}
-.row-bg {
-  padding: 10px 0;
-  background-color: #f9fafc;
-}
-.font-bold {
-  font-weight: bold;
-  font-size: 24px;
+.table-box {
+  margin-top: 20px;
 }
 </style>

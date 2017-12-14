@@ -7,11 +7,11 @@
       </div>
       <div class="aside" v-show="aside_show">
         <el-menu default-active="/home" class="el-menu-vertical-demo" :router="true">
-          <el-menu-item index="/home" :class="{'isActive': active}">首页</el-menu-item>
+          <el-menu-item index="/home" :class="{'isActive': active}">首页概览</el-menu-item>
           <el-menu-item index="/orderManage" :class="{'isActive': !active}">订单管理</el-menu-item>
           <el-menu-item index="/goodsManage" :class="{'isActive': !active}">商品管理</el-menu-item>
           <el-menu-item index="/accountManage" :class="{'isActive': !active}">账号管理</el-menu-item>
-          <el-menu-item index="/customManage" :class="{'isActive': !active}">客户列表</el-menu-item>
+          <el-menu-item index="/customManage" :class="{'isActive': !active}">用户列表</el-menu-item>
           <el-menu-item index="/incomeManage" :class="{'isActive': !active}">收益明细</el-menu-item>
           <el-menu-item index="/accountInfo" :class="{'isActive': !active}">账号资料</el-menu-item>
         </el-menu>

@@ -25,18 +25,129 @@
           </el-col>
       </el-row>
     </div>
-    <div class="text-box"></div>
+    <div class="echart-wrap">
+      <div id="echartBox"></div>
+      <div class="select-bar">
+        <el-select v-model="value" placeholder="请选择" size="mini" @change="onChange">
+          <el-option v-for="item in selectData" :key="item.value" :label="item.label" :value="item.value"></el-option>
+        </el-select>
+      </div>
+    </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'Home'
+  name: 'Home',
+  data () {
+    return {
+      value: '1',
+      selectData: [
+        {
+          value: '1',
+          label: '本月'
+        },
+        {
+          value: '2',
+          label: '近3月'
+        },
+        {
+          value: '3',
+          label: '本年'
+        }
+      ],
+      options: {
+        title: {
+          text: '一周收益',
+          subtext: '纯属虚构'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['最高气温']
+        },
+        toolbox: {
+          show: true,
+          feature: {
+            dataZoom: {
+              yAxisIndex: 'none'
+            },
+            magicType: {type: ['line', 'bar']},
+            restore: {},
+            saveAsImage: {}
+          }
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+          type: 'value',
+          axisLabel: {
+            formatter: '￥ {value}'
+          }
+        },
+        series: [
+          {
+            name: '收益',
+            type: 'line',
+            data: [541, 687, 321, 541, 121, 184, 761],
+            markPoint: {
+              data: [
+                {type: 'max', name: '最大值'},
+                {type: 'min', name: '最小值'}
+              ]},
+            markLine: {
+              data: [
+                {type: 'average', name: '平均值'}
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  methods: {
+    initEchart () {
+      let myChart = this.echarts.init(document.getElementById('echartBox'))
+      myChart.setOption(this.options)
+    },
+    onChange () {
+      // 获取当月有多少天
+      let d = new Date()
+      let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
+      let monthDaysList = []
+      for (let i = 1; i <= curMonthDays; i++) {
+        monthDaysList.push(i)
+      }
+      this.options.xAxis.data = monthDaysList
+      this.initEchart()
+      // console.log(this.value)
+    }
+  },
+  mounted () {
+    this.initEchart()
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 @import '../assets/css/function';
+.echart-wrap {
+  width: 96%;
+  height: 400px;
+  display: flex;
+  justify-content: flex-start;
+  #echartBox {
+    width: 100%;
+    height: 100%;
+  }
+  .select-bar {
+    width: 100px;
+  }
+}
 .el-row {
   margin-bottom: 20px;
   &:last-child {

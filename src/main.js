@@ -5,6 +5,7 @@ import App from './App'
 import router from './router'
 import axios from 'axios'
 import ElementUI from 'element-ui'
+import * as echarts from 'echarts'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 import './assets/css/reset.scss'
@@ -55,6 +56,7 @@ axios.interceptors.request.use(
 // })
 
 Vue.prototype.axios = axios
+Vue.prototype.echarts = echarts
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)
