@@ -9,7 +9,7 @@
       </div>
     </div>
     <div class="table">
-      <el-table stripe :data="tableData" align="left" style="width: 100%">
+      <el-table stripe :data="tableData" @row-dblclick="goodsRow_DbClick" align="left" style="width: 100%">
         <el-table-column prop="order_num" label="商品编号" width="180"></el-table-column>
         <el-table-column prop="name" label="商品" width="180"></el-table-column>
         <el-table-column  prop="picture" label="图片">
@@ -431,6 +431,14 @@ export default {
     }
   },
   methods: {
+    goodsRow_DbClick (row, event) {
+      console.log(row)
+      const {href} = this.$router.resolve({
+        name: 'GoodsDetail',
+        query: { orderId: row.order_num }
+      })
+      window.open(href, '_blank')
+    },
     dialogOpen () {
       // 打开dialog时默认选中第一种颜色、S码
       this.flagS = true

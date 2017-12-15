@@ -120,10 +120,11 @@ export default {
       let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
       let monthDaysList = []
       for (let i = 1; i <= curMonthDays; i++) {
-        monthDaysList.push(i)
+        monthDaysList.push(d.getMonth() + 1 + '/' + i)
       }
       this.options.xAxis.data = monthDaysList
       this.initEchart()
+      console.log(monthDaysList)
       // console.log(this.value)
     }
   },
@@ -140,6 +141,7 @@ export default {
   height: 400px;
   display: flex;
   justify-content: flex-start;
+  margin-top: 20px;
   #echartBox {
     width: 100%;
     height: 100%;

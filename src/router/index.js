@@ -10,6 +10,7 @@ import GoodsManage from '@/views/GoodsManage'
 import AccountInfo from '@/views/AccountInfo'
 import OrderDetail from '@/views/OrderDetail'
 import AccountDetail from '@/views/AccountDetail'
+import GoodsDetail from '@/views/GoodsDetail'
 
 Vue.use(Router)
 
@@ -70,6 +71,11 @@ export default new Router({
       path: '/accountDetail',
       name: 'AccountDetail',
       component: AccountDetail
+    },
+    {
+      path: '/goodsDetail',
+      name: 'GoodsDetail',
+      component: GoodsDetail
     }
   ]
 })
