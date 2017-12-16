@@ -6,7 +6,7 @@
     <div class="main-wrap">
       <div class="domian-cls">
         <span>账号：</span>
-        <span>admin</span>
+        <span>{{account}}</span>
       </div>
       <div class="logo-info">
         <span>Logo:</span>
@@ -31,7 +31,7 @@
         <el-input placeholder="请输入内容" v-model="phone" class="domain-ipt"></el-input>
       </div>
       <div class="div-btn">
-        <el-button type="primary">保存修改</el-button>
+        <el-button type="primary" @click="saveChange">保存修改</el-button>
         <el-button type="success" @click="centerDialogVisible = true">修改密码</el-button>
       </div>
     </div>
@@ -103,6 +103,7 @@ export default {
     }
     return {
       centerDialogVisible: false,
+      account: 'admin',
       shopName: '狗迷会',
       domain: 'http://idea.vesstack.com/sdds2531524sdsd',
       phone: '400-800-100',
@@ -143,6 +144,7 @@ export default {
         })
       }
     },
+    saveChange () {},
     savePwd (formName) {
       let _this = this
       let date = new Date()
@@ -268,10 +270,10 @@ export default {
 }
 .main-wrap {
   width: 100%;
-  margin-top: 20px;
+  // margin-top: 20px;
   border: 1px solid #ececec;
   box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
-  padding: 20px 20px 50px 20px;
+  padding: 0px 20px 50px 20px;
   >div {
     margin-top: 20px;
     height: 40px;

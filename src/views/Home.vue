@@ -4,21 +4,21 @@
       <el-row :gutter="40">
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
+              <span class="font-bold">￥{{dayIncome}}</span>
               <br>
               <span>今日成交额</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
+              <span class="font-bold">￥{{dayOrder}}</span>
               <br>
               <span>今日订单数</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥26042</span>
+              <span class="font-bold">￥{{dayToatalIncome}}</span>
               <br>
               <span>今日总成交额</span>
             </div>
@@ -41,6 +41,9 @@ export default {
   name: 'Home',
   data () {
     return {
+      dayIncome: 36042,
+      dayOrder: 5412,
+      dayToatalIncome: 45617,
       value: '1',
       selectData: [
         {

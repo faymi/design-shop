@@ -50,7 +50,7 @@
         </el-table-column> -->
         <el-table-column label="状态">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.value" placeholder="请选择">
+            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.order_num, scope.row.value)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -431,6 +431,9 @@ export default {
     }
   },
   methods: {
+    selectChange (orderNum, val) {
+      console.log(orderNum, val)
+    },
     goodsRow_DbClick (row, event) {
       console.log(row)
       const {href} = this.$router.resolve({

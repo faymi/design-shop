@@ -4,14 +4,14 @@
       <div class="left">订单管理</div>
       <div class="right">
         <div class="search-ipt">
-          <el-input placeholder="订单号、客户、电话、地址" prefix-icon="el-icon-search" v-model="searchInput"></el-input>          
+          <el-input placeholder="订单号、客户、电话、地址" prefix-icon="el-icon-search" @keyup.enter.native="search" v-model="searchInput"></el-input>          
         </div>
         <div class="search-btn">
-          <el-button type="primary">搜索</el-button>
+          <el-button type="primary" @click="search">搜索</el-button>
         </div>
       </div>
     </div>
-    <div class="search-bar">搜索“2017”关键字结果：</div>
+    <div class="search-bar" v-show="searchResultShow">搜索“{{searchText}}”关键字结果：</div>
     <div class="table">
       <el-table @row-dblclick="rowClick" :data="tableData" align="left" style="width: 100%">
         <el-table-column prop="order_num" label="订单号" width="180"></el-table-column>
@@ -52,6 +52,8 @@ export default {
   name: 'OrderManage',
   data () {
     return {
+      searchResultShow: false,
+      searchText: '',
       currentPage1: 5,
       currentPage2: 5,
       currentPage3: 5,
@@ -112,6 +114,14 @@ export default {
     }
   },
   methods: {
+    search () {
+      if (this.searchInput !== '') {
+        this.searchResultShow = true
+        this.searchText = this.searchInput
+      } else {
+        this.searchResultShow = false
+      }
+    },
     rowClick (row, event, column) {
       console.log(row)
       // this.$router.push({name: 'OrderDetail', params: { orderId: '' }})

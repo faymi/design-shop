@@ -22,12 +22,12 @@
         <el-table-column label="余额">
           <template slot-scope="scope">
             <span>{{ scope.row.balance}}</span>
-            <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">提现</el-button>
+            <el-button @click.native.prevent="getCash(scope.$index, tableData4)" type="text" size="small">提现</el-button>
           </template>
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.value" placeholder="请选择">
+            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.num, scope.row.value)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -162,7 +162,7 @@ export default {
           value: '1'
         },
         {
-          num: 20171206125010,
+          num: 20171206125011,
           shopName: '鸿兴会',
           picture: require('../assets/logo.png'),
           account: 'admin',
@@ -183,7 +183,7 @@ export default {
           value: '1'
         },
         {
-          num: 20171206125010,
+          num: 20171206125012,
           shopName: '狮子会',
           picture: require('../assets/logo.png'),
           account: 'admin',
@@ -204,7 +204,7 @@ export default {
           value: '1'
         },
         {
-          num: 20171206125010,
+          num: 20171206125013,
           shopName: '学生会',
           picture: require('../assets/logo.png'),
           account: 'admin',
@@ -225,7 +225,7 @@ export default {
           value: '2'
         },
         {
-          num: 20171206125010,
+          num: 20171206125014,
           shopName: '猫迷会',
           picture: require('../assets/logo.png'),
           account: 'admin',
@@ -249,6 +249,9 @@ export default {
     }
   },
   methods: {
+    selectChange (num, value) {
+      console.log(num, value)
+    },
     row_DbClick (row, event) {
       console.log(row)
       const {href} = this.$router.resolve({

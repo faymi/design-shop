@@ -5,14 +5,14 @@
       <el-row :gutter="40">
           <el-col :span="12">
             <div class="left">
-              <span>总收益</span><span class="font-bold">￥26042</span>
+              <span>总收益</span><span class="font-bold">￥{{totalIncome}}</span>
               <br>
-              <span>成交额</span><span class="font-bold">￥26042</span>
+              <span>成交额</span><span class="font-bold">￥{{turnVolume}}</span>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="right">
-              <span>可提现</span><span class="font-bold">￥26042</span>
+              <span>可提现</span><span class="font-bold">￥{{cash}}</span>
               <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">提现</el-button>
             </div>
           </el-col>
@@ -53,6 +53,9 @@ export default {
   name: 'IncomeManage',
   data () {
     return {
+      totalIncome: 16125,
+      turnVolume: 45415,
+      cash: 2455,
       currentPage1: 5,
       currentPage2: 5,
       currentPage3: 5,

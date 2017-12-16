@@ -17,13 +17,13 @@
               <img src="../assets/logo.png" alt="">
             </div>
             <div class="detail-left">
-              <div class="shop-name-cls"><span>店名：</span>狗迷会</div>              
-              <div><span>账号：</span>idea</div>
-              <div><span>域名：</span>www.baidu.com</div>
+              <div class="shop-name-cls"><span>店名：</span>{{shopName}}</div>              
+              <div><span>账号：</span>{{account}}</div>
+              <div><span>域名：</span>{{domain}}</div>
             </div>
             <div class="detail-right">
-              <div><span>余额：</span>￥1000<el-button type="text">提现</el-button></div>
-              <div><span>状态：</span>运营中</div>
+              <div><span>余额：</span>￥{{balance}}<el-button type="text">提现</el-button></div>
+              <div><span>状态：</span>{{status}}</div>
             </div>
           </div>
           <div class="detail-list">
@@ -74,7 +74,7 @@
     </div>
     <el-dialog title="删除账号" :visible.sync="delDialog" width="400px" center>
       <div class="del-dialog-wrap">
-        <span>是否确认删除该账号“idea？”</span>
+        <span>是否确认删除该账号“{{account}}”？</span>
       </div>
       <span slot="footer" class="dialog-footer">
         <el-button type="primary" @click="delDialog = false">确 定</el-button>
@@ -138,6 +138,8 @@ export default {
       account: 'ideat',
       password: '123456',
       shopName: '狗迷会',
+      balance: 1000,
+      status: '运营中',
       dataUrl: '',
       imgFile: {},
       phone: '18819412313',

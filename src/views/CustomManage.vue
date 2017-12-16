@@ -1,13 +1,13 @@
 <template>
   <div class="content-wrap">
     <div class="header">
-      <div class="left">客户列表</div>
+      <div class="left">用户列表</div>
       <div class="right">
         <div class="search-ipt">
-          <el-input placeholder="用户名、电话、地址" prefix-icon="el-icon-search" v-model="searchInput"></el-input>          
+          <el-input placeholder="用户名、电话、地址" prefix-icon="el-icon-search" @keyup.enter.native="search" v-model="searchInput"></el-input>          
         </div>
         <div class="search-btn">
-          <el-button type="primary">搜索</el-button>
+          <el-button type="primary" @click="search">搜索</el-button>
         </div>
       </div>
     </div>
@@ -127,6 +127,9 @@ export default {
     }
   },
   methods: {
+    search () {
+      console.log(this.searchInput)
+    },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
