@@ -11,23 +11,23 @@
     <div class="table">
       <el-table stripe @row-dblclick="row_DbClick" :data="tableData" align="left" style="width: 100%">
         <el-table-column prop="num" label="编号" width="100"></el-table-column>
-        <el-table-column prop="account" label="账号" width="180"></el-table-column>
+        <el-table-column prop="userId" label="账号" width="180"></el-table-column>
         <el-table-column  prop="shopName" label="店名" width="120"></el-table-column>
-        <el-table-column  prop="picture" label="LOGO">
+        <el-table-column  prop="logoPic" label="LOGO">
             <template slot-scope="scope">
-                <img class="row-img" :src="scope.row.picture" alt="">
+                <img class="row-img" :src="scope.row.logoPic" alt="">
             </template>
         </el-table-column>        
-        <el-table-column  prop="domain" label="域名"></el-table-column>
-        <el-table-column label="余额">
-          <template slot-scope="scope">
+        <el-table-column  prop="userDomain" label="域名"></el-table-column>
+        <el-table-column prop="balance" label="余额">
+          <!-- <template slot-scope="scope">
             <span>{{ scope.row.balance}}</span>
             <el-button @click.native.prevent="getCash(scope.$index, tableData4)" type="text" size="small">提现</el-button>
-          </template>
+          </template> -->
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.num, scope.row.value)">
+            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.userId, scope.row.status)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -66,6 +66,11 @@
                 <el-input placeholder="请输入账号" type="text" v-model="accountForm.account"></el-input>
               </el-form-item>
             </div>
+            <!-- <div class="changePwd">
+              <el-form-item label="域名：" prop="domain">
+                <el-input placeholder="请输入域名" type="text" v-model="accountForm.domain"></el-input>
+              </el-form-item>
+            </div> -->
             <div class="changePwd">
               <el-form-item label="密码：" prop="new_pwd">
                 <el-input placeholder="请输入密码" type="password" v-model="accountForm.new_pwd"></el-input>
@@ -97,6 +102,13 @@ export default {
         callback()
       }
     }
+    // let validateDomain = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入域名'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
     let validateNewPass = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请输入密码'))
@@ -123,8 +135,10 @@ export default {
       currentPage4: 4,
       searchInput: '',
       centerDialogVisible: false,
+      domain: 'http://idea.vesstack.com/sdds2531524sdsd',
       accountForm: {
         account: '',
+        domain: '',
         new_pwd: '',
         rep_pwd: ''
       },
@@ -132,6 +146,9 @@ export default {
         account: [
             { validator: validateAccount, trigger: 'blur' }
         ],
+        // domain: [
+        //   { validator: validateDomain, trigger: 'blur' }
+        // ],
         new_pwd: [
           { validator: validateNewPass, trigger: 'blur' }
         ],
@@ -139,128 +156,12 @@ export default {
           { validator: validateRepPass, trigger: 'blur' }
         ]
       },
-      tableData: [
-        {
-          num: 20171206125010,
-          shopName: '狗迷会',
-          picture: require('../assets/logo.png'),
-          account: 'admin',
-          domain: 'www.baidu.com',
-          order_num: '99',
-          balance: '15461',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '运营中'
-            },
-            {
-              value: '2',
-              label: '已关闭'
-            }
-          ],
-          value: '1'
-        },
-        {
-          num: 20171206125011,
-          shopName: '鸿兴会',
-          picture: require('../assets/logo.png'),
-          account: 'admin',
-          domain: 'www.baidu.com',
-          order_num: '99',
-          balance: '15461',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '运营中'
-            },
-            {
-              value: '2',
-              label: '已关闭'
-            }
-          ],
-          value: '1'
-        },
-        {
-          num: 20171206125012,
-          shopName: '狮子会',
-          picture: require('../assets/logo.png'),
-          account: 'admin',
-          domain: 'www.baidu.com',
-          order_num: '99',
-          balance: '15461',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '运营中'
-            },
-            {
-              value: '2',
-              label: '已关闭'
-            }
-          ],
-          value: '1'
-        },
-        {
-          num: 20171206125013,
-          shopName: '学生会',
-          picture: require('../assets/logo.png'),
-          account: 'admin',
-          domain: 'www.baidu.com',
-          order_num: '99',
-          balance: '15461',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '运营中'
-            },
-            {
-              value: '2',
-              label: '已关闭'
-            }
-          ],
-          value: '2'
-        },
-        {
-          num: 20171206125014,
-          shopName: '猫迷会',
-          picture: require('../assets/logo.png'),
-          account: 'admin',
-          domain: 'www.baidu.com',
-          order_num: '99',
-          balance: '15461',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '运营中'
-            },
-            {
-              value: '2',
-              label: '已关闭'
-            }
-          ],
-          value: '2'
-        }
-      ]
+      tableData: []
     }
   },
   methods: {
-    selectChange (num, value) {
-      console.log(num, value)
-    },
-    row_DbClick (row, event) {
-      console.log(row)
-      const {href} = this.$router.resolve({
-        name: 'AccountDetail',
-        query: { accountId: row.account }
-      })
-      window.open(href, '_blank')
-    },
-    saveAccount (formName) {
+    selectChange (userId, value) {
+      // console.log(userId, value)
       let _this = this
       let date = new Date()
       let year = date.getFullYear()
@@ -270,13 +171,47 @@ export default {
       let minute = date.getMinutes()
       let second = date.getSeconds()
       let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
-      let username = sessionStorage.getItem('username')
+      this.axios.post('ideat/userManage/editUserInfo', {
+        status: value,
+        updateTime: time,
+        userId: userId
+      })
+      .then(function (response) {
+        // console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    row_DbClick (row, event) {
+      // console.log(row)
+      const {href} = this.$router.resolve({
+        name: 'AccountDetail',
+        query: { accountId: row.userId }
+      })
+      window.open(href, '_blank')
+    },
+    saveAccount (formName) {
+      let _this = this
+      let userId = this.accountForm.account
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.axios.post('ideat/userManage/editPwd', {
-            userId: username,
-            pwd: this.accountForm.new_pwd,
-            updateTime: time
+          this.axios.post('ideat/userManage/addUser', {
+            userId: userId,
+            pwd: this.accountForm.new_pwd
+            // domain: this.accountForm.domain
           })
           .then(function (response) {
             let data = response.data
@@ -312,6 +247,38 @@ export default {
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
     }
+  },
+  mounted () {
+    let _this = this
+    let options = [{value: '1', label: '运营中'}, {value: '0', label: '已关闭'}]
+    this.axios.get('ideat/userManage/getUserList', {
+      params: {
+        start: 0,
+        limit: 10
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      // console.log(data)
+      let result = data.body.result
+      for (let i = 0; i < result.length; i++) {
+        result.num = i + 1
+        result[i].options = options
+        result[i].value = String(result[i].status)
+      }
+      _this.tableData = result
+      // console.log(JSON.stringify(result))
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>

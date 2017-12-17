@@ -103,10 +103,11 @@ export default {
     }
     return {
       centerDialogVisible: false,
-      account: 'admin',
-      shopName: '狗迷会',
-      domain: 'http://idea.vesstack.com/sdds2531524sdsd',
-      phone: '400-800-100',
+      account: '',
+      shopName: '',
+      userId: '',
+      domain: '',
+      phone: '',
       pwdForm: {
         old_pwd: '',
         new_pwd: '',
@@ -144,7 +145,44 @@ export default {
         })
       }
     },
-    saveChange () {},
+    saveChange () {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let userId = this.userId
+      this.editDialog = true
+      this.axios.post('ideat/userManage/editUserInfo', {
+        servicePhone: _this.phone,
+        shopName: _this.shopName,
+        updateTime: time,
+        userId: userId,
+        userPic: _this.dataUrl
+      })
+      .then(function (response) {
+        // console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
     savePwd (formName) {
       let _this = this
       let date = new Date()
@@ -155,7 +193,7 @@ export default {
       let minute = date.getMinutes()
       let second = date.getSeconds()
       let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
-      let username = sessionStorage.getItem('username')
+      let username = this.userId
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.axios.post('ideat/userManage/editPwd', {
@@ -251,6 +289,34 @@ export default {
       }
       reader.readAsDataURL(file)
     }
+  },
+  mounted () {
+    let _this = this
+    this.userId = sessionStorage.getItem('username')
+    this.axios.get('ideat/userManage/getUserInfo', {
+      params: {
+        userId: this.userId
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      let result = data.body
+      _this.account = result.userName
+      _this.shopName = result.shopName
+      _this.domain = result.userDomain
+      _this.dataUrl = result.logoPic
+      _this.phone = result.servicePhone
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>

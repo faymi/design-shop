@@ -14,11 +14,11 @@
           </div>
           <div class="account-detail">
             <div class="img-logo">
-              <img src="../assets/logo.png" alt="">
+              <img :src="logoImg" alt="">
             </div>
             <div class="detail-left">
               <div class="shop-name-cls"><span>店名：</span>{{shopName}}</div>              
-              <div><span>账号：</span>{{account}}</div>
+              <div><span>账号：</span>{{userId}}</div>
               <div><span>域名：</span>{{domain}}</div>
             </div>
             <div class="detail-right">
@@ -74,10 +74,10 @@
     </div>
     <el-dialog title="删除账号" :visible.sync="delDialog" width="400px" center>
       <div class="del-dialog-wrap">
-        <span>是否确认删除该账号“{{account}}”？</span>
+        <span>是否确认删除该账号“{{userId}}”？</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="delDialog = false">确 定</el-button>
+        <el-button type="primary" @click="deleteUser">确 定</el-button>
         <el-button @click="delDialog = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -86,7 +86,7 @@
         <div class="main-wrap">
           <div class="domian-cls">
             <span>账号：</span>
-            <span>{{account}}</span>
+            <span>{{userId}}</span>
           </div>
           <div class="domain-cls">
             <span>密码：</span>
@@ -116,7 +116,7 @@
         </div>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="editDialog = false">确 定</el-button>
+        <el-button type="primary" @click="editUser">确 定</el-button>
         <el-button @click="editDialog = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -135,15 +135,17 @@ export default {
       delDialog: false,
       editDialog: false,
       activeName: 'first',
-      account: 'ideat',
-      password: '123456',
-      shopName: '狗迷会',
-      balance: 1000,
-      status: '运营中',
+      userId: '',
+      account: '',
+      password: '',
+      shopName: '',
+      balance: 0,
+      status: '',
       dataUrl: '',
+      logoImg: '',
       imgFile: {},
-      phone: '18819412313',
-      domain: 'http://idea.vesstack.com/sdds2531524sdsd',
+      phone: '',
+      domain: '',
       tableData: [
         {
           order_num: 20171206125010,
@@ -271,7 +273,112 @@ export default {
         _this.dataUrl = reader.result
       }
       reader.readAsDataURL(file)
+    },
+    editUser () {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.editDialog = true
+      this.axios.post('ideat/userManage/editUserInfo', {
+        pwd: _this.password,
+        servicePhone: _this.phone,
+        shopName: _this.shopName,
+        updateTime: time,
+        userId: _this.userId,
+        userPic: _this.dataUrl
+      })
+      .then(function (response) {
+        // console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    deleteUser () {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.axios.post('ideat/userManage/deleteUser', {
+        userId: _this.userId,
+        updateTime: time
+      })
+      .then(function (response) {
+        // console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+        _this.delDialog = false
+        _this.$router.push('/accountManage')
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
+  },
+  mounted () {
+    // console.log(this.$route.query)
+    let _this = this
+    this.userId = this.$route.query.accountId
+    this.axios.get('ideat/userManage/getUserInfo', {
+      params: {
+        userId: _this.userId
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      let result = data.body
+      _this.account = result.userName
+      _this.shopName = result.shopName
+      _this.domain = result.userDomain
+      _this.balance = result.balance
+      _this.status = result.status
+      _this.logoImg = result.logoPic
+      _this.password = result.pwd
+      _this.phone = result.servicePhone
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>

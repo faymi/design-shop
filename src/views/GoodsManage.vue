@@ -10,31 +10,32 @@
     </div>
     <div class="table">
       <el-table stripe :data="tableData" @row-dblclick="goodsRow_DbClick" align="left" style="width: 100%">
-        <el-table-column prop="order_num" label="商品编号" width="180"></el-table-column>
-        <el-table-column prop="name" label="商品" width="180"></el-table-column>
-        <el-table-column  prop="picture" label="图片">
+        <el-table-column prop="goodsId" label="商品编号" width="180"></el-table-column>
+        <el-table-column prop="goodsName" label="商品" width="180"></el-table-column>
+        <el-table-column  label="图片">
             <template slot-scope="scope">
-                <img class="row-img" :src="scope.row.picture" alt="">
+                <img class="row-img" :src="scope.row.goodsPicPath" alt="">
             </template>
         </el-table-column>
-        <el-table-column  prop="cost" label="成本价格"></el-table-column>
-        <el-table-column  prop="print_cost" label="印花成本">
+        <!-- <el-table-column  prop="cost" label="成本价格"></el-table-column> -->
+        <el-table-column label="成本价格">
           <template slot-scope="scope">
             <div class="ipt-wrap">
-              <p>单面：</p>{{scope.row.print_cost}}
+              <p>单面：</p>{{scope.row.singleCost}}
             </div>
             <div class="ipt-wrap">
-              <p>双面：</p>{{scope.row.print_cost}}
+              <p>双面：</p>{{scope.row.doubleCost}}
             </div>
           </template>
         </el-table-column>
-        <el-table-column  prop="print_cost" label="零售价格">
+        <el-table-column label="零售价格">
           <template slot-scope="scope">
             <div class="ipt-wrap">
-              <p>单面：</p>{{scope.row.print_cost}}
+              <p>单面：</p>{{scope.row.singlePrice}}
             </div>
             <div class="ipt-wrap">
-              <p>双面：</p>{{scope.row.print_cost}}
+              <p>双面：</p>{{scope.row.doublePrice}}
+              <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">编辑</el-button>              
             </div>
           </template>
         </el-table-column>
@@ -50,7 +51,7 @@
         </el-table-column> -->
         <el-table-column label="状态">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.order_num, scope.row.value)">
+            <el-select v-model="scope.row.status" placeholder="请选择" @change="selectChange(scope.row.goodsId, scope.row.status)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -145,8 +146,9 @@
             <li><span>商品图片：</span><el-upload
               class="upload-card"
               ref="upload"
-              action="https://jsonplaceholder.typicode.com/posts/"
+              action="ideat/goodsManage/addGoodsPic"
               :on-preview="handlePreview"
+              :on-success="onSuccess"
               :on-remove="handleRemove"
               :file-list="fileList"
               list-type="picture-card"
@@ -265,6 +267,7 @@ export default {
   name: 'GoodsManage',
   data () {
     return {
+      userId: '',
       currentPage1: 5, // 分页
       currentPage2: 5,
       currentPage3: 5,
@@ -277,6 +280,7 @@ export default {
       singlePrice: '',
       doublePrice: '',
       textarea: '',
+      goodsId: '',
       tabColorIndex: 0,
       tabSizeIndex: 0,
       flagS: false, // 尺寸选中状态
@@ -295,6 +299,8 @@ export default {
       colors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
       size: [{key: 'S'}, {key: 'M'}, {key: 'L'}, {key: 'XL'}, {key: 'XXL'}, {key: 'XXXL'}], // 尺寸数组
       fileList: [],
+      dataUrl: '',
+      goodsPicPath: '',
       options: [
         {
           value: '1',
@@ -309,113 +315,7 @@ export default {
           label: 'POLO衫'
         }],
       value: '1',
-      tableData: [
-        {
-          order_num: 20171206125010,
-          name: '纯棉T恤',
-          picture: require('../assets/logo.png'),
-          cost: '69',
-          print_cost: '10',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '未上架'
-            },
-            {
-              value: '2',
-              label: '已上架'
-            }
-          ],
-          value: '1'
-        },
-        {
-          order_num: 20171206125010,
-          name: '纯棉T恤',
-          picture: require('../assets/logo.png'),
-          cost: '69',
-          print_cost: '10',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '未上架'
-            },
-            {
-              value: '2',
-              label: '已上架'
-            }
-          ],
-          value: '2'
-        },
-        {
-          order_num: 20171206125010,
-          name: '纯棉T恤',
-          picture: require('../assets/logo.png'),
-          cost: '69',
-          print_cost: '10',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '未上架'
-            },
-            {
-              value: '2',
-              label: '已上架'
-            }
-          ],
-          value: '1'
-        },
-        {
-          order_num: 20171206125010,
-          name: '纯棉T恤',
-          picture: require('../assets/logo.png'),
-          cost: '69',
-          print_cost: '10',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '未上架'
-            },
-            {
-              value: '2',
-              label: '已上架'
-            }
-          ],
-          value: '2'
-        },
-        {
-          order_num: 20171206125010,
-          name: '纯棉T恤',
-          picture: require('../assets/logo.png'),
-          cost: '69',
-          print_cost: '10',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02',
-          options: [
-            {
-              value: '1',
-              label: '未上架'
-            },
-            {
-              value: '2',
-              label: '已上架'
-            }
-          ],
-          value: '2'
-        }
-      ],
+      tableData: [],
       dialogFormVisible: false,
       form: {
         name: '',
@@ -431,14 +331,47 @@ export default {
     }
   },
   methods: {
-    selectChange (orderNum, val) {
-      console.log(orderNum, val)
+    selectChange (goodsId, status) {
+      console.log(this.userId)
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.axios.post('ideat/goodsManage/editGoodsInfo', {
+        userId: this.userId,
+        goodsId: goodsId,
+        status: status,
+        inserTime: time
+      })
+      .then(function (response) {
+        console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     },
     goodsRow_DbClick (row, event) {
       console.log(row)
       const {href} = this.$router.resolve({
         name: 'GoodsDetail',
-        query: { orderId: row.order_num }
+        query: { goodsId: row.goodsId }
       })
       window.open(href, '_blank')
     },
@@ -550,14 +483,81 @@ export default {
     // },
     // 添加商品弹窗事件
     addGoods () {
-      this.$refs.upload.submit()
-      this.dialogFormVisible = false
+      // this.$refs.upload.submit()
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.axios.post('ideat/goodsManage/addGoods', {
+        goodsName: this.goodName,
+        goodsTypeId: this.value,
+        printing: this.skill,
+        singleCost: this.singleCost,
+        doubleCost: this.doubleCost,
+        goodsDescript: this.textarea,
+        insertTime: time
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        // console.log(data)
+        _this.goodsId = data.body.goodsId
+        _this.addGoodsExtra()
+        // this.dialogFormVisible = false
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    addGoodsExtra () {
+      let _this = this
+      this.axios.post('ideat/goodsManage/addGoodsExtra', {
+        params: [
+          {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+          {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+          {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+        ],
+        goodsId: this.goodsId
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        console.log(data)
+        // _this.goodsId = data.body.goodsId
+        // this.dialogFormVisible = false
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
     },
     handlePreview (file) {
+      this.dataUrl = file.url
       console.log(file)
+    },
+    onSuccess (response, file, fileList) {
+      console.log(response)
+      console.log(file)
+      console.log(fileList)
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
@@ -576,16 +576,34 @@ export default {
     }
   },
   mounted () {
-    let username = sessionStorage.getItem('username')
-    let data = {userId: username}
-    let params = JSON.stringify(data)
+    let _this = this
+    this.userId = sessionStorage.getItem('username')
+    let data = {userId: this.userId}
+    let params = data
     this.axios.get('/ideat/goodsManage/getGoodsList', {
       params: {
-        params: params
+        ...params,
+        start: 0,
+        limit: 10
       }
     })
     .then(function (response) {
       console.log(response)
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      let result = data.body.result
+      let options = [{value: '0', label: '未上架'}, {value: '1', label: '已上架'}]
+      for (let i = 0; i < result.length; i++) {
+        result[i].options = options
+        result[i].status = String(result[i].status)
+      }
+      _this.tableData = result
     })
     .catch(function (error) {
       console.log(error)

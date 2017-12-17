@@ -16,8 +16,8 @@
             <div class="goods-img"><img src="../assets/logo.png" alt=""></div>
             <div class="goods-detail">
               <div class="goods-name">
-                <span>纯棉T恤</span>
-                <el-select v-model="statusValue" placeholder="请选择" size="small" style="width: 100px;">
+                <span>{{detail.goodsName}}</span>
+                <el-select v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;">
                   <el-option key="0" label="已上架" value="0"></el-option>
                   <el-option key="1" label="已下架" value="1"></el-option>
                 </el-select>
@@ -34,24 +34,24 @@
               <div class="price-box">
                 <div class="price-left">
                   <p>成本单价</p>
-                  <span>印花单面：￥18</span>
-                  <span>印花双面：￥28</span>
+                  <span>印花单面：￥{{detail.singleCost}}</span>
+                  <span>印花双面：￥{{detail.doubleCost}}</span>
                 </div>
                 <div class="price-right">
                   <p>零售单价</p>
-                  <span>印花单面：未设置</span>
-                  <span>印花双面：￥28</span>
+                  <span>印花单面：{{detail.singlePrice}}</span>
+                  <span>印花双面：￥{{detail.doublePrice}}</span>
                 </div>
                 <div class="price-right">
                   <p>印花工艺</p>
-                  <span>打印机直喷</span>
+                  <span>{{detail.printing}}</span>
                 </div>
               </div>
             </div>
           </div>
           <div class="goods-introduction">
             <p>商品简介</p>
-            <span>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Nam fermentum, nulla luctus pharetra vulputate, felis tellus mollis orci, sed rhoncus sapien nunc eget.</span>
+            <span>{{detail.goodsDescript}}</span>
           </div>
           <div class="goods-picture">
             <img src="../assets/logo.png" alt="">
@@ -194,10 +194,10 @@
     </el-dialog>
     <el-dialog title="删除商品" :visible.sync="delDialog" width="400px" center>
       <div class="del-dialog-wrap">
-        <span>是否确认删除该商品“纯棉T恤？”</span>
+        <span>是否确认删除该商品“{{detail.goodsName}}”？</span>
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="delDialog = false">确 定</el-button>
+        <el-button type="primary" @click="deleteGoods">确 定</el-button>
         <el-button @click="delDialog = false">取 消</el-button>
       </span>
     </el-dialog>
@@ -209,6 +209,18 @@ export default {
   name: 'GoodsDetail',
   data () {
     return {
+      goodsId: '',
+      goodsName: '',
+      detail: {
+        goodsName: '',
+        statusValue: '',
+        singlePrice: '',
+        goodsDescript: '',
+        doublePrice: '',
+        singleCost: '',
+        doubleCost: '',
+        printing: ''
+      },
       goodName: '', // 弹窗左侧输入框v-model
       skill: '',
       singleCost: '',
@@ -369,8 +381,74 @@ export default {
     // },
     // 添加商品弹窗事件
     addGoods () {
-      this.$refs.upload.submit()
-      this.dialogFormVisible = false
+      // this.$refs.upload.submit()
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.axios.post('ideat/goodsManage/addGoods', {
+        goodName: this.goodName,
+        goodsTypeId: this.value,
+        printing: this.skill,
+        singleCost: this.singleCost,
+        doubleCost: this.doubleCost,
+        goodsDescript: this.textarea,
+        insertTime: time
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        console.log(data)
+        this.dialogFormVisible = false
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    deleteGoods () {
+      let _this = this
+      let date = new Date()
+      let year = date.getFullYear()
+      let month = date.getMonth() + 1
+      let day = date.getDate()
+      let hour = date.getHours()
+      let minute = date.getMinutes()
+      let second = date.getSeconds()
+      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      this.axios.post('ideat/goodsManage/deleteGoods', {
+        goodsId: this.goodsId,
+        updateTime: time
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+        _this.$router.push('/goodsManage')
+        _this.delDialog = false
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     },
     handleRemove (file, fileList) {
       console.log(file, fileList)
@@ -378,6 +456,40 @@ export default {
     handlePreview (file) {
       console.log(file)
     }
+  },
+  mounted () {
+    let _this = this
+    this.goodsId = this.$route.query.goodsId
+    // console.log(this.goodsId)
+    this.axios.get('ideat/goodsManage/getGoodsInfo', {
+      params: {
+        goodsId: this.goodsId
+      }
+    })
+    .then(function (response) {
+      // console.log(response)
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      let result = data.body
+      _this.detail.goodsName = result.goodsName
+      _this.detail.statusValue = String(result.status)
+      _this.detail.singlePrice = result.singlePrice
+      _this.detail.goodsDescript = result.goodsDescript
+      _this.detail.doublePrice = result.doublePrice
+      _this.detail.singleCost = result.singleCost
+      _this.detail.goodsName = result.goodsName
+      _this.detail.doubleCost = result.doubleCost
+      _this.detail.printing = result.printing
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>
