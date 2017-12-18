@@ -201,32 +201,32 @@
                 <span>库存：</span>
                 <ul class="input">
                   <li v-show="flagS">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeS">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeS" @blur="inputBlur('S')">
                       <template slot="prepend">S</template>
                     </el-input>
                   </li>
                   <li v-show="flagM">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeM">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeM" @blur="inputBlur('M')">
                       <template slot="prepend">M</template>
                     </el-input>
                   </li>
                   <li v-show="flagL">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeL">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeL" @blur="inputBlur('L')">
                       <template slot="prepend">L</template>
                     </el-input>
                   </li>
                   <li v-show="flag1L">
-                    <el-input style="width: 83px;height:32px;" v-model="size1L">
+                    <el-input style="width: 83px;height:32px;" v-model="size1L" @blur="inputBlur('XL')">
                       <template slot="prepend">XL</template>
                     </el-input>
                   </li>
                   <li v-show="flag2L">
-                    <el-input style="width: 83px;height:32px;" v-model="size2L">
+                    <el-input style="width: 83px;height:32px;" v-model="size2L" @blur="inputBlur('2XL')">
                       <template slot="prepend">2XL</template>
                     </el-input>
                   </li>
                   <li v-show="flag3L">
-                    <el-input style="width: 83px;height:32px;" v-model="size3L">
+                    <el-input style="width: 83px;height:32px;" v-model="size3L" @blur="inputBlur('3XL')">
                       <template slot="prepend">3XL</template>
                     </el-input>
                   </li>
@@ -296,8 +296,12 @@ export default {
       size2L: '',
       size3L: '',
       selectList: [], // 选中的尺寸数组
-      colors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
+      colors: [{key: 'white', color: 1}, {key: 'black', color: 2}, {key: 'red', color: 3}, {key: 'grey', color: 4}], // 色块数组
       size: [{key: 'S'}, {key: 'M'}, {key: 'L'}, {key: 'XL'}, {key: 'XXL'}, {key: 'XXXL'}], // 尺寸数组
+      params: [],
+      mainParams: [],
+      currentColor: '',
+      detail: [],
       fileList: [],
       dataUrl: '',
       goodsPicPath: '',
@@ -475,6 +479,79 @@ export default {
     // 色块点击事件
     tabColorClick (index, color) {
       this.tabColorIndex = index
+      this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+      this.currentColor = color.color
+      if (this.params.length > 0) {
+        this.mainParams.push(this.params[0])
+      }
+      let flag = false
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === color.color) {
+          flag = true
+        }
+      }
+      if (!flag) {
+        let item = {}
+        item.color = color.color
+        item.detail = []
+        this.params.push(item)
+      }
+    },
+    inputBlur (type) {
+      let itemChild = {}
+      let detail = []
+      switch (type) {
+        case 'S':
+          if (this.sizeS !== '') {
+            itemChild.size = 'S'
+            itemChild.amount = this.sizeS
+            detail.push(itemChild)
+          }
+          break
+        case 'M':
+          if (this.sizeM !== '') {
+            itemChild.size = 'M'
+            itemChild.amount = this.sizeM
+            detail.push(itemChild)
+          }
+          break
+        case 'L':
+          if (this.sizeL !== '') {
+            itemChild.size = 'L'
+            itemChild.amount = this.sizeL
+            detail.push(itemChild)
+          }
+          break
+        case 'XL':
+          if (this.size1L !== '') {
+            itemChild.size = 'XL'
+            itemChild.amount = this.sizeXL
+            detail.push(itemChild)
+          }
+          break
+        case '2XL':
+          if (this.size2L !== '') {
+            itemChild.size = '2XL'
+            itemChild.amount = this.size2L
+            detail.push(itemChild)
+          }
+          break
+        case '3XL':
+          if (this.size3L !== '') {
+            itemChild.size = '3XL'
+            itemChild.amount = this.size3L
+            detail.push(itemChild)
+          }
+          break
+      }
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === this.currentColor) {
+          if (itemChild.hasOwnProperty('size')) {
+            this.params[i].detail.push(itemChild)
+          }
+        }
+      }
+      console.log(this.params)
     },
     // 尺寸点击事件
     // tabSizeClick (index, size, event) {
@@ -484,6 +561,12 @@ export default {
     // 添加商品弹窗事件
     addGoods () {
       // this.$refs.upload.submit()
+      console.log(this.params)
+      // if (this.params.length > 0) {
+      //   this.mainParams.push(this.params[0])
+      // }
+      // console.log(JSON.stringify(this.mainParams))
+      // console.log(this.mainParams)
       let _this = this
       let date = new Date()
       let year = date.getFullYear()
@@ -821,7 +904,7 @@ export default {
   }
 }
 .selectedItem {
-  border: 2px solid #e3393c !important;
+  border: 1px solid #e3393c !important;
   color: #e3393c;
 }
 // 修改element组件的样式 /deep/

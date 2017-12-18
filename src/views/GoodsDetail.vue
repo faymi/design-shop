@@ -780,7 +780,7 @@ export default {
   }
 }
 .selectedItem {
-  border: 2px solid #e3393c !important;
+  border: 1px solid #e3393c !important;
   color: #e3393c;
 }
 // 修改element组件的样式 /deep/
