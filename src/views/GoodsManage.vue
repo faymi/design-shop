@@ -149,6 +149,7 @@
               action="ideat/goodsManage/addGoodsPic"
               :on-preview="handlePreview"
               :on-success="onSuccess"
+              :before-upload="beforeUpload"
               :on-remove="handleRemove"
               :file-list="fileList"
               list-type="picture-card"
@@ -235,16 +236,16 @@
               <li>
                 <span>效果图：</span>
                 <div class="img-cloth">
-                  <img src="../assets/logo.png" alt="">
+                  <img :src="frontImg" alt="">
                   <div class="img-bottom">
-                    <p>正面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                    <p>正面</p><el-button size="mini" type="primary" class="upload-btn" @click ="uploadFront">上传图片</el-button>
                     <input id="front_ipt" type="file" name="image" accept="image/*" @change="InputChangeFront" style="display: none;">
                   </div>
                 </div>
                 <div class="img-cloth">
-                  <img src="../assets/logo.png" alt="">
+                  <img :src="backImg" alt="">
                   <div class="img-bottom">
-                    <p>反面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                    <p>反面</p><el-button size="mini" type="primary" class="upload-btn" @click ="uploadBack">上传图片</el-button>
                     <input id="back_ipt" type="file" name="image" accept="image/*" @change="InputChangeBack" style="display: none;">
                   </div>
                 </div>
@@ -258,6 +259,9 @@
         <el-button type="primary" @click="addGoods">完成添加</el-button>
         <el-button @click="dialogFormVisible = false">取  消</el-button>
       </div>
+    </el-dialog>
+    <el-dialog :visible.sync="preViewDialog" size="tiny">
+      <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
   </div>
 </template>
@@ -303,8 +307,13 @@ export default {
       currentColor: '',
       detail: [],
       fileList: [],
-      dataUrl: '',
+      imgFile: {},
+      dataUrl: [],
+      fileData: [],
+      dialogImageUrl: '',
       goodsPicPath: '',
+      frontImg: require('../assets/logo.png'),
+      backImg: require('../assets/logo.png'),
       options: [
         {
           value: '1',
@@ -321,6 +330,7 @@ export default {
       value: '1',
       tableData: [],
       dialogFormVisible: false,
+      preViewDialog: false,
       form: {
         name: '',
         region: '',
@@ -400,9 +410,68 @@ export default {
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
     },
+    uploadImg (action) {
+      console.log(action)
+    },
+    // 转换为base64 side =>0：正面，1：反面，type => 0：素材，1：效果图
+    transformFileToDataUrl (file, side, type) {
+      // console.log(file)
+      let _this = this
+      // 封装好的函数
+      const reader = new FileReader()
+      // file转dataUrl是个异步函数，要将代码写在回调里(onload)
+      reader.onload = function (e) {
+        let params = []
+        params.side = side
+        params.goodsPicType = type
+        params.goodsPicInfo = reader.result
+        if (side === 0 && type === 1) {
+          _this.frontImg = reader.result
+        }
+        if (side === 1 && type === 1) {
+          _this.backImg = reader.result
+        }
+        _this.dataUrl.push(params)
+      }
+      reader.readAsDataURL(file)
+    },
+    getFile (event, size, type) {
+      // 获取当前选中的文件
+      const file = event.target.files[0]
+      const imgMasSize = 1024 * 1024 * 10 // 10MB
+      // 检查文件类型
+      if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
+          // 自定义报错方式
+          // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+        this.$message.error('文件类型仅支持 jpeg/png/gif！')
+        return
+      }
+      // 文件大小限制
+      if (file.size > imgMasSize) {
+        // 文件大小自定义限制
+        // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+        this.$message.error('文件大小不能超过10MB！')
+        return
+      }
+      // 图片压缩之旅
+      this.transformFileToDataUrl(file, size, type)
+    },
+    // 触发上传图片事件
+    uploadFront () {
+      let tag = document.getElementById('front_ipt')
+      tag.click()
+    },
+    uploadBack () {
+      let tag = document.getElementById('back_ipt')
+      tag.click()
+    },
     // 正、反面上传图片
-    InputChangeFront () {},
-    InputChangeBack () {},
+    InputChangeFront (event) {
+      this.getFile(event, 0, 1)
+    },
+    InputChangeBack (event) {
+      this.getFile(event, 1, 1)
+    },
     // 删除尺寸数组元素
     delectSize (size) {
       if (this.selectList.length === 0) {
@@ -481,9 +550,6 @@ export default {
       this.tabColorIndex = index
       this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
       this.currentColor = color.color
-      if (this.params.length > 0) {
-        this.mainParams.push(this.params[0])
-      }
       let flag = false
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === color.color) {
@@ -496,49 +562,89 @@ export default {
         item.detail = []
         this.params.push(item)
       }
+      // 切换回来已输入尺寸的色块时显示已输入的尺寸
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === this.currentColor) {
+          if (this.params[i].detail.length === 0) {
+            this.flagS = true
+            this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
+            this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+          } else {
+            this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
+            this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+            for (let k = 0; k < this.params[i].detail.length; k++) {
+              if (this.params[i].detail[k].sizeId === 'S') {
+                this.flagS = true
+                this.sizeS = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'M') {
+                this.flagM = true
+                this.sizeM = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'L') {
+                this.flagL = true
+                this.sizeL = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'XL') {
+                this.flag1L = true
+                this.size1L = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === '2XL') {
+                this.flag2L = true
+                this.size2L = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === '3XL') {
+                this.flag3L = true
+                this.size3L = this.params[i].detail[k].amount
+              }
+            }
+          }
+        }
+      }
     },
+    // 尺寸输入框失去焦点事件
     inputBlur (type) {
       let itemChild = {}
       let detail = []
       switch (type) {
         case 'S':
           if (this.sizeS !== '') {
-            itemChild.size = 'S'
+            itemChild.sizeId = 'S'
             itemChild.amount = this.sizeS
             detail.push(itemChild)
           }
           break
         case 'M':
           if (this.sizeM !== '') {
-            itemChild.size = 'M'
+            itemChild.sizeId = 'M'
             itemChild.amount = this.sizeM
             detail.push(itemChild)
           }
           break
         case 'L':
           if (this.sizeL !== '') {
-            itemChild.size = 'L'
+            itemChild.sizeId = 'L'
             itemChild.amount = this.sizeL
             detail.push(itemChild)
           }
           break
         case 'XL':
           if (this.size1L !== '') {
-            itemChild.size = 'XL'
+            itemChild.sizeId = 'XL'
             itemChild.amount = this.sizeXL
             detail.push(itemChild)
           }
           break
         case '2XL':
           if (this.size2L !== '') {
-            itemChild.size = '2XL'
+            itemChild.sizeId = '2XL'
             itemChild.amount = this.size2L
             detail.push(itemChild)
           }
           break
         case '3XL':
           if (this.size3L !== '') {
-            itemChild.size = '3XL'
+            itemChild.sizeId = '3XL'
             itemChild.amount = this.size3L
             detail.push(itemChild)
           }
@@ -546,7 +652,12 @@ export default {
       }
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === this.currentColor) {
-          if (itemChild.hasOwnProperty('size')) {
+          if (itemChild.hasOwnProperty('sizeId')) {
+            for (let j = 0; j < this.params[i].detail.length; j++) {
+              if (this.params[i].detail[j].sizeId === itemChild.sizeId) {
+                this.params[i].detail.splice(j, 1)
+              }
+            }
             this.params[i].detail.push(itemChild)
           }
         }
@@ -558,15 +669,12 @@ export default {
     //   console.log(event)
     //   // this.tabSizeIndex = index
     // },
-    // 添加商品弹窗事件
+    // 添加商品完成事件
     addGoods () {
+      console.log(this.dataUrl)
+      this.$refs.upload.submit()
       // this.$refs.upload.submit()
       console.log(this.params)
-      // if (this.params.length > 0) {
-      //   this.mainParams.push(this.params[0])
-      // }
-      // console.log(JSON.stringify(this.mainParams))
-      // console.log(this.mainParams)
       let _this = this
       let date = new Date()
       let year = date.getFullYear()
@@ -630,12 +738,18 @@ export default {
         console.log(error)
       })
     },
+    beforeUpload (file) {
+      // this.fileData.push(file)
+      this.transformFileToDataUrl(file, 0, 0)
+    },
     handleRemove (file, fileList) {
       console.log(file, fileList)
     },
     handlePreview (file) {
-      this.dataUrl = file.url
-      console.log(file)
+      // this.dataUrl = file.url
+      this.preViewDialog = true
+      this.dialogImageUrl = file.url
+      // console.log(file)
     },
     onSuccess (response, file, fileList) {
       console.log(response)
