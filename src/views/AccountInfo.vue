@@ -1,72 +1,77 @@
 <template>
   <div class="content-wrap">
-    <div class="header">
-      <div class="left">账号资料</div>
-    </div>
-    <div class="main-wrap">
-      <div class="domian-cls">
-        <span>账号：</span>
-        <span>{{account}}</span>
-      </div>
-      <div class="logo-info">
-        <span>Logo:</span>
-        <div class="img-wrap" @click="upload">
-          <img v-if="dataUrl" :src="dataUrl" alt="">
-          <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+    <div class="info-wrap">
+      <div class="inner-wrap">
+        <div class="header">
+        <div class="left">账号资料</div>
         </div>
-        <!-- <el-button class="upload-cls" type="primary" size="small" @click="upload">上传LOGO</el-button> -->
-        <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
-      </div>
-      <div class="domain-cls">
-        <span>店名：</span>
-        <el-input placeholder="请输入店名" id="shopName" v-model="shopName" class="domain-ipt"></el-input>
-      </div>
-      <div class="domain-cls">
-        <span>域名：</span>
-        <el-input id="ipt_domain" v-model="domain" readonly="readonly" class="domain-ipt"></el-input>
-        <el-button class="copy-cls" type="primary" size="small" @click="copy">点击复制</el-button>
-      </div>
-      <div class="domain-cls">
-        <span>客服电话：</span>
-        <el-input placeholder="请输入内容" v-model="phone" class="domain-ipt"></el-input>
-      </div>
-      <div class="div-btn">
-        <el-button type="primary" @click="saveChange">保存修改</el-button>
-        <el-button type="success" @click="centerDialogVisible = true">修改密码</el-button>
+        <div class="main-wrap">
+          <div class="domian-cls">
+            <span>账号：</span>
+            <span>{{account}}</span>
+          </div>
+          <div class="logo-info">
+            <span>Logo:</span>
+            <div class="img-wrap" @click="upload">
+              <img v-if="dataUrl" :src="dataUrl" alt="">
+              <i v-else class="el-icon-plus avatar-uploader-icon"></i>
+            </div>
+            <!-- <el-button class="upload-cls" type="primary" size="small" @click="upload">上传LOGO</el-button> -->
+            <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
+          </div>
+          <div class="domain-cls">
+            <span>店名：</span>
+            <el-input placeholder="请输入店名" id="shopName" v-model="shopName" class="domain-ipt"></el-input>
+          </div>
+          <div class="domain-cls">
+            <span>域名：</span>
+            <el-input id="ipt_domain" v-model="domain" readonly="readonly" class="domain-ipt"></el-input>
+            <el-button class="copy-cls" type="primary" size="small" @click="copy">点击复制</el-button>
+          </div>
+          <div class="domain-cls">
+            <span>客服电话：</span>
+            <el-input placeholder="请输入内容" v-model="phone" class="domain-ipt"></el-input>
+          </div>
+          <div class="div-btn">
+            <el-button type="primary" @click="saveChange">保存修改</el-button>
+            <el-button type="success" @click="centerDialogVisible = true">修改密码</el-button>
+            <el-button type="warning" class="logout" @click="logout">退出登录</el-button>
+          </div>
+        </div>
+        <el-dialog
+          title="修改密码"
+          :visible.sync="centerDialogVisible"
+          width="550px"
+          center>
+            <div class="changePwd-wrap">
+              <el-form :model="pwdForm" status-icon :rules="pwdRules" ref="pwdForm" label-width="100px">
+                <div class="changePwd">
+                  <!-- <span>旧密码：</span> -->
+                  <el-form-item label="旧密码：" prop="old_pwd">
+                    <el-input placeholder="请输入旧密码" type="password" v-model="pwdForm.old_pwd"></el-input>
+                  </el-form-item>
+                </div>
+                <div class="changePwd">
+                  <!-- <span>新密码：</span> -->
+                  <el-form-item label="新密码：" prop="new_pwd">
+                    <el-input placeholder="请输入新密码" type="password" v-model="pwdForm.new_pwd"></el-input>
+                  </el-form-item>
+                </div>
+                <div class="changePwd">
+                  <!-- <span>确认新密码：</span> -->
+                  <el-form-item label="确认新密码：" prop="rep_pwd">
+                    <el-input placeholder="请确认新密码" type="password" v-model="pwdForm.rep_pwd"></el-input>
+                  </el-form-item>
+                </div>
+              </el-form>
+            </div>
+            <span slot="footer" class="dialog-footer">
+              <el-button type="primary" @click="savePwd('pwdForm')">确 定</el-button>
+              <el-button @click="cancel('pwdForm')">取 消</el-button>
+            </span>
+        </el-dialog>
       </div>
     </div>
-    <el-dialog
-      title="修改密码"
-      :visible.sync="centerDialogVisible"
-      width="550px"
-      center>
-        <div class="changePwd-wrap">
-          <el-form :model="pwdForm" status-icon :rules="pwdRules" ref="pwdForm" label-width="100px">
-            <div class="changePwd">
-              <!-- <span>旧密码：</span> -->
-              <el-form-item label="旧密码：" prop="old_pwd">
-                <el-input placeholder="请输入旧密码" type="password" v-model="pwdForm.old_pwd"></el-input>
-              </el-form-item>
-            </div>
-            <div class="changePwd">
-              <!-- <span>新密码：</span> -->
-              <el-form-item label="新密码：" prop="new_pwd">
-                <el-input placeholder="请输入新密码" type="password" v-model="pwdForm.new_pwd"></el-input>
-              </el-form-item>
-            </div>
-            <div class="changePwd">
-              <!-- <span>确认新密码：</span> -->
-              <el-form-item label="确认新密码：" prop="rep_pwd">
-                <el-input placeholder="请确认新密码" type="password" v-model="pwdForm.rep_pwd"></el-input>
-              </el-form-item>
-            </div>
-          </el-form>
-        </div>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="savePwd('pwdForm')">确 定</el-button>
-          <el-button @click="cancel('pwdForm')">取 消</el-button>
-        </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -175,6 +180,11 @@ export default {
       .catch(function (error) {
         console.log(error)
       })
+    },
+    // 退出登录
+    logout () {
+      sessionStorage.clear()
+      this.$router.push('/login')
     },
     savePwd (formName) {
       let _this = this
@@ -309,89 +319,104 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/css/function';
-.header {
-  width: 100%;
-  height: 40px;
-  .left {
-    width: 200px;
-    height: 100%;
-    float: left;
-    text-align: left;
-    line-height: 40px;
-  }
-}
-.main-wrap {
-  width: 100%;
-  // margin-top: 20px;
-  border: 1px solid #ececec;
-  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
-  padding: 0px 20px 50px 20px;
-  >div {
-    margin-top: 20px;
-    height: 40px;
-    text-align: left;
-    >span {
-      width: 100px;
-      text-align: left;
-      line-height: 40px;
-      display: inline-block;
-    }
-    >p {
-      border: 1px solid #D8DCE5;
-      background-color: #f5f7fa;
-      padding-left: 10px;
-      padding-right: 10px;
-      border-radius: 4px;
-      color: #878d99;
-      line-height: 40px;
-    }
-  }
-  .logo-info {
-    height: 100px;
-    text-align: left;
-    display: flex;
-    align-items: flex-start;
-    .img-wrap {
-      width: 100px;
-      height: 100px;
-      margin-right: 40px;
-      border: 1px dashed #d9d9d9;
-      text-align: center;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      cursor: pointer;
-      img {
-        width: 98%;
-        height: 98%;
-      }
-      .avatar-uploader-icon {
-        font-size: 28px;
-        color: #8c939d;
-        width: 98%;
-        height: 98%;
-        line-height: 100px;
-        text-align: center;
+.info-wrap {
+  margin: 0px 60px 20px 60px;
+  // border:1px solid #000;
+  font-size: 14px;
+  padding: 10px;
+  .inner-wrap {
+    margin: 0px 40px;
+    .header {
+      width: 100%;
+      height: 40px;
+      .left {
+        width: 200px;
+        height: 100%;
+        float: left;
+        text-align: left;
+        line-height: 40px;
       }
     }
-    .upload-cls {
-      align-self:flex-end;
-    }
-  }
-  .domain-cls {
-    display: flex;
-    justify-content: flex-start;
-    .domain-ipt {
-      width: 400px;
-    }
-    .copy-cls {
-      margin-left: 20px;
-    }
-  }
-  .div-btn {
-    margin-top: 60px;
-    button {
-      margin-right: 40px;
+    .main-wrap {
+      // width: 100%;
+      // margin-top: 20px;
+      border: 1px solid #ececec;
+      box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+      padding: 0px 20px 50px 20px;
+      >div {
+        margin-top: 20px;
+        height: 40px;
+        text-align: left;
+        >span {
+          width: 100px;
+          text-align: left;
+          line-height: 40px;
+          display: inline-block;
+        }
+        >p {
+          border: 1px solid #D8DCE5;
+          background-color: #f5f7fa;
+          padding-left: 10px;
+          padding-right: 10px;
+          border-radius: 4px;
+          color: #878d99;
+          line-height: 40px;
+        }
+      }
+      .logo-info {
+        height: 100px;
+        text-align: left;
+        display: flex;
+        align-items: flex-start;
+        .img-wrap {
+          width: 100px;
+          height: 100px;
+          margin-right: 40px;
+          border: 1px dashed #d9d9d9;
+          text-align: center;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          cursor: pointer;
+          img {
+            width: 98%;
+            height: 98%;
+          }
+          .avatar-uploader-icon {
+            font-size: 28px;
+            color: #8c939d;
+            width: 98%;
+            height: 98%;
+            line-height: 100px;
+            text-align: center;
+          }
+        }
+        .upload-cls {
+          align-self:flex-end;
+        }
+      }
+      .domain-cls {
+        display: flex;
+        justify-content: flex-start;
+        .domain-ipt {
+          width: 400px;
+        }
+        .copy-cls {
+          margin-left: 20px;
+        }
+      }
+      .div-btn {
+        margin-top: 60px;
+        position: relative;
+        button {
+          margin-right: 40px;
+        }
+        .logout {
+          position: absolute;
+          float: right;
+          right: 0px;
+        }
+      }
     }
   }
 }
@@ -402,5 +427,4 @@ export default {
     margin: 20px;
   }
 }
-
 </style>

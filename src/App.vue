@@ -2,10 +2,10 @@
   <div id="app">
     <div class="container">
       <div class="header" v-show="header_show">
-        <div class="left">idea2t</div>
+        <div class="left" @click="toHome">idea2t</div>
         <div class="right">
           <span>{{userId}}</span>
-          <img src="./assets/logo.png" alt="">
+          <img @click="toAccountInfo" src="./assets/logo.png" alt="">
         </div>
       </div>
       <div class="aside" v-show="aside_show">
@@ -16,7 +16,7 @@
           <el-menu-item index="/accountManage" :class="{'isActive': !active}">账号管理</el-menu-item>
           <el-menu-item index="/customManage" :class="{'isActive': !active}">用户列表</el-menu-item>
           <el-menu-item index="/incomeManage" :class="{'isActive': !active}">收益明细</el-menu-item>
-          <el-menu-item index="/accountInfo" :class="{'isActive': !active}">账号资料</el-menu-item>
+          <!-- <el-menu-item index="/accountInfo" :class="{'isActive': !active}">账号资料</el-menu-item> -->
         </el-menu>
       </div>
       <div :class="{'main': ismain}">
@@ -41,12 +41,22 @@ export default {
     }
   },
   methods: {
+    toHome () {
+      this.$router.push('/home')
+    },
+    toAccountInfo () {
+      this.$router.push('/accountInfo')
+    }
   },
   watch: {
     '$route' (to, from) {
       let path = to.path.split('/')[1]
       if (path === 'login' || path === 'orderDetail' || path === 'accountDetail' || path === 'goodsDetail') {
         this.header_show = false
+        this.aside_show = false
+        this.ismain = false
+      } else if (path === 'accountInfo') {
+        this.header_show = true
         this.aside_show = false
         this.ismain = false
       } else {
@@ -59,14 +69,20 @@ export default {
   },
   created () {
     this.path = this.$route.path
+    console.log(this.path)
     if (this.path === '/login' || this.path === '/orderDetail' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
       this.header_show = false
+      this.aside_show = false
+      this.ismain = false
+    } else if (this.path === '/accountInfo') {
+      this.header_show = true
       this.aside_show = false
       this.ismain = false
     } else {
       this.header_show = true
       this.aside_show = true
       this.ismain = true
+      this.userId = sessionStorage.getItem('username')
     }
   }
 }
@@ -97,6 +113,7 @@ export default {
   line-height: 60px;
   color: #fff;
   font-size: 20px;
+  cursor: pointer;
 }
 .header .right {
   float: right;
