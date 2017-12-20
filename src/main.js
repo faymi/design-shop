@@ -6,6 +6,7 @@ import router from './router'
 import axios from 'axios'
 import ElementUI from 'element-ui'
 import * as echarts from 'echarts'
+import * as moment from 'moment'
 import 'element-ui/lib/theme-chalk/index.css'
 import 'font-awesome/css/font-awesome.css'
 import './assets/css/reset.scss'
@@ -28,6 +29,7 @@ axios.interceptors.request.use(
     //     ...config.params
     //   }
     // }
+    // 格式化请求参数
     if (config.method === 'get') {
       config.params = {
         _t: Date.parse(new Date()) / 1000,
@@ -57,6 +59,7 @@ axios.interceptors.request.use(
 
 Vue.prototype.axios = axios
 Vue.prototype.echarts = echarts
+Vue.prototype.moment = moment
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

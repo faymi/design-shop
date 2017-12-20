@@ -348,14 +348,7 @@ export default {
     selectChange (goodsId, status) {
       console.log(this.userId)
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/editGoodsInfo', {
         userId: this.userId,
         goodsId: goodsId,
@@ -394,7 +387,7 @@ export default {
       this.flagS = true
       // dialog渲染完后获取DOM
       this.$nextTick(function () {
-        let first = document.getElementById('0')
+        let first = document.getElementById('0') // 此处的id值不能和编辑商品处的id一样
         if (document.all) {
           first.click() // IE
         } else { // 其它浏览器
@@ -562,6 +555,7 @@ export default {
         item.detail = []
         this.params.push(item)
       }
+      console.log(this.params)
       // 切换回来已输入尺寸的色块时显示已输入的尺寸
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === this.currentColor) {
@@ -671,19 +665,20 @@ export default {
     // },
     // 添加商品完成事件
     addGoods () {
-      console.log(this.dataUrl)
+      // console.log(this.dataUrl)
       this.$refs.upload.submit()
       // this.$refs.upload.submit()
+      // console.log(this.params)
+      // 去除detail为空的数组项
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].detail.length === 0) {
+          this.params.splice(i, 1)
+          i = 0
+        }
+      }
       console.log(this.params)
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/addGoods', {
         goodsName: this.goodName,
         goodsTypeId: this.value,

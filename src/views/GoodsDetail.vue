@@ -103,6 +103,8 @@
               action="https://jsonplaceholder.typicode.com/posts/"
               :on-preview="handlePreview"
               :on-remove="handleRemove"
+              :on-success="onSuccess"
+              :before-upload="beforeUpload"
               :file-list="fileList"
               list-type="picture-card"
               :auto-upload="false">
@@ -114,7 +116,7 @@
           <div class="color-box">
             <span>商品颜色：</span>
             <ul class="color">
-              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index+'_color'" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
             </ul>
           </div>
           <div class="color-detail">
@@ -134,32 +136,32 @@
                 <span>库存：</span>
                 <ul class="input">
                   <li v-show="flagS">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeS">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeS" @blur="inputBlur('S')">
                       <template slot="prepend">S</template>
                     </el-input>
                   </li>
                   <li v-show="flagM">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeM">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeM" @blur="inputBlur('M')">
                       <template slot="prepend">M</template>
                     </el-input>
                   </li>
                   <li v-show="flagL">
-                    <el-input style="width: 83px;height:32px;" v-model="sizeL">
+                    <el-input style="width: 83px;height:32px;" v-model="sizeL" @blur="inputBlur('L')">
                       <template slot="prepend">L</template>
                     </el-input>
                   </li>
                   <li v-show="flag1L">
-                    <el-input style="width: 83px;height:32px;" v-model="size1L">
+                    <el-input style="width: 83px;height:32px;" v-model="size1L" @blur="inputBlur('XL')">
                       <template slot="prepend">XL</template>
                     </el-input>
                   </li>
                   <li v-show="flag2L">
-                    <el-input style="width: 83px;height:32px;" v-model="size2L">
+                    <el-input style="width: 83px;height:32px;" v-model="size2L" @blur="inputBlur('2XL')">
                       <template slot="prepend">2XL</template>
                     </el-input>
                   </li>
                   <li v-show="flag3L">
-                    <el-input style="width: 83px;height:32px;" v-model="size3L">
+                    <el-input style="width: 83px;height:32px;" v-model="size3L" @blur="inputBlur('3XL')">
                       <template slot="prepend">3XL</template>
                     </el-input>
                   </li>
@@ -168,16 +170,16 @@
               <li>
                 <span>效果图：</span>
                 <div class="img-cloth">
-                  <img src="../assets/logo.png" alt="">
+                  <img :src="frontImg" alt="">
                   <div class="img-bottom">
-                    <p>正面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                    <p>正面</p><el-button size="mini" type="primary" class="upload-btn" @click ="uploadFront">上传图片</el-button>
                     <input id="front_ipt" type="file" name="image" accept="image/*" @change="InputChangeFront" style="display: none;">
                   </div>
                 </div>
                 <div class="img-cloth">
-                  <img src="../assets/logo.png" alt="">
+                  <img :src="backImg" alt="">
                   <div class="img-bottom">
-                    <p>反面</p><el-button size="mini" type="primary" class="upload-btn">上传图片</el-button>
+                    <p>反面</p><el-button size="mini" type="primary" class="upload-btn" @click ="uploadBack">上传图片</el-button>
                     <input id="back_ipt" type="file" name="image" accept="image/*" @change="InputChangeBack" style="display: none;">
                   </div>
                 </div>
@@ -200,6 +202,9 @@
         <el-button type="primary" @click="deleteGoods">确 定</el-button>
         <el-button @click="delDialog = false">取 消</el-button>
       </span>
+    </el-dialog>
+    <el-dialog :visible.sync="preViewDialog" size="tiny">
+      <img width="100%" :src="dialogImageUrl" alt="">
     </el-dialog>
   </div>
 </template>
@@ -246,10 +251,19 @@ export default {
       editColors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
       size: [{key: 'S'}, {key: 'M'}, {key: 'L'}, {key: 'XL'}, {key: 'XXL'}, {key: 'XXXL'}], // 尺寸数组
       fileList: [],
+      params: [],
+      currentColor: '',
+      imgFile: {},
+      dataUrl: [],
+      fileData: [],
+      dialogImageUrl: '',
+      goodsPicPath: '',
+      frontImg: require('../assets/logo.png'),
+      backImg: require('../assets/logo.png'),
       delDialog: false,
       statusValue: '0',
       tabColorIndex: 0,
-      colors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
+      colors: [{key: 'white', color: 1}, {key: 'black', color: 2}, {key: 'red', color: 3}, {key: 'grey', color: 4}], // 色块数组
       stock: [{size: 'S', amount: 200}, {size: 'M', amount: 12}, {size: 'L', amount: 621}, {size: 'XL', amount: 1544}, {size: 'XXL', amount: 212}],
       options: [
         {
@@ -265,20 +279,21 @@ export default {
           label: 'POLO衫'
         }],
       value: '1',
+      preViewDialog: false,
       dialogFormVisible: false
     }
   },
   methods: {
     // 色块点击事件
     colorClick (index, color) {
-      this.tabColorIndex = index
+      this.colorIndex = index
     },
     dialogOpen () {
       // 打开dialog时默认选中第一种颜色、S码
       this.flagS = true
       // dialog渲染完后获取DOM
       this.$nextTick(function () {
-        let first = document.getElementById('0')
+        let first = document.getElementById('0_color') // 此处的id值不能和添加商品处的id一样
         if (document.all) {
           first.click() // IE
         } else { // 其它浏览器
@@ -294,9 +309,65 @@ export default {
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
     },
+    // 转换为base64 side =>0：正面，1：反面，type => 0：素材，1：效果图
+    transformFileToDataUrl (file, side, type) {
+      // console.log(file)
+      let _this = this
+      // 封装好的函数
+      const reader = new FileReader()
+      // file转dataUrl是个异步函数，要将代码写在回调里(onload)
+      reader.onload = function (e) {
+        let params = []
+        params.side = side
+        params.goodsPicType = type
+        params.goodsPicInfo = reader.result
+        if (side === 0 && type === 1) {
+          _this.frontImg = reader.result
+        }
+        if (side === 1 && type === 1) {
+          _this.backImg = reader.result
+        }
+        _this.dataUrl.push(params)
+      }
+      reader.readAsDataURL(file)
+    },
+    getFile (event, size, type) {
+      // 获取当前选中的文件
+      const file = event.target.files[0]
+      const imgMasSize = 1024 * 1024 * 10 // 10MB
+      // 检查文件类型
+      if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
+          // 自定义报错方式
+          // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+        this.$message.error('文件类型仅支持 jpeg/png/gif！')
+        return
+      }
+      // 文件大小限制
+      if (file.size > imgMasSize) {
+        // 文件大小自定义限制
+        // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+        this.$message.error('文件大小不能超过10MB！')
+        return
+      }
+      // 图片压缩之旅
+      this.transformFileToDataUrl(file, size, type)
+    },
+    // 触发上传图片事件
+    uploadFront () {
+      let tag = document.getElementById('front_ipt')
+      tag.click()
+    },
+    uploadBack () {
+      let tag = document.getElementById('back_ipt')
+      tag.click()
+    },
     // 正、反面上传图片
-    InputChangeFront () {},
-    InputChangeBack () {},
+    InputChangeFront (event) {
+      this.getFile(event, 0, 1)
+    },
+    InputChangeBack (event) {
+      this.getFile(event, 1, 1)
+    },
     // 删除尺寸数组元素
     delectSize (size) {
       if (this.selectList.length === 0) {
@@ -373,24 +444,137 @@ export default {
     // 色块点击事件
     tabColorClick (index, color) {
       this.tabColorIndex = index
+      this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+      this.currentColor = color.color
+      let flag = false
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === color.color) {
+          flag = true
+        }
+      }
+      if (!flag) {
+        let item = {}
+        item.color = color.color
+        item.detail = []
+        this.params.push(item)
+      }
+      console.log(this.params)
+      // 切换回来已输入尺寸的色块时显示已输入的尺寸
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === this.currentColor) {
+          if (this.params[i].detail.length === 0) {
+            this.flagS = true
+            this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
+            this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+          } else {
+            this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
+            this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+            for (let k = 0; k < this.params[i].detail.length; k++) {
+              if (this.params[i].detail[k].sizeId === 'S') {
+                this.flagS = true
+                this.sizeS = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'M') {
+                this.flagM = true
+                this.sizeM = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'L') {
+                this.flagL = true
+                this.sizeL = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === 'XL') {
+                this.flag1L = true
+                this.size1L = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === '2XL') {
+                this.flag2L = true
+                this.size2L = this.params[i].detail[k].amount
+              }
+              if (this.params[i].detail[k].sizeId === '3XL') {
+                this.flag3L = true
+                this.size3L = this.params[i].detail[k].amount
+              }
+            }
+          }
+        }
+      }
+    },
+    // 尺寸输入框失去焦点事件
+    inputBlur (type) {
+      let itemChild = {}
+      switch (type) {
+        case 'S':
+          if (this.sizeS !== '') {
+            itemChild.sizeId = 'S'
+            itemChild.amount = this.sizeS
+            console.log(this.sizeS)
+          }
+          break
+        case 'M':
+          if (this.sizeM !== '') {
+            itemChild.sizeId = 'M'
+            itemChild.amount = this.sizeM
+          }
+          break
+        case 'L':
+          if (this.sizeL !== '') {
+            itemChild.sizeId = 'L'
+            itemChild.amount = this.sizeL
+          }
+          break
+        case 'XL':
+          if (this.size1L !== '') {
+            itemChild.sizeId = 'XL'
+            itemChild.amount = this.sizeXL
+          }
+          break
+        case '2XL':
+          if (this.size2L !== '') {
+            itemChild.sizeId = '2XL'
+            itemChild.amount = this.size2L
+          }
+          break
+        case '3XL':
+          if (this.size3L !== '') {
+            itemChild.sizeId = '3XL'
+            itemChild.amount = this.size3L
+          }
+          break
+      }
+      console.log(this.params)
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].color === this.currentColor) {
+          if (itemChild.hasOwnProperty('sizeId')) {
+            for (let j = 0; j < this.params[i].detail.length; j++) {
+              if (this.params[i].detail[j].sizeId === itemChild.sizeId) {
+                this.params[i].detail.splice(j, 1)
+              }
+            }
+            this.params[i].detail.push(itemChild)
+          }
+        }
+      }
+      console.log(this.params)
     },
     // 尺寸点击事件
     // tabSizeClick (index, size, event) {
     //   console.log(event)
     //   // this.tabSizeIndex = index
     // },
-    // 添加商品弹窗事件
+    // 编辑商品完成事件
     addGoods () {
-      // this.$refs.upload.submit()
+      console.log(this.dataUrl)
+      this.$refs.upload.submit()
+      // 去除detail为空的数组项
+      for (let i = 0; i < this.params.length; i++) {
+        if (this.params[i].detail.length === 0) {
+          this.params.splice(i, 1)
+          i = 0
+        }
+      }
+      console.log(this.params)
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/addGoods', {
         goodName: this.goodName,
         goodsTypeId: this.value,
@@ -418,14 +602,7 @@ export default {
     },
     deleteGoods () {
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/deleteGoods', {
         goodsId: this.goodsId,
         updateTime: time
@@ -450,11 +627,22 @@ export default {
         console.log(error)
       })
     },
+    beforeUpload (file) {
+      // this.fileData.push(file)
+      this.transformFileToDataUrl(file, 0, 0)
+    },
+    onSuccess (response, file, fileList) {
+      console.log(response)
+      console.log(file)
+      console.log(fileList)
+    },
     handleRemove (file, fileList) {
       console.log(file, fileList)
     },
     handlePreview (file) {
-      console.log(file)
+      // console.log(file)
+      this.preViewDialog = true
+      this.dialogImageUrl = file.url
     }
   },
   mounted () {

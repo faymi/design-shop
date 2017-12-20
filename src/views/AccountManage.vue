@@ -163,14 +163,7 @@ export default {
     selectChange (userId, value) {
       // console.log(userId, value)
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/userManage/editUserInfo', {
         status: value,
         updateTime: time,

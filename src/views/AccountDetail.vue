@@ -276,14 +276,7 @@ export default {
     },
     editUser () {
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.editDialog = true
       this.axios.post('ideat/userManage/editUserInfo', {
         pwd: _this.password,
@@ -314,14 +307,7 @@ export default {
     },
     deleteUser () {
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/userManage/deleteUser', {
         userId: _this.userId,
         updateTime: time

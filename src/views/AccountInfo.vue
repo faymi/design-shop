@@ -147,14 +147,7 @@ export default {
     },
     saveChange () {
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       let userId = this.userId
       this.editDialog = true
       this.axios.post('ideat/userManage/editUserInfo', {
@@ -185,14 +178,7 @@ export default {
     },
     savePwd (formName) {
       let _this = this
-      let date = new Date()
-      let year = date.getFullYear()
-      let month = date.getMonth() + 1
-      let day = date.getDate()
-      let hour = date.getHours()
-      let minute = date.getMinutes()
-      let second = date.getSeconds()
-      let time = year + '-' + month + '-' + day + ' ' + hour + ':' + minute + ':' + second
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       let username = this.userId
       this.$refs[formName].validate((valid) => {
         if (valid) {
