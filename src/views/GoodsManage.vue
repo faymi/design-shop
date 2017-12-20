@@ -152,6 +152,7 @@
               :before-upload="beforeUpload"
               :on-remove="handleRemove"
               :file-list="fileList"
+              accept="image/*"
               list-type="picture-card"
               :auto-upload="false">
               <i class="el-icon-plus avatar-uploader-icon"></i>

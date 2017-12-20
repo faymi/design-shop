@@ -106,6 +106,7 @@
               :on-success="onSuccess"
               :before-upload="beforeUpload"
               :file-list="fileList"
+              accept="image/*"
               list-type="picture-card"
               :auto-upload="false">
               <i class="el-icon-plus avatar-uploader-icon"></i>
@@ -250,7 +251,7 @@ export default {
       selectList: [], // 选中的尺寸数组
       editColors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
       size: [{key: 'S'}, {key: 'M'}, {key: 'L'}, {key: 'XL'}, {key: 'XXL'}, {key: 'XXXL'}], // 尺寸数组
-      fileList: [],
+      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
       params: [],
       currentColor: '',
       imgFile: {},
@@ -444,7 +445,7 @@ export default {
     // 色块点击事件
     tabColorClick (index, color) {
       this.tabColorIndex = index
-      this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+      // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
       this.currentColor = color.color
       let flag = false
       for (let i = 0; i < this.params.length; i++) {
@@ -649,6 +650,11 @@ export default {
     let _this = this
     this.goodsId = this.$route.query.goodsId
     // console.log(this.goodsId)
+    this.params = [
+      {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+      {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+      {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+    ]
     this.axios.get('ideat/goodsManage/getGoodsInfo', {
       params: {
         goodsId: this.goodsId

@@ -3,7 +3,10 @@
     <div class="container">
       <div class="header" v-show="header_show">
         <div class="left">idea2t</div>
-        <div class="right">faymi</div>
+        <div class="right">
+          <span>{{userId}}</span>
+          <img src="./assets/logo.png" alt="">
+        </div>
       </div>
       <div class="aside" v-show="aside_show">
         <el-menu default-active="/home" class="el-menu-vertical-demo" :router="true">
@@ -33,8 +36,11 @@ export default {
       header_show: true,
       aside_show: true,
       path: '',
-      ismain: false
+      ismain: false,
+      userId: ''
     }
+  },
+  methods: {
   },
   watch: {
     '$route' (to, from) {
@@ -47,6 +53,7 @@ export default {
         this.header_show = true
         this.aside_show = true
         this.ismain = true
+        this.userId = sessionStorage.getItem('username')
       }
     }
   },
@@ -97,6 +104,16 @@ export default {
   height: 100%;
   line-height: 60px;
   color: #fff;
+  img {
+    width: 24px;
+    height: 24px;
+    border: 1px solid #fff;
+    border-radius: 50%;
+    cursor: pointer;
+    display: inline-block; 
+    vertical-align: middle;
+    margin-left: 4px;
+  }
 }
 .aside {
   width: 200px;
