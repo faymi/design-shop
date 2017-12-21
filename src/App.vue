@@ -9,7 +9,7 @@
         </div>
       </div>
       <div class="aside" v-show="aside_show">
-        <el-menu :default-active="currentPath" class="el-menu-vertical-demo" active-text-color="#409EFF" :router="true" @select="selectEvt">
+        <el-menu :default-active="currentPath" class="el-menu-vertical-demo" active-text-color="#409EFF" :router="true">
           <el-menu-item v-for="item in menu" :index="item.index" :key="item.index" :class="{'isActive': item.index === currentPath}">{{item.title}}</el-menu-item>
           <!-- <el-menu-item index="/home">首页概览</el-menu-item>
           <el-menu-item index="/orderManage">订单管理</el-menu-item>s
@@ -46,14 +46,11 @@ export default {
       path: '',
       currentPath: '',
       ismain: false,
-      userId: ''
+      userId: '',
+      authority: false
     }
   },
   methods: {
-    selectEvt (index, path) {
-      console.log(index)
-      console.log(path)
-    },
     toHome () {
       this.$router.push('/home')
     },
@@ -79,11 +76,15 @@ export default {
         this.ismain = true
         this.userId = sessionStorage.getItem('username')
       }
+      // 权限控制菜单
+      this.authority = sessionStorage.getItem('authority')
+      if (this.authority === 'false' && this.menu.length === 6) {
+        this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
+      }
     }
   },
   created () {
     this.path = this.currentPath = this.$route.path
-    console.log(this.path)
     if (this.path === '/login' || this.path === '/orderDetail' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
       this.header_show = false
       this.aside_show = false
@@ -97,6 +98,11 @@ export default {
       this.aside_show = true
       this.ismain = true
       this.userId = sessionStorage.getItem('username')
+    }
+    // 权限控制菜单
+    this.authority = sessionStorage.getItem('authority')
+    if (this.authority === 'false' && this.menu.length === 6) {
+      this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
     }
   }
 }

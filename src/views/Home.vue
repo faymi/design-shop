@@ -48,27 +48,28 @@ export default {
       selectData: [
         {
           value: '1',
-          label: '本月'
+          label: '本周'
         },
         {
           value: '2',
-          label: '近3月'
+          label: '本月'
         },
         {
           value: '3',
           label: '本年'
         }
       ],
+      myChart: {},
       options: {
         title: {
-          text: '一周收益',
-          subtext: '纯属虚构'
+          text: '本周收益',
+          subtext: ''
         },
         tooltip: {
           trigger: 'axis'
         },
         legend: {
-          data: ['最高气温']
+          data: ['']
         },
         toolbox: {
           show: true,
@@ -114,21 +115,49 @@ export default {
   },
   methods: {
     initEchart () {
-      let myChart = this.echarts.init(document.getElementById('echartBox'))
-      myChart.setOption(this.options)
+      this.myChart = this.echarts.init(document.getElementById('echartBox'))
+      this.myChart.setOption(this.options)
     },
     onChange () {
-      // 获取当月有多少天
-      let d = new Date()
-      let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
-      let monthDaysList = []
-      for (let i = 1; i <= curMonthDays; i++) {
-        monthDaysList.push(d.getMonth() + 1 + '/' + i)
+      if (this.value === '1') { // 本周
+        this.myChart.setOption(this.options)
+      } else if (this.value === '2') { // 本月
+        // 获取当月有多少天
+        let d = new Date()
+        let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
+        let monthDaysList = []
+        for (let i = 1; i <= curMonthDays; i++) {
+          monthDaysList.push(d.getMonth() + 1 + '/' + i)
+        }
+        this.myChart.setOption({
+          title: {
+            text: '本月收益'
+          },
+          xAxis: {
+            data: monthDaysList
+          },
+          series: [
+            {
+              data: [123, 687, 134, 541, 121, 184, 223, 411, 674, 324, 345, 333]
+            }
+          ]
+        })
+      } else { // 本年
+        let monthList = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+        this.myChart.setOption({
+          title: {
+            text: '本年收益'
+          },
+          xAxis: {
+            data: monthList
+          },
+          series: [
+            {
+              data: [541, 687, 321, 541, 121, 184, 888, 466, 766, 123, 422, 333]
+            }
+          ]
+        })
       }
-      this.options.xAxis.data = monthDaysList
-      this.initEchart()
-      console.log(monthDaysList)
-      // console.log(this.value)
     }
   },
   mounted () {

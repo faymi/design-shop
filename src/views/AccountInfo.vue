@@ -234,12 +234,14 @@ export default {
       if (['jpeg', 'png', 'gif', 'jpg'].indexOf(file.type.split('/')[1]) < 0) {
           // 自定义报错方式
           // Toast.error("文件类型仅支持 jpeg/png/gif！", 2000, undefined, false);
+        this.$message.error('文件类型仅支持 jpeg/png/gif！')
         return
       }
       // 文件大小限制
       if (file.size > imgMasSize) {
         // 文件大小自定义限制
         // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
+        this.$message.error('文件大小不能超过10MB！')
         return
       }
       // 判断是否是ios

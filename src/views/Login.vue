@@ -79,6 +79,7 @@ export default {
               return
             }
             sessionStorage.setItem('username', username)
+            sessionStorage.setItem('authority', true) // 权限控制
             _this.$router.push('/home')
           })
           .catch(function (error) {
