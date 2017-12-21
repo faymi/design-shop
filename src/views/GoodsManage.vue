@@ -182,7 +182,7 @@
           <div class="color-box">
             <span>商品颜色：</span>
             <ul class="color">
-              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :key="index" :id="index" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
             </ul>
           </div>
           <div class="color-detail">

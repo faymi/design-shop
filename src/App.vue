@@ -9,14 +9,15 @@
         </div>
       </div>
       <div class="aside" v-show="aside_show">
-        <el-menu default-active="/home" class="el-menu-vertical-demo" :router="true">
-          <el-menu-item index="/home" :class="{'isActive': active}">首页概览</el-menu-item>
-          <el-menu-item index="/orderManage" :class="{'isActive': !active}">订单管理</el-menu-item>
-          <el-menu-item index="/goodsManage" :class="{'isActive': !active}">商品管理</el-menu-item>
-          <el-menu-item index="/accountManage" :class="{'isActive': !active}">账号管理</el-menu-item>
-          <el-menu-item index="/customManage" :class="{'isActive': !active}">用户列表</el-menu-item>
-          <el-menu-item index="/incomeManage" :class="{'isActive': !active}">收益明细</el-menu-item>
-          <!-- <el-menu-item index="/accountInfo" :class="{'isActive': !active}">账号资料</el-menu-item> -->
+        <el-menu :default-active="currentPath" class="el-menu-vertical-demo" active-text-color="#409EFF" :router="true" @select="selectEvt">
+          <el-menu-item v-for="item in menu" :index="item.index" :key="item.index" :class="{'isActive': item.index === currentPath}">{{item.title}}</el-menu-item>
+          <!-- <el-menu-item index="/home">首页概览</el-menu-item>
+          <el-menu-item index="/orderManage">订单管理</el-menu-item>s
+          <el-menu-item index="/goodsManage">商品管理</el-menu-item>
+          <el-menu-item index="/accountManage">账号管理</el-menu-item>
+          <el-menu-item index="/customManage">用户列表</el-menu-item>
+          <el-menu-item index="/incomeManage">收益明细</el-menu-item> -->
+          <!-- <el-menu-item index="/accountInfo">账号资料</el-menu-item> -->
         </el-menu>
       </div>
       <div :class="{'main': ismain}">
@@ -32,15 +33,27 @@ export default {
   name: 'app',
   data () {
     return {
-      active: true,
+      menu: [
+        {index: '/home', title: '首页概览'},
+        {index: '/orderManage', title: '订单管理'},
+        {index: '/goodsManage', title: '商品管理'},
+        {index: '/accountManage', title: '账号管理'},
+        {index: '/customManage', title: '用户列表'},
+        {index: '/incomeManage', title: '收益明细'}
+      ],
       header_show: true,
       aside_show: true,
       path: '',
+      currentPath: '',
       ismain: false,
       userId: ''
     }
   },
   methods: {
+    selectEvt (index, path) {
+      console.log(index)
+      console.log(path)
+    },
     toHome () {
       this.$router.push('/home')
     },
@@ -50,6 +63,7 @@ export default {
   },
   watch: {
     '$route' (to, from) {
+      this.currentPath = to.path
       let path = to.path.split('/')[1]
       if (path === 'login' || path === 'orderDetail' || path === 'accountDetail' || path === 'goodsDetail') {
         this.header_show = false
@@ -68,7 +82,7 @@ export default {
     }
   },
   created () {
-    this.path = this.$route.path
+    this.path = this.currentPath = this.$route.path
     console.log(this.path)
     if (this.path === '/login' || this.path === '/orderDetail' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
       this.header_show = false
@@ -146,5 +160,8 @@ export default {
 }
 .main {
   margin-left: 200px;
+}
+.isActive {
+  color: #409EFF !important;
 }
 </style>
