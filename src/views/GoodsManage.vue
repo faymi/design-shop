@@ -3,7 +3,7 @@
     <div class="header">
       <div class="left">商品管理</div>
       <div class="right">
-        <div class="search-btn">
+        <div class="search-btn" v-if="authority">
           <el-button type="primary" @click="dialogFormVisible = true">添加商品</el-button>
         </div>
       </div>
@@ -272,6 +272,7 @@ export default {
   name: 'GoodsManage',
   data () {
     return {
+      authority: false,
       userId: '',
       currentPage1: 5, // 分页
       currentPage2: 5,
@@ -769,6 +770,7 @@ export default {
     }
   },
   mounted () {
+    this.authority = sessionStorage.getItem('authority') === 'true' // 添加商品权限
     let _this = this
     this.userId = sessionStorage.getItem('username')
     let data = {userId: this.userId}

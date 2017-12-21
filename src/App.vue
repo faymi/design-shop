@@ -10,7 +10,7 @@
       </div>
       <div class="aside" v-show="aside_show">
         <el-menu :default-active="currentPath" class="el-menu-vertical-demo" active-text-color="#409EFF" :router="true">
-          <el-menu-item v-for="item in menu" :index="item.index" :key="item.index" :class="{'isActive': item.index === currentPath}">{{item.title}}</el-menu-item>
+          <el-menu-item v-for="item in menu" :index="item.index" :key="item.index" v-if="'/accountManage' === item.index ? authority === 'true' : true" :class="{'isActive': item.index === currentPath}">{{item.title}}</el-menu-item>
           <!-- <el-menu-item index="/home">首页概览</el-menu-item>
           <el-menu-item index="/orderManage">订单管理</el-menu-item>s
           <el-menu-item index="/goodsManage">商品管理</el-menu-item>
@@ -78,9 +78,9 @@ export default {
       }
       // 权限控制菜单
       this.authority = sessionStorage.getItem('authority')
-      if (this.authority === 'false' && this.menu.length === 6) {
-        this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
-      }
+      // if (this.authority === 'false' && this.menu.length === 6) {
+      //   this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
+      // }
     }
   },
   created () {
@@ -101,9 +101,9 @@ export default {
     }
     // 权限控制菜单
     this.authority = sessionStorage.getItem('authority')
-    if (this.authority === 'false' && this.menu.length === 6) {
-      this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
-    }
+    // if (this.authority === 'false' && this.menu.length === 6) {
+    //   this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
+    // }
   }
 }
 </script>
