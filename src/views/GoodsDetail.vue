@@ -8,12 +8,12 @@
               <p>商品详情</p>
             </div>
             <div class="header-right">
-              <el-button type="primary" @click="delDialog = true">删除</el-button>
+              <el-button type="primary" @click="delDialog = true" v-if="authority">删除</el-button>
               <el-button type="primary" @click="dialogFormVisible = true">编辑</el-button>
             </div>
           </div>
           <div class="goods-content">
-            <div class="goods-img"><img src="../assets/logo.png" alt=""></div>
+            <div class="goods-img"><img :src="imageList[0]" alt=""></div>
             <div class="goods-detail">
               <div class="goods-name">
                 <span>{{detail.goodsName}}</span>
@@ -24,12 +24,12 @@
               </div>
               <div class="color-box">
                 <ul class="color">
-                  <li v-for="(color, index) in editColors" @click="colorClick(index, color)" :id="index" :class="{selectedItem:index === colorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+                  <li v-for="(color, index) in editColors" @click="colorClick(index, color)" :key="index+'_size'" :id="index+'_size'" :class="{selectedItem:index === colorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
                 </ul>
               </div>
               <div class="size-stock">
                 <p>尺寸&库存</p>
-                <span v-for="item in stock">{{item.size}}/{{item.amount}}</span>
+                <span v-for="item in stock" :key="item.sizeId">{{item.sizeId}}/{{item.amount}}</span>
               </div>
               <div class="price-box">
                 <div class="price-left">
@@ -54,9 +54,7 @@
             <span>{{detail.goodsDescript}}</span>
           </div>
           <div class="goods-picture">
-            <img src="../assets/logo.png" alt="">
-            <img src="../assets/logo.png" alt="">
-            <img src="../assets/logo.png" alt="">
+            <img v-for="(item, index) in imageList" :key="index" :src="item" alt="">
           </div>
         </div>
       </div>
@@ -117,7 +115,7 @@
           <div class="color-box">
             <span>商品颜色：</span>
             <ul class="color">
-              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :id="index+'_color'" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+              <li v-for="(color, index) in colors" @click="tabColorClick(index, color)" :key="index" :id="index+'_color'" :class="{selectedItem:index === tabColorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
             </ul>
           </div>
           <div class="color-detail">
@@ -215,6 +213,7 @@ export default {
   name: 'GoodsDetail',
   data () {
     return {
+      authority: '',
       goodsId: '',
       goodsName: '',
       detail: {
@@ -249,9 +248,9 @@ export default {
       size2L: '',
       size3L: '',
       selectList: [], // 选中的尺寸数组
-      editColors: [{key: 'white'}, {key: 'black'}, {key: 'red'}, {key: 'grey'}], // 色块数组
+      editColors: [{key: 'white', color: 1}, {key: 'black', color: 2}, {key: 'red', color: 3}, {key: 'grey', color: 4}], // 色块数组
       size: [{key: 'S'}, {key: 'M'}, {key: 'L'}, {key: 'XL'}, {key: 'XXL'}, {key: 'XXXL'}], // 尺寸数组
-      fileList: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
+      fileList: [],
       params: [],
       currentColor: '',
       imgFile: {},
@@ -259,13 +258,14 @@ export default {
       fileData: [],
       dialogImageUrl: '',
       goodsPicPath: '',
+      imageList: [],
       frontImg: require('../assets/logo.png'),
       backImg: require('../assets/logo.png'),
       delDialog: false,
       statusValue: '0',
       tabColorIndex: 0,
       colors: [{key: 'white', color: 1}, {key: 'black', color: 2}, {key: 'red', color: 3}, {key: 'grey', color: 4}], // 色块数组
-      stock: [{size: 'S', amount: 200}, {size: 'M', amount: 12}, {size: 'L', amount: 621}, {size: 'XL', amount: 1544}, {size: 'XXL', amount: 212}],
+      stock: [],
       options: [
         {
           value: '1',
@@ -281,13 +281,20 @@ export default {
         }],
       value: '1',
       preViewDialog: false,
-      dialogFormVisible: false
+      dialogFormVisible: false,
+      extraInfo: []
     }
   },
   methods: {
     // 色块点击事件
     colorClick (index, color) {
       this.colorIndex = index
+      this.stock = []
+      for (let i = 0; i < this.extraInfo.length; i++) {
+        if (this.extraInfo[i].color === color.color) {
+          this.stock = this.extraInfo[i].detail
+        }
+      }
     },
     dialogOpen () {
       // 打开dialog时默认选中第一种颜色、S码
@@ -318,7 +325,7 @@ export default {
       const reader = new FileReader()
       // file转dataUrl是个异步函数，要将代码写在回调里(onload)
       reader.onload = function (e) {
-        let params = []
+        let params = {}
         params.side = side
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
@@ -564,7 +571,6 @@ export default {
     // },
     // 编辑商品完成事件
     addGoods () {
-      console.log(this.dataUrl)
       this.$refs.upload.submit()
       // 去除detail为空的数组项
       for (let i = 0; i < this.params.length; i++) {
@@ -573,10 +579,9 @@ export default {
           i = 0
         }
       }
-      console.log(this.params)
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
-      this.axios.post('ideat/goodsManage/addGoods', {
+      this.axios.post('ideat/goodsManage/editBaseGoodsInfo', {
         goodName: this.goodName,
         goodsTypeId: this.value,
         printing: this.skill,
@@ -594,8 +599,55 @@ export default {
           })
           return
         }
-        console.log(data)
-        this.dialogFormVisible = false
+        // this.dialogFormVisible = false
+        _this.addGoodsExtra()
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    addGoodsExtra () {
+      let _this = this
+      this.axios.post('ideat/goodsManage/editGoodsExtra', {
+        params: this.params,
+        // [
+        //   {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+        //   {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+        //   {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+        // ],
+        goodsId: this.goodsId
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.addGoodsPic()
+        // _this.goodsId = data.body.goodsId
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    addGoodsPic () {
+      let _this = this
+      this.axios.post('ideat/goodsManage/editGoodsPic', {
+        goodsId: this.goodsId,
+        params: this.dataUrl
+      }).then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: '编辑商品成功！'
+          })
+          return
+        }
+        _this.dialogFormVisible = false
       })
       .catch(function (error) {
         console.log(error)
@@ -638,7 +690,29 @@ export default {
       console.log(fileList)
     },
     handleRemove (file, fileList) {
-      console.log(file, fileList)
+      let _this = this
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
+      this.axios.post('ideat/goodsManage/deleteGoodsPic', {
+        goodsPicId: file.goodsPicId,
+        updateTime: time
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: data.msg
+        })
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     },
     handlePreview (file) {
       // console.log(file)
@@ -647,14 +721,15 @@ export default {
     }
   },
   mounted () {
+    this.authority = sessionStorage.getItem('authority') === 'true' // 添加商品权限
     let _this = this
     this.goodsId = this.$route.query.goodsId
     // console.log(this.goodsId)
-    this.params = [
-      {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
-      {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
-      {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
-    ]
+    // this.params = [
+    //   {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+    //   {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+    //   {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+    // ]
     this.axios.get('ideat/goodsManage/getGoodsInfo', {
       params: {
         goodsId: this.goodsId
@@ -671,15 +746,37 @@ export default {
         return
       }
       let result = data.body
-      _this.detail.goodsName = result.goodsName
+      _this.goodName = _this.detail.goodsName = result.goodsName
       _this.detail.statusValue = String(result.status)
-      _this.detail.singlePrice = result.singlePrice
-      _this.detail.goodsDescript = result.goodsDescript
-      _this.detail.doublePrice = result.doublePrice
-      _this.detail.singleCost = result.singleCost
-      _this.detail.goodsName = result.goodsName
-      _this.detail.doubleCost = result.doubleCost
-      _this.detail.printing = result.printing
+      _this.singlePrice = _this.detail.singlePrice = result.singlePrice
+      _this.textarea = _this.detail.goodsDescript = result.goodsDescript
+      _this.doublePrice = _this.detail.doublePrice = result.doublePrice
+      _this.singleCost = _this.detail.singleCost = result.singleCost
+      _this.doubleCost = _this.detail.doubleCost = result.doubleCost
+      _this.skill = _this.detail.printing = result.printing
+      let imageInfo = result.imageInfo
+      for (let i = 0; i < imageInfo.length; i++) {
+        _this.imageList.push(imageInfo[i].goodsPicPath)
+        if (imageInfo[i].goodsPicType === 0) { // 素材图
+          let item = {}
+          item.name = ''
+          item.goodsPicId = imageInfo[i].goodsPicId
+          item.url = imageInfo[i].goodsPicPath
+          _this.fileList.push(item)
+        }
+        if (imageInfo[i].side === 0 && imageInfo[i].goodsPicType === 1) {
+          _this.frontImg = imageInfo[i].goodsPicPath
+        }
+        if (imageInfo[i].side === 1 && imageInfo[i].goodsPicType === 1) {
+          _this.backImg = imageInfo[i].goodsPicPath
+        }
+      }
+      _this.extraInfo = result.extraInfo
+      _this.params = result.extraInfo
+      for (let i = 0; i < _this.params.length; i++) {
+        _this.params[i].color = Number(_this.params[i].color)
+      }
+      _this.colorClick(0, {color: 1})
     })
     .catch(function (error) {
       console.log(error)

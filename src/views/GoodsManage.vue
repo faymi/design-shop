@@ -28,7 +28,7 @@
             </div>
           </template>
         </el-table-column>
-        <el-table-column label="零售价格">
+        <el-table-column label="零售价格" v-if="!authority">
           <template slot-scope="scope">
             <div class="ipt-wrap">
               <p>单面：</p>{{scope.row.singlePrice}}
@@ -49,7 +49,7 @@
             </div>
           </template>
         </el-table-column> -->
-        <el-table-column label="状态">
+        <el-table-column label="状态" v-if="!authority">
           <template  slot-scope="scope">
             <el-select v-model="scope.row.status" placeholder="请选择" @change="selectChange(scope.row.goodsId, scope.row.status)">
               <el-option
@@ -146,7 +146,7 @@
             <li><span>商品图片：</span><el-upload
               class="upload-card"
               ref="upload"
-              action="ideat/goodsManage/addGoodsPic"
+              action="https://jsonplaceholder.typicode.com/posts/"
               :on-preview="handlePreview"
               :on-success="onSuccess"
               :before-upload="beforeUpload"
@@ -404,6 +404,11 @@ export default {
       // // 关闭后初始化
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
+      this.params = []
+      this.frontImg = this.backImg = require('../assets/logo.png')
+      this.goodName = this.skill = this.singleCost = this.doubleCost = this.singlePrice = this.doublePrice = this.textarea = ''
+      this.value = '1'
+      this.$refs.upload.clearFiles()
     },
     uploadImg (action) {
       console.log(action)
@@ -416,7 +421,7 @@ export default {
       const reader = new FileReader()
       // file转dataUrl是个异步函数，要将代码写在回调里(onload)
       reader.onload = function (e) {
-        let params = []
+        let params = {}
         params.side = side
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
@@ -667,10 +672,7 @@ export default {
     // },
     // 添加商品完成事件
     addGoods () {
-      // console.log(this.dataUrl)
       this.$refs.upload.submit()
-      // this.$refs.upload.submit()
-      // console.log(this.params)
       // 去除detail为空的数组项
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].detail.length === 0) {
@@ -678,7 +680,6 @@ export default {
           i = 0
         }
       }
-      console.log(this.params)
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/addGoods', {
@@ -711,11 +712,12 @@ export default {
     addGoodsExtra () {
       let _this = this
       this.axios.post('ideat/goodsManage/addGoodsExtra', {
-        params: [
-          {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
-          {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
-          {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
-        ],
+        params: this.params,
+        // [
+        //   {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+        //   {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+        //   {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+        // ],
         goodsId: this.goodsId
       })
       .then(function (response) {
@@ -727,9 +729,29 @@ export default {
           })
           return
         }
-        console.log(data)
+        _this.addGoodsPic()
         // _this.goodsId = data.body.goodsId
-        // this.dialogFormVisible = false
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    addGoodsPic () {
+      let _this = this
+      this.axios.post('ideat/goodsManage/addGoodsPic', {
+        goodsId: this.goodsId,
+        params: this.dataUrl
+      }).then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.dialogFormVisible = false
+        _this.$router.push('/goodsManage')
       })
       .catch(function (error) {
         console.log(error)
