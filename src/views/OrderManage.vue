@@ -14,14 +14,14 @@
     <div class="search-bar" v-show="searchResultShow">搜索“{{searchText}}”关键字结果：</div>
     <div class="table">
       <el-table @row-dblclick="rowClick" :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="order_num" label="订单号" width="180"></el-table-column>
-        <el-table-column prop="name" label="客户" width="100"></el-table-column>
-        <el-table-column  prop="phone" label="联系电话" width="116"></el-table-column>
-        <el-table-column  prop="address" label="收货地址"></el-table-column>
-        <el-table-column  prop="goods" label="商品"></el-table-column>
-        <el-table-column  prop="total" label="总价"></el-table-column>
+        <el-table-column prop="orderId" label="订单号" width="180"></el-table-column>
+        <el-table-column prop="orderName" label="客户" width="100"></el-table-column>
+        <el-table-column  prop="orderPhone" label="联系电话" width="116"></el-table-column>
+        <el-table-column  prop="orderAddress" label="收货地址"></el-table-column>
+        <el-table-column  prop="goodsName" label="商品"></el-table-column>
+        <el-table-column  prop="orderTotal" label="总价"></el-table-column>
         <el-table-column  prop="status" label="状态"></el-table-column>
-        <el-table-column prop="date" label="日期" width="180"></el-table-column>
+        <el-table-column prop="orderTime" label="日期" width="180"></el-table-column>
         <!-- <el-table-column label="操作" width="80">
           <template slot-scope="scope">
             <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">详情</el-button>
@@ -59,61 +59,46 @@ export default {
       currentPage3: 5,
       currentPage4: 4,
       searchInput: '',
-      tableData: [
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 号200房阿斯顿发生动感',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        }
-      ]
+      tableData: []
     }
   },
   methods: {
+    getData (inputParams) {
+      let _this = this
+      let params
+      if (inputParams !== '' && inputParams !== 'undefined') {
+        params = {
+          params: inputParams,
+          start: 0,
+          limit: 10
+        }
+      } else {
+        params = {
+          start: 0,
+          limit: 10
+        }
+      }
+      this.axios.get('ideat/orderManage/getOrderList', {
+        params: {
+          ...params
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.tableData = result.result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
     search () {
       if (this.searchInput !== '') {
         this.searchResultShow = true
@@ -121,13 +106,14 @@ export default {
       } else {
         this.searchResultShow = false
       }
+      this.getData(this.searchInput)
     },
     rowClick (row, event, column) {
       console.log(row)
       // this.$router.push({name: 'OrderDetail', params: { orderId: '' }})
       const {href} = this.$router.resolve({
         name: 'OrderDetail',
-        query: { orderId: row.order_num }
+        query: { orderId: row.orderId }
       })
       window.open(href, '_blank')
     },
@@ -137,6 +123,9 @@ export default {
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
     }
+  },
+  mounted () {
+    this.getData()
   }
 }
 </script>

@@ -13,12 +13,12 @@
     </div>
     <div class="table">
       <el-table stripe :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="index" label="序号" width="80"></el-table-column>
-        <el-table-column prop="name" label="用户名" width="100"></el-table-column>
-        <el-table-column  prop="phone" label="联系电话"></el-table-column>
+        <el-table-column prop="customerId" label="序号" width="80"></el-table-column>
+        <el-table-column prop="customerName" label="用户名" width="100"></el-table-column>
+        <el-table-column  prop="customerPhone" label="联系电话"></el-table-column>
         <el-table-column  prop="address" label="地址"></el-table-column>
-        <el-table-column prop="firstLoginTime" label="首次登陆时间"></el-table-column>
-        <el-table-column  prop="recentLoginTime" label="最近登录时间"></el-table-column>
+        <el-table-column prop="registerTime" label="首次登陆时间"></el-table-column>
+        <el-table-column  prop="lastLoginTime" label="最近登录时间"></el-table-column>
         <el-table-column  prop="IP" label="最近登录IP"></el-table-column>
         <!-- <el-table-column  prop="order_num" label="订单数"></el-table-column>
         <el-table-column  prop="total" label="成交额"></el-table-column> -->
@@ -52,90 +52,59 @@ export default {
       currentPage3: 5,
       currentPage4: 4,
       searchInput: '',
-      tableData: [
-        {
-          index: 1,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          order_num: 123,
-          status: '代签收',
-          date: '2016-05-02',
-          firstLoginTime: '2017-12-12 08:45:12',
-          recentLoginTime: '2017-12-12 09:35:24',
-          IP: '192.168.0.1'
-        },
-        {
-          index: 1,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          order_num: 123,
-          status: '代签收',
-          date: '2016-05-02',
-          firstLoginTime: '2017-12-12 08:45:12',
-          recentLoginTime: '2017-12-12 09:35:24',
-          IP: '192.168.0.1'
-        },
-        {
-          index: 2,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          order_num: 123,
-          status: '代签收',
-          date: '2016-05-02',
-          firstLoginTime: '2017-12-12 08:45:12',
-          recentLoginTime: '2017-12-12 09:35:24',
-          IP: '192.168.0.1'
-        },
-        {
-          index: 3,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          order_num: 123,
-          status: '代签收',
-          date: '2016-05-02',
-          firstLoginTime: '2017-12-12 08:45:12',
-          recentLoginTime: '2017-12-12 09:35:24',
-          IP: '192.168.0.1'
-        },
-        {
-          index: 4,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          order_num: 123,
-          status: '代签收',
-          date: '2016-05-02',
-          firstLoginTime: '2017-12-12 08:45:12',
-          recentLoginTime: '2017-12-12 09:35:24',
-          IP: '192.168.0.1'
-        }
-      ]
+      tableData: []
     }
   },
   methods: {
     search () {
-      console.log(this.searchInput)
+      // console.log(this.searchInput)
+      this.getData(this.searchInput)
     },
     handleSizeChange (val) {
       console.log(`每页 ${val} 条`)
     },
     handleCurrentChange (val) {
       console.log(`当前页: ${val}`)
+    },
+    getData (inputParams) {
+      let params
+      if (inputParams !== '' && inputParams !== 'undefined') {
+        params = {
+          params: inputParams,
+          start: 0,
+          limit: 10
+        }
+      } else {
+        params = {
+          start: 0,
+          limit: 10
+        }
+      }
+      let _this = this
+      this.axios.get('ideat/userManage/getCustomerList', {
+        params: {
+          ...params
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.tableData = result.result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
+  },
+  mounted () {
+    this.getData()
   }
 }
 </script>

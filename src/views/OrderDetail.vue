@@ -111,6 +111,31 @@ export default {
     },
     deliver () {
     }
+  },
+  mounted () {
+    let _this = this
+    this.axios.get('ideat/orderManage/getOrderInfo', {
+      params: {
+        orderId: '1'
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return false
+      }
+      let result = data.body
+      console.log(result)
+      return result
+    })
+    .catch(function (error) {
+      console.log(error)
+      return false
+    })
   }
 }
 </script>
