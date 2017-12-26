@@ -34,13 +34,10 @@
       <div class="block">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -54,29 +51,24 @@ export default {
     return {
       searchResultShow: false,
       searchText: '',
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 1,
+      total: 0,
+      start: 0,
+      limit: 10,
       searchInput: '',
       tableData: []
     }
   },
   methods: {
-    getData (inputParams) {
+    getData (start, limit, inputParams) {
       let _this = this
       let params
+      params = {
+        start: start,
+        limit: limit
+      }
       if (inputParams !== '' && inputParams !== 'undefined') {
-        params = {
-          params: inputParams,
-          start: 0,
-          limit: 10
-        }
-      } else {
-        params = {
-          start: 0,
-          limit: 10
-        }
+        params.params = inputParams
       }
       this.axios.get('ideat/orderManage/getOrderList', {
         params: {
@@ -93,6 +85,7 @@ export default {
           return
         }
         let result = data.body
+        _this.total = result.total
         _this.tableData = result.result
       })
       .catch(function (error) {
@@ -117,15 +110,14 @@ export default {
       })
       window.open(href, '_blank')
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      this.getData(this.start, this.limit)
     }
   },
   mounted () {
-    this.getData()
+    this.getData(this.start, this.limit)
   }
 }
 </script>

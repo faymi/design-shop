@@ -69,17 +69,13 @@
       </el-table>
     </div>
     <div class="page-wrap">
-      <!-- <el-pagination background layout="prev, pager, next" :total="1000"></el-pagination> -->
       <div class="block">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -107,7 +103,7 @@
                 <template slot="append">元</template>
               </el-input>
             </li>
-            <li>
+            <!-- <li v-if="!authority">
               <span>零售价格：</span>
               <el-input style="width: 100px;height:32px;" v-model="singlePrice">
                 <template slot="prepend">单面</template>
@@ -117,7 +113,7 @@
                 <template slot="prepend">双面</template>
                 <template slot="append">元</template>
               </el-input>
-            </li>
+            </li> -->
             <!-- <li>
               <span>定制区域：</span>
               <el-input style="width: 100px;height:32px;" v-model="input3">
@@ -274,10 +270,10 @@ export default {
     return {
       authority: false,
       userId: '',
-      currentPage1: 5, // 分页
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 1,
+      total: 0,
+      start: 0,
+      limit: 10,
       searchInput: '',
       goodName: '', // 弹窗左侧输入框v-model
       skill: '',
@@ -332,23 +328,11 @@ export default {
       value: '1',
       tableData: [],
       dialogFormVisible: false,
-      preViewDialog: false,
-      form: {
-        name: '',
-        region: '',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
-      },
-      formLabelWidth: '120px'
+      preViewDialog: false
     }
   },
   methods: {
     selectChange (goodsId, status) {
-      console.log(this.userId)
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.axios.post('ideat/goodsManage/editGoodsInfo', {
@@ -358,7 +342,6 @@ export default {
         inserTime: time
       })
       .then(function (response) {
-        console.log(response)
         let data = response.data
         if (data.code !== 0) {
           _this.$notify.error({
@@ -377,7 +360,6 @@ export default {
       })
     },
     goodsRow_DbClick (row, event) {
-      console.log(row)
       const {href} = this.$router.resolve({
         name: 'GoodsDetail',
         query: { goodsId: row.goodsId }
@@ -751,7 +733,7 @@ export default {
           return
         }
         _this.dialogFormVisible = false
-        _this.$router.push('/goodsManage')
+        _this.getData(_this.start, _this.limit)
       })
       .catch(function (error) {
         console.log(error)
@@ -775,11 +757,44 @@ export default {
       console.log(file)
       console.log(fileList)
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
-    },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      this.getData(this.start, this.limit)
+    },
+    getData (start, limit) {
+      let _this = this
+      this.userId = sessionStorage.getItem('username')
+      let data = {userId: this.userId}
+      let params = data
+      this.axios.get('/ideat/goodsManage/getGoodsList', {
+        params: {
+          ...params,
+          start: start,
+          limit: limit
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body.result
+        let options = [{value: '0', label: '未上架'}, {value: '1', label: '已上架'}]
+        for (let i = 0; i < result.length; i++) {
+          result[i].options = options
+          result[i].status = String(result[i].status)
+        }
+        _this.total = data.body.total
+        _this.tableData = result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
   },
   watch: {
@@ -793,38 +808,7 @@ export default {
   },
   mounted () {
     this.authority = sessionStorage.getItem('authority') === 'true' // 添加商品权限
-    let _this = this
-    this.userId = sessionStorage.getItem('username')
-    let data = {userId: this.userId}
-    let params = data
-    this.axios.get('/ideat/goodsManage/getGoodsList', {
-      params: {
-        ...params,
-        start: 0,
-        limit: 10
-      }
-    })
-    .then(function (response) {
-      console.log(response)
-      let data = response.data
-      if (data.code !== 0) {
-        _this.$notify.error({
-          title: '温馨提示',
-          message: data.msg
-        })
-        return
-      }
-      let result = data.body.result
-      let options = [{value: '0', label: '未上架'}, {value: '1', label: '已上架'}]
-      for (let i = 0; i < result.length; i++) {
-        result[i].options = options
-        result[i].status = String(result[i].status)
-      }
-      _this.tableData = result
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.getData(this.start, this.limit)
   }
 }
 </script>

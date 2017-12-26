@@ -10,13 +10,13 @@
     </div>
     <div class="table">
       <el-table stripe @row-dblclick="row_DbClick" :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="num" label="编号" width="100"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="编号" width="50"></el-table-column>
         <el-table-column prop="userId" label="账号" width="180"></el-table-column>
         <el-table-column  prop="shopName" label="店名" width="120"></el-table-column>
         <el-table-column  prop="logoPic" label="LOGO">
-            <template slot-scope="scope">
-                <img class="row-img" :src="scope.row.logoPic" alt="">
-            </template>
+          <template slot-scope="scope">
+            <img class="row-img" :src="scope.row.logoPic" alt="">
+          </template>
         </el-table-column>        
         <el-table-column  prop="userDomain" label="域名"></el-table-column>
         <el-table-column prop="balance" label="余额">
@@ -44,13 +44,10 @@
       <div class="block">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -129,10 +126,10 @@ export default {
       }
     }
     return {
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 1,
+      total: 0,
+      start: 0,
+      limit: 10,
       searchInput: '',
       centerDialogVisible: false,
       domain: 'http://idea.vesstack.com/sdds2531524sdsd',
@@ -221,6 +218,7 @@ export default {
             })
             _this.$refs[formName].resetFields()
             _this.centerDialogVisible = false
+            _this.getData(_this.start, _this.limit)
           })
           .catch(function (error) {
             console.log(error)
@@ -234,44 +232,50 @@ export default {
       this.$refs[formName].resetFields()
       this.centerDialogVisible = false
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    // 序号
+    indexMethod (index) {
+      return index + this.start + 1
     },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      this.getData(this.start, this.limit)
+    },
+    // 获取账号数据
+    getData (start, limit) {
+      let _this = this
+      let options = [{value: '1', label: '运营中'}, {value: '0', label: '已关闭'}]
+      this.axios.get('ideat/userManage/getUserList', {
+        params: {
+          start: start,
+          limit: limit
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body.result
+        for (let i = 0; i < result.length; i++) {
+          result.num = i + 1
+          result[i].options = options
+          result[i].value = String(result[i].status)
+        }
+        _this.total = data.body.total
+        _this.tableData = result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
   },
   mounted () {
-    let _this = this
-    let options = [{value: '1', label: '运营中'}, {value: '0', label: '已关闭'}]
-    this.axios.get('ideat/userManage/getUserList', {
-      params: {
-        start: 0,
-        limit: 10
-      }
-    })
-    .then(function (response) {
-      let data = response.data
-      if (data.code !== 0) {
-        _this.$notify.error({
-          title: '温馨提示',
-          message: data.msg
-        })
-        return
-      }
-      // console.log(data)
-      let result = data.body.result
-      for (let i = 0; i < result.length; i++) {
-        result.num = i + 1
-        result[i].options = options
-        result[i].value = String(result[i].status)
-      }
-      _this.tableData = result
-      // console.log(JSON.stringify(result))
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.getData(this.start, this.limit)
   }
 }
 </script>

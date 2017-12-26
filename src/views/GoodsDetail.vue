@@ -17,7 +17,7 @@
             <div class="goods-detail">
               <div class="goods-name">
                 <span>{{detail.goodsName}}</span>
-                <el-select v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;">
+                <el-select v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;" v-if="!authority">
                   <el-option key="0" label="已上架" value="0"></el-option>
                   <el-option key="1" label="已下架" value="1"></el-option>
                 </el-select>
@@ -83,7 +83,7 @@
                 <template slot="append">元</template>
               </el-input>
             </li>
-            <li>
+            <!-- <li>
               <span>零售价格：</span>
               <el-input style="width: 100px;height:32px;" v-model="singlePrice">
                 <template slot="prepend">单面</template>
@@ -93,7 +93,7 @@
                 <template slot="prepend">双面</template>
                 <template slot="append">元</template>
               </el-input>
-            </li>
+            </li> -->
             <li><span>商品简介：</span><el-input type="textarea" :rows="2" placeholder="请输入内容" v-model="textarea"></el-input></li>
             <li><span>商品图片：</span><el-upload
               class="upload-card"

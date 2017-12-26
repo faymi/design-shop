@@ -13,7 +13,7 @@
     </div>
     <div class="table">
       <el-table stripe :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="customerId" label="序号" width="80"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="序号" width="50"></el-table-column>
         <el-table-column prop="customerName" label="用户名" width="100"></el-table-column>
         <el-table-column  prop="customerPhone" label="联系电话"></el-table-column>
         <el-table-column  prop="address" label="地址"></el-table-column>
@@ -29,13 +29,10 @@
       <div class="block">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :current-page.sync ="currentPage"
+          layout="total, prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -47,38 +44,38 @@ export default {
   name: 'OrderManage',
   data () {
     return {
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 1,
+      total: 0,
+      start: 0,
+      limit: 10,
       searchInput: '',
       tableData: []
     }
   },
   methods: {
     search () {
-      // console.log(this.searchInput)
-      this.getData(this.searchInput)
+      this.start = 0
+      this.currentPage = 1
+      this.getData(this.start, this.limit, this.searchInput)
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    // 序号
+    indexMethod (index) {
+      return index + this.start + 1
     },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      this.getData(this.start, this.limit, this.searchInput)
     },
-    getData (inputParams) {
+    // 获取用户列表数据
+    getData (start, limit, inputParams) {
       let params
+      params = {
+        start: start,
+        limit: limit
+      }
       if (inputParams !== '' && inputParams !== 'undefined') {
-        params = {
-          params: inputParams,
-          start: 0,
-          limit: 10
-        }
-      } else {
-        params = {
-          start: 0,
-          limit: 10
-        }
+        params.params = inputParams
       }
       let _this = this
       this.axios.get('ideat/userManage/getCustomerList', {
@@ -96,6 +93,7 @@ export default {
           return
         }
         let result = data.body
+        _this.total = data.body.total
         _this.tableData = result.result
       })
       .catch(function (error) {
@@ -104,7 +102,7 @@ export default {
     }
   },
   mounted () {
-    this.getData()
+    this.getData(this.start, this.limit)
   }
 }
 </script>
