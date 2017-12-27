@@ -11,7 +11,17 @@
     <div class="table">
       <el-table stripe @row-dblclick="row_DbClick" :data="tableData" align="left" style="width: 100%">
         <el-table-column type="index" :index="indexMethod" label="编号" width="50"></el-table-column>
-        <el-table-column prop="userId" label="账号" width="180"></el-table-column>
+        <el-table-column label="账号" width="180">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>账号: {{ scope.row.userId }}，余额：{{scope.row.balance}}</p>
+              <p>双击查看账号详情</p>
+              <div slot="reference" class="name-wrapper" style="display: inline-block; cursor: pointer;">
+                <el-tag size="medium">{{ scope.row.userId }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column  prop="shopName" label="店名" width="120"></el-table-column>
         <el-table-column  prop="logoPic" label="LOGO">
           <template slot-scope="scope">
@@ -27,7 +37,7 @@
         </el-table-column>
         <el-table-column label="状态" width="120">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.userId, scope.row.status)">
+            <el-select v-model="scope.row.value" placeholder="请选择" @change="selectChange(scope.row.userId, scope.row.value)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"

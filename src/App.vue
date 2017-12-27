@@ -5,7 +5,7 @@
         <div class="left" @click="toHome">idea2t</div>
         <div class="right">
           <span>{{userId}}</span>
-          <img @click="toAccountInfo" src="./assets/logo.png" alt="">
+          <img @click="toAccountInfo" :src="logoPic" alt="">
         </div>
       </div>
       <div class="aside" v-show="aside_show">
@@ -33,6 +33,7 @@ export default {
   name: 'app',
   data () {
     return {
+      logoPic: require('./assets/user.png'),
       menu: [
         {index: '/home', title: '首页概览'},
         {index: '/orderManage', title: '订单管理'},
@@ -78,6 +79,10 @@ export default {
       }
       // 权限控制菜单
       this.authority = sessionStorage.getItem('authority')
+      let pic = sessionStorage.getItem('logoPic')
+      if (pic) {
+        this.logoPic = pic
+      }
       // if (this.authority === 'false' && this.menu.length === 6) {
       //   this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
       // }
@@ -101,6 +106,10 @@ export default {
     }
     // 权限控制菜单
     this.authority = sessionStorage.getItem('authority')
+    let pic = sessionStorage.getItem('logoPic')
+    if (pic) {
+      this.logoPic = pic
+    }
     // if (this.authority === 'false' && this.menu.length === 6) {
     //   this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
     // }
@@ -142,14 +151,15 @@ export default {
   line-height: 60px;
   color: #fff;
   img {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border: 1px solid #fff;
     border-radius: 50%;
     cursor: pointer;
     display: inline-block; 
     vertical-align: middle;
     margin-left: 4px;
+    margin-top: -6px;
   }
 }
 .aside {

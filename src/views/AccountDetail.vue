@@ -28,28 +28,63 @@
           </div>
           <div class="detail-list">
             <el-tabs v-model="activeName" @tab-click="handleClick">
-              <el-tab-pane label="订单列表" name="first">
-                <el-table :data="tableData" align="left" style="width: 100%">
-                  <el-table-column prop="order_num" label="订单号" width="180"></el-table-column>
-                  <el-table-column prop="name" label="用户" width="100"></el-table-column>
-                  <el-table-column  prop="phone" label="联系电话" width="116"></el-table-column>
-                  <el-table-column  prop="address" label="收货地址"></el-table-column>
-                  <el-table-column  prop="goods" label="商品"></el-table-column>
-                  <el-table-column  prop="total" label="总价"></el-table-column>
+              <el-tab-pane label="订单列表" name="order" class="table">
+                <el-table :data="orderList" align="left" style="width: 100%">
+                  <el-table-column prop="orderId" label="订单号" width="180"></el-table-column>
+                  <el-table-column prop="orderName" label="客户" width="100"></el-table-column>
+                  <el-table-column  prop="orderPhone" label="联系电话" width="116"></el-table-column>
+                  <el-table-column  prop="orderAddress" label="收货地址"></el-table-column>
+                  <el-table-column  prop="goodsName" label="商品"></el-table-column>
+                  <el-table-column  prop="orderTotal" label="总价"></el-table-column>
                   <el-table-column  prop="status" label="状态"></el-table-column>
+                  <el-table-column prop="orderTime" label="日期" width="180"></el-table-column>
                   <!-- <el-table-column prop="date" label="日期" width="180"></el-table-column> -->
                 </el-table>
               </el-tab-pane>
-              <el-tab-pane label="商品列表" name="second">
-                <el-table :data="tableData" align="left" style="width: 100%">
-                  <el-table-column prop="order_num" label="订单号" width="180"></el-table-column>
-                  <el-table-column prop="name" label="客户" width="100"></el-table-column>
-                  <el-table-column  prop="phone" label="联系电话" width="116"></el-table-column>
-                  <el-table-column  prop="address" label="收货地址"></el-table-column>
-                  <el-table-column  prop="goods" label="商品"></el-table-column>
-                  <el-table-column  prop="total" label="总价"></el-table-column>
-                  <el-table-column  prop="status" label="状态"></el-table-column>
-                  <el-table-column prop="date" label="日期" width="180"></el-table-column>
+              <el-tab-pane label="商品列表" name="goods">
+                <el-table :data="goodsList" align="left" style="width: 100%">
+                  <el-table-column type="index" :index="indexMethod" label="编号" width="50"></el-table-column>
+                  <el-table-column prop="goodsId" label="商品编号" width="180" v-if="false"></el-table-column>
+                  <el-table-column prop="goodsName" label="商品" width="180">
+                  </el-table-column>
+                  <el-table-column  label="图片">
+                      <template slot-scope="scope">
+                          <img class="row-img" :src="scope.row.goodsPicPath" alt="">
+                      </template>
+                  </el-table-column>
+                  <el-table-column label="成本价格">
+                    <template slot-scope="scope">
+                      <div class="ipt-wrap">
+                        <p>单面：</p>{{scope.row.singleCost}}
+                      </div>
+                      <div class="ipt-wrap">
+                        <p>双面：</p>{{scope.row.doubleCost}}
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="零售价格" v-if="!authority">
+                    <template slot-scope="scope">
+                      <div class="ipt-wrap">
+                        <p>单面：</p>{{scope.row.singlePrice}}
+                      </div>
+                      <div class="ipt-wrap">
+                        <p>双面：</p>{{scope.row.doublePrice}}
+                        <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">编辑</el-button>              
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="状态" v-if="!authority">
+                    <template  slot-scope="scope">
+                      <el-select v-model="scope.row.status" placeholder="请选择" @change="selectChange(scope.row.goodsId, scope.row.status)">
+                        <el-option
+                          v-for="item in scope.row.options"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                        </el-option>
+                      </el-select>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </el-tab-pane>
             </el-tabs>
@@ -59,13 +94,10 @@
             <div class="block">
               <el-pagination
                 background
-                @size-change="handleSizeChange"
                 @current-change="handleCurrentChange"
-                :current-page="currentPage4"
-                :page-sizes="[100, 200, 300, 400]"
-                :page-size="100"
-                layout="total, sizes, prev, pager, next, jumper"
-                :total="400">
+                :current-page="currentPage"
+                layout="total, prev, pager, next"
+                :total="total">
               </el-pagination>
             </div>
           </div>
@@ -103,7 +135,7 @@
           </div>
           <div class="domain-cls">
             <span>店名：</span>
-            <el-input placeholder="请输入店名" id="shopName" v-model="shopName" class="domain-ipt" clearable></el-input>
+            <el-input placeholder="请输入店名" id="shopName" v-model="shopNameEdit" class="domain-ipt" clearable></el-input>
           </div>
           <div class="domain-cls">
             <span>域名：</span>
@@ -128,17 +160,20 @@ export default {
   name: 'AccountDetail',
   data () {
     return {
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      currentPage: 1,
+      total: 0,
+      start: 0,
+      limit: 10,
+      tabName: '',
+      authority: false,
       delDialog: false,
       editDialog: false,
-      activeName: 'first',
+      activeName: 'order',
       userId: '',
       account: '',
       password: '',
       shopName: '',
+      shopNameEdit: '',
       balance: 0,
       status: '',
       dataUrl: '',
@@ -146,69 +181,97 @@ export default {
       imgFile: {},
       phone: '',
       domain: '',
-      tableData: [
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 号200房阿斯顿发生动感',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        },
-        {
-          order_num: 20171206125010,
-          name: '王小虎',
-          phone: 18819412313,
-          address: '上海市普陀区金沙江路 1518 弄',
-          goods: '纯棉T恤',
-          total: '99',
-          status: '代签收',
-          date: '2016-05-02'
-        }
-      ]
+      orderList: [],
+      goodsList: []
     }
   },
   methods: {
+    // tab 切换事件
     handleClick (tab, event) {
-      console.log(tab, event)
+      this.tabName = tab.name
+      this.start = 0
+      if (tab.name === 'order') {
+        this.getOrderList(this.start, this.limit)
+      } else {
+        this.getGoodsList(this.start, this.limit)
+      }
     },
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    // 获取订单列表
+    getOrderList (start, limit) {
+      let _this = this
+      let params
+      params = {
+        start: start,
+        limit: limit
+      }
+      this.axios.get('ideat/orderManage/getOrderList', {
+        params: {
+          ...params
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.total = result.total
+        _this.orderList = result.result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     },
+    // 获取商品列表
+    getGoodsList (start, limit) {
+      let _this = this
+      let data = {userId: this.userId}
+      let params = data
+      this.axios.get('/ideat/goodsManage/getGoodsList', {
+        params: {
+          ...params,
+          start: start,
+          limit: limit
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body.result
+        let options = [{value: '0', label: '未上架'}, {value: '1', label: '已上架'}]
+        for (let i = 0; i < result.length; i++) {
+          result[i].options = options
+          result[i].status = String(result[i].status)
+        }
+        _this.total = data.body.total
+        _this.goodsList = result
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
+    // 序号
+    indexMethod (index) {
+      return index + this.start + 1
+    },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      if (this.tabName === 'order') {
+        this.getOrderList(this.start, this.limit)
+      } else {
+        this.getGoodsList(this.start, this.limit)
+      }
     },
     upload_logo () {
       let tag = document.getElementById('edit_pic_ipt')
@@ -274,20 +337,26 @@ export default {
       }
       reader.readAsDataURL(file)
     },
+    // 编辑账号
     editUser () {
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       this.editDialog = true
-      this.axios.post('ideat/userManage/editUserInfo', {
-        pwd: _this.password,
-        servicePhone: _this.phone,
-        shopName: _this.shopName,
+      let params = {
+        pwd: this.password,
+        servicePhone: this.phone,
+        shopName: this.shopNameEdit,
         updateTime: time,
-        userId: _this.userId,
-        userPic: _this.dataUrl
+        userId: this.userId
+      }
+      let reg = /^http/
+      if (!reg.test(this.dataUrl)) {
+        params.userPic = this.dataUrl
+      }
+      this.axios.post('ideat/userManage/editUserInfo', {
+        ...params
       })
       .then(function (response) {
-        // console.log(response)
         let data = response.data
         if (data.code !== 0) {
           _this.$notify.error({
@@ -300,11 +369,14 @@ export default {
           title: '温馨提示',
           message: data.msg
         })
+        _this.editDialog = false
+        _this.getData()
       })
       .catch(function (error) {
         console.log(error)
       })
     },
+    // 删除账号
     deleteUser () {
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
@@ -313,7 +385,6 @@ export default {
         updateTime: time
       })
       .then(function (response) {
-        // console.log(response)
         let data = response.data
         if (data.code !== 0) {
           _this.$notify.error({
@@ -332,39 +403,51 @@ export default {
       .catch(function (error) {
         console.log(error)
       })
+    },
+    // 获取初始数据
+    getData () {
+      let _this = this
+      this.userId = this.$route.query.accountId
+      this.axios.get('ideat/userManage/getUserInfo', {
+        params: {
+          userId: _this.userId
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.account = result.userName
+        _this.shopName = result.shopName
+        _this.shopNameEdit = result.shopName
+        _this.domain = result.userDomain
+        _this.balance = result.balance
+        _this.status = result.status
+        if (result.logoPic === '') {
+          _this.dataUrl = _this.logoImg = require('../assets/user.png')
+        } else {
+          _this.logoImg = result.logoPic
+          _this.dataUrl = result.logoPic
+        }
+        _this.password = result.pwd
+        _this.phone = result.servicePhone
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
   },
   mounted () {
     // console.log(this.$route.query)
-    let _this = this
-    this.userId = this.$route.query.accountId
-    this.axios.get('ideat/userManage/getUserInfo', {
-      params: {
-        userId: _this.userId
-      }
-    })
-    .then(function (response) {
-      let data = response.data
-      if (data.code !== 0) {
-        _this.$notify.error({
-          title: '温馨提示',
-          message: data.msg
-        })
-        return
-      }
-      let result = data.body
-      _this.account = result.userName
-      _this.shopName = result.shopName
-      _this.domain = result.userDomain
-      _this.balance = result.balance
-      _this.status = result.status
-      _this.logoImg = result.logoPic
-      _this.password = result.pwd
-      _this.phone = result.servicePhone
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.authority = sessionStorage.getItem('authority') === 'true'
+    this.getData()
+    this.getOrderList(this.start, this.limit)
   }
 }
 </script>
@@ -427,6 +510,49 @@ export default {
             margin-bottom: 8px;
           }
         }
+      }
+    }
+    .detail-list {
+      .row-img {
+        width: 40px;
+        height: 40px;
+      }
+      .ipt-wrap {
+        display: flex;
+        justify-content: flex-start;
+        p {
+          width: 50px;
+          height: 20px;
+        }
+        input {
+          width: 60px;
+          height: 20px;
+          border: 1px solid #ececec;
+          border-radius: 2px;
+        }
+      }
+      :-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+        color: #b4bccc; 
+        opacity:1; 
+        font-size: 12px;
+      }
+
+      ::-moz-placeholder { /* Mozilla Firefox 19+ */
+          color: #b4bccc;
+          opacity:1;
+          font-size: 12px;
+      }
+
+      input:-ms-input-placeholder{
+          color: #b4bccc;
+          opacity:1;
+          font-size: 12px;
+      }
+
+      input::-webkit-input-placeholder{
+          color: #b4bccc;
+          opacity:1;
+          font-size: 12px;
       }
     }
   }

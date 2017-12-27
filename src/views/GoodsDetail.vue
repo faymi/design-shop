@@ -9,7 +9,7 @@
             </div>
             <div class="header-right">
               <el-button type="primary" @click="delDialog = true" v-if="authority">删除</el-button>
-              <el-button type="primary" @click="dialogFormVisible = true">编辑</el-button>
+              <el-button type="primary" @click="dialogFormVisible = true" v-if="authority">编辑</el-button>
             </div>
           </div>
           <div class="goods-content">
@@ -189,7 +189,7 @@
       </div>
       
       <div slot="footer" class="dialog-footer">
-        <el-button type="primary" @click="addGoods">完成添加</el-button>
+        <el-button type="primary" @click="addGoods">完成编辑</el-button>
         <el-button @click="dialogFormVisible = false">取  消</el-button>
       </div>
     </el-dialog>

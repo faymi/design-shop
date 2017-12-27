@@ -10,8 +10,19 @@
     </div>
     <div class="table">
       <el-table stripe :data="tableData" @row-dblclick="goodsRow_DbClick" align="left" style="width: 100%">
-        <el-table-column prop="goodsId" label="商品编号" width="180"></el-table-column>
-        <el-table-column prop="goodsName" label="商品" width="180"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="编号" width="50"></el-table-column>
+        <el-table-column prop="goodsId" label="商品编号" width="180" v-if="false"></el-table-column>
+        <el-table-column label="商品" width="180">
+          <template slot-scope="scope">
+            <el-popover trigger="hover" placement="top">
+              <p>商品: {{ scope.row.goodsName }}</p>
+              <p>双击查看商品详情</p>
+              <div slot="reference" class="name-wrapper" style="display: inline-block; cursor: pointer;">
+                <el-tag size="medium">{{ scope.row.goodsName }}</el-tag>
+              </div>
+            </el-popover>
+          </template>
+        </el-table-column>
         <el-table-column  label="图片">
             <template slot-scope="scope">
                 <img class="row-img" :src="scope.row.goodsPicPath" alt="">
@@ -756,6 +767,10 @@ export default {
       console.log(response)
       console.log(file)
       console.log(fileList)
+    },
+    // 序号
+    indexMethod (index) {
+      return index + this.start + 1
     },
     // 分页事件
     handleCurrentChange (val) {

@@ -23,7 +23,7 @@
             <span>店名：</span>
             <el-input placeholder="请输入店名" id="shopName" v-model="shopName" class="domain-ipt"></el-input>
           </div>
-          <div class="domain-cls">
+          <div class="domain-cls" v-if="!authority">
             <span>域名：</span>
             <el-input id="ipt_domain" v-model="domain" readonly="readonly" class="domain-ipt"></el-input>
             <el-button class="copy-cls" type="primary" size="small" @click="copy">点击复制</el-button>
@@ -113,6 +113,7 @@ export default {
       userId: '',
       domain: '',
       phone: '',
+      authority: false,
       pwdForm: {
         old_pwd: '',
         new_pwd: '',
@@ -134,6 +135,34 @@ export default {
     }
   },
   methods: {
+    getData () {
+      let _this = this
+      this.userId = sessionStorage.getItem('username')
+      this.axios.get('ideat/userManage/getUserInfo', {
+        params: {
+          userId: this.userId
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.account = result.userId
+        _this.shopName = result.shopName
+        _this.domain = result.userDomain
+        _this.dataUrl = result.logoPic
+        _this.phone = result.servicePhone
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
+    },
     upload () {
       let tag = document.getElementById('add_pic_ipt')
       tag.click()
@@ -160,7 +189,7 @@ export default {
         shopName: _this.shopName,
         updateTime: time,
         userId: userId,
-        userPic: _this.dataUrl
+        logoPic: _this.dataUrl
       })
       .then(function (response) {
         // console.log(response)
@@ -176,6 +205,7 @@ export default {
           title: '温馨提示',
           message: data.msg
         })
+        // _this.getData()
       })
       .catch(function (error) {
         console.log(error)
@@ -289,32 +319,8 @@ export default {
     }
   },
   mounted () {
-    let _this = this
-    this.userId = sessionStorage.getItem('username')
-    this.axios.get('ideat/userManage/getUserInfo', {
-      params: {
-        userId: this.userId
-      }
-    })
-    .then(function (response) {
-      let data = response.data
-      if (data.code !== 0) {
-        _this.$notify.error({
-          title: '温馨提示',
-          message: data.msg
-        })
-        return
-      }
-      let result = data.body
-      _this.account = result.userName
-      _this.shopName = result.shopName
-      _this.domain = result.userDomain
-      _this.dataUrl = result.logoPic
-      _this.phone = result.servicePhone
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.authority = sessionStorage.getItem('authority') === 'true'
+    this.getData()
   }
 }
 </script>

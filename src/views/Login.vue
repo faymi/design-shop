@@ -79,6 +79,7 @@ export default {
               return
             }
             sessionStorage.setItem('username', username)
+            sessionStorage.setItem('logoPic', data.body.logoPic) // 右上角用户头像
             sessionStorage.setItem('authority', data.body.flag) // 权限控制
             _this.$router.push('/home')
           })
