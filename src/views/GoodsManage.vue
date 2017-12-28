@@ -42,11 +42,11 @@
         <el-table-column label="零售价格" v-if="!authority">
           <template slot-scope="scope">
             <div class="ipt-wrap">
-              <p>单面：</p>{{scope.row.singlePrice}}
+              <p>单面：</p>{{scope.row.singlePrice == '' ?  scope.row.singleCost : scope.row.singlePrice}}
             </div>
             <div class="ipt-wrap">
-              <p>双面：</p>{{scope.row.doublePrice}}
-              <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">编辑</el-button>              
+              <p>双面：</p>{{scope.row.doublePrice == '' ?  scope.row.doubleCost : scope.row.doublePrice}}
+              <el-button @click.native.prevent="editRowPrice(scope.row, tableData)" type="text" size="small">编辑</el-button>              
             </div>
           </template>
         </el-table-column>
@@ -62,7 +62,7 @@
         </el-table-column> -->
         <el-table-column label="状态" v-if="!authority">
           <template  slot-scope="scope">
-            <el-select v-model="scope.row.status" placeholder="请选择" @change="selectChange(scope.row.goodsId, scope.row.status)">
+            <el-select v-model="scope.row.status" placeholder="请选择" @change="selectChange(scope.row)">
               <el-option
                 v-for="item in scope.row.options"
                 :key="item.value"
@@ -90,6 +90,32 @@
         </el-pagination>
       </div>
     </div>
+
+    <el-dialog
+      title="编辑零售价"
+      :visible.sync="editPriceDialog"
+      width="550px"
+      center>
+        <div class="changePwd-wrap">
+          <el-form :model="priceForm" status-icon :rules="priceRules" ref="priceForm" label-width="100px">
+            <div class="changePwd">
+              <el-form-item label="单面：" prop="singlePrice">
+                <el-input placeholder="请输入单面售价" type="text" v-model="priceForm.singlePrice"></el-input>
+              </el-form-item>
+            </div>
+            <div class="changePwd">
+              <el-form-item label="双面：" prop="doublePrice">
+                <el-input placeholder="请输入双面售价" type="text" v-model="priceForm.doublePrice"></el-input>
+              </el-form-item>
+            </div>
+          </el-form>
+        </div>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="savePrice('priceForm')">确 定</el-button>
+          <el-button @click="cancelEditPrice('priceForm')">取 消</el-button>
+        </span>
+    </el-dialog>
+
     <el-dialog title="添加商品" @close="dialogClose" @open="dialogOpen" :visible.sync="dialogFormVisible" width="900px">
       <div class="dialog-wrap">
         <div class="dialog-left">
@@ -278,7 +304,33 @@
 export default {
   name: 'GoodsManage',
   data () {
+    let validateSinglePrice = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入单面售价'))
+      } else {
+        callback()
+      }
+    }
+    let validateDoublePrice = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入双面售价'))
+      } else {
+        callback()
+      }
+    }
     return {
+      priceForm: {
+        singlePrice: '',
+        doublePrice: ''
+      },
+      priceRules: {
+        singlePrice: [
+            { validator: validateSinglePrice, trigger: 'blur' }
+        ],
+        doublePrice: [
+          { validator: validateDoublePrice, trigger: 'blur' }
+        ]
+      },
       authority: false,
       userId: '',
       currentPage: 1,
@@ -336,21 +388,79 @@ export default {
           value: '3',
           label: 'POLO衫'
         }],
-      value: '1',
+      value: '1',  // status 1 为上架
       tableData: [],
       dialogFormVisible: false,
-      preViewDialog: false
+      preViewDialog: false,
+      editPriceDialog: false
     }
   },
   methods: {
-    selectChange (goodsId, status) {
+    // 编辑售价弹窗
+    editRowPrice (row, tableData) {
+      this.editPriceDialog = true
+      this.goodsId = row.goodsId
+      this.priceForm.singlePrice = row.singlePrice
+      this.priceForm.doublePrice = row.doublePrice
+    },
+    // 编辑售价弹窗关闭按钮
+    cancelEditPrice (priceForm) {
+      this.$refs[priceForm].resetFields()
+      this.editPriceDialog = false
+    },
+    // 编辑售价弹窗保存按钮
+    savePrice (priceForm) {
       let _this = this
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
-      this.axios.post('ideat/goodsManage/editGoodsInfo', {
+      this.$refs[priceForm].validate((valid) => {
+        if (valid) {
+          this.axios.post('ideat/goodsManage/editGoodsInfo', {
+            userId: this.userId,
+            goodsId: this.goodsId,
+            singlePrice: this.priceForm.singlePrice,
+            doublePrice: this.priceForm.doublePrice,
+            inserTime: time
+          })
+          .then(function (response) {
+            let data = response.data
+            if (data.code !== 0) {
+              _this.$notify.error({
+                title: '温馨提示',
+                message: data.msg
+              })
+              return
+            }
+            _this.$notify.success({
+              title: '温馨提示',
+              message: data.msg
+            })
+            _this.editPriceDialog = false
+            _this.getData(_this.start, _this.limit)
+          })
+          .catch(function (error) {
+            console.log(error)
+          })
+        } else {
+          return false
+        }
+      })
+    },
+    // 上下架状态更改
+    selectChange (row) {
+      let _this = this
+      let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
+      let params = {
         userId: this.userId,
-        goodsId: goodsId,
-        status: status,
+        goodsId: row.goodsId,
+        status: row.status,
         inserTime: time
+      }
+      if (row.singlePrice === '' && row.doublePrice === '') {
+        params.singlePrice = row.singleCost
+        params.doublePrice = row.doubleCost
+      }
+      this.axios.post('ideat/goodsManage/editGoodsInfo', {
+        ...params
       })
       .then(function (response) {
         let data = response.data
@@ -1036,6 +1146,14 @@ export default {
     }
   }
 }
+.changePwd-wrap {
+  width: 80%;
+  margin: 0 auto;
+  .changePwd {
+    margin: 20px;
+  }
+}
+
 .selectedItem {
   border: 1px solid #e3393c !important;
   color: #e3393c;

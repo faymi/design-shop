@@ -351,7 +351,7 @@ export default {
       }
       let reg = /^http/
       if (!reg.test(this.dataUrl)) {
-        params.userPic = this.dataUrl
+        params.logoPic = this.dataUrl
       }
       this.axios.post('ideat/userManage/editUserInfo', {
         ...params

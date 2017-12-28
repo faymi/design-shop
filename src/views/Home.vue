@@ -41,9 +41,12 @@ export default {
   name: 'Home',
   data () {
     return {
+      userId: '',
       dayIncome: 36042,
       dayOrder: 5412,
       dayToatalIncome: 45617,
+      start: 0,
+      limit: 7,
       value: '1',
       selectData: [
         {
@@ -158,10 +161,71 @@ export default {
           ]
         })
       }
+    },
+    getDayStat () {
+      let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
+      let endTime = this.moment().format('YYYY-MM-DD')
+      this.axios.get('ideat/dataManage/getDayStat', {
+        params: {
+          start: this.start,
+          limit: this.limit,
+          userId: this.userId,
+          startTime: startTime,
+          endTime: endTime
+        }
+      })
+      .then(function (response) {
+        console.log(response.data)
+      })
+      .then(function (error) {
+        console.log(error)
+      })
+    },
+    getMonthStat () {
+      let startTime = this.moment().startOf('month').format('YYYY-MM-DD')
+      let endTime = this.moment().format('YYYY-MM-DD')
+      this.axios.get('ideat/dataManage/getMonthStat', {
+        params: {
+          start: 0,
+          limit: 30,
+          userId: this.userId,
+          startTime: startTime,
+          endTime: endTime
+        }
+      })
+      .then(function (response) {
+        console.log(response.data)
+      })
+      .then(function (error) {
+        console.log(error)
+      })
+    },
+    getYearStat () {
+      let startTime = this.moment().startOf('year').format('YYYY-MM-DD')
+      let endTime = this.moment().format('YYYY-MM-DD')
+      this.axios.get('ideat/dataManage/getYearStat', {
+        params: {
+          start: 0,
+          limit: 12,
+          userId: this.userId,
+          startTime: startTime,
+          endTime: endTime
+        }
+      })
+      .then(function (response) {
+        console.log(response.data)
+      })
+      .then(function (error) {
+        console.log(error)
+      })
     }
   },
   mounted () {
+    this.userId = sessionStorage.getItem('username')
     this.initEchart()
+    this.getDayStat()
+    this.getMonthStat()
+    this.getYearStat()
   }
 }
 </script>
