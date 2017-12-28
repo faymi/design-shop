@@ -123,31 +123,104 @@ export default {
     },
     onChange () {
       if (this.value === '1') { // 本周
-        this.myChart.setOption(this.options)
+        let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
+        let endTime = this.moment().format('YYYY-MM-DD')
+        this.getDayStat(startTime, endTime, 'week')
       } else if (this.value === '2') { // 本月
-        // 获取当月有多少天
-        let d = new Date()
-        let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
-        let monthDaysList = []
-        for (let i = 1; i <= curMonthDays; i++) {
-          monthDaysList.push(d.getMonth() + 1 + '/' + i)
-        }
-        this.myChart.setOption({
-          title: {
-            text: '本月收益'
-          },
-          xAxis: {
-            data: monthDaysList
-          },
-          series: [
-            {
-              data: [123, 687, 134, 541, 121, 184, 223, 411, 674, 324, 345, 333]
-            }
-          ]
-        })
+        let startTime = this.moment().startOf('month').format('YYYY-MM-DD')
+        let endTime = this.moment().format('YYYY-MM-DD')
+        this.getDayStat(startTime, endTime, 'month')
+        // this.myChart.setOption({
+        //   title: {
+        //     text: '本月收益'
+        //   },
+        //   xAxis: {
+        //     data: monthDaysList
+        //   },
+        //   series: [
+        //     {
+        //       data: [123, 687, 134, 541, 121, 184, 223, 411, 674, 324, 345, 333]
+        //     }
+        //   ]
+        // })
       } else { // 本年
-        let monthList = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
-        this.myChart.setOption({
+        this.getMonthStat()
+      }
+    },
+    getDayStat (startTime, endTime, sign) {
+      let _this = this
+      // 获取当月有多少天
+      let d = new Date()
+      let curMonthDays = new Date(d.getFullYear(), (d.getMonth() + 1), 0).getDate()
+      let monthDaysList = []
+      for (let i = 1; i <= curMonthDays; i++) {
+        monthDaysList.push(d.getMonth() + 1 + '/' + i)
+      }
+      this.axios.get('ideat/dataManage/getDayStat', {
+        params: {
+          userId: this.userId,
+          startTime: startTime,
+          endTime: endTime
+        }
+      })
+      .then(function (response) {
+        let result = response.data.body
+        let dayProfit = []
+        for (let i = 0; i < result.length; i++) {
+          // console.log(result[i].statMonth + '===' + result[i].monthProfit)
+          dayProfit.push(result[i].dayProfit)
+        }
+        console.log(dayProfit)
+        console.log(sign)
+        if (sign === 'week') {
+          _this.myChart.setOption({
+            title: {
+              text: '本周收益'
+            },
+            series: [
+              {
+                data: dayProfit.slice(1, dayProfit.length)
+              }
+            ]
+          })
+        } else {
+          _this.myChart.setOption({
+            title: {
+              text: '本月收益'
+            },
+            xAxis: {
+              data: dayProfit
+            },
+            series: [
+              {
+                data: dayProfit.slice(1, dayProfit.length)
+              }
+            ]
+          })
+        }
+      })
+      .then(function (error) {
+        console.log(error)
+      })
+    },
+    getMonthStat () {
+      let _this = this
+      let monthList = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月']
+      let statYear = this.moment().format('YYYY')
+      this.axios.get('ideat/dataManage/getMonthStat', {
+        params: {
+          userId: this.userId,
+          statYear: statYear
+        }
+      })
+      .then(function (response) {
+        let result = response.data.body
+        let monthProfit = []
+        for (let i = 0; i < result.length; i++) {
+          // console.log(result[i].statMonth + '===' + result[i].monthProfit)
+          monthProfit[result[i].statMonth] = result[i].monthProfit
+        }
+        _this.myChart.setOption({
           title: {
             text: '本年收益'
           },
@@ -156,76 +229,43 @@ export default {
           },
           series: [
             {
-              data: [541, 687, 321, 541, 121, 184, 888, 466, 766, 123, 422, 333]
+              data: monthProfit.slice(1, monthProfit.length)
             }
           ]
         })
-      }
-    },
-    getDayStat () {
-      let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
-      let endTime = this.moment().format('YYYY-MM-DD')
-      this.axios.get('ideat/dataManage/getDayStat', {
-        params: {
-          start: this.start,
-          limit: this.limit,
-          userId: this.userId,
-          startTime: startTime,
-          endTime: endTime
-        }
-      })
-      .then(function (response) {
-        console.log(response.data)
-      })
-      .then(function (error) {
-        console.log(error)
-      })
-    },
-    getMonthStat () {
-      let startTime = this.moment().startOf('month').format('YYYY-MM-DD')
-      let endTime = this.moment().format('YYYY-MM-DD')
-      this.axios.get('ideat/dataManage/getMonthStat', {
-        params: {
-          start: 0,
-          limit: 30,
-          userId: this.userId,
-          startTime: startTime,
-          endTime: endTime
-        }
-      })
-      .then(function (response) {
-        console.log(response.data)
-      })
-      .then(function (error) {
-        console.log(error)
-      })
-    },
-    getYearStat () {
-      let startTime = this.moment().startOf('year').format('YYYY-MM-DD')
-      let endTime = this.moment().format('YYYY-MM-DD')
-      this.axios.get('ideat/dataManage/getYearStat', {
-        params: {
-          start: 0,
-          limit: 12,
-          userId: this.userId,
-          startTime: startTime,
-          endTime: endTime
-        }
-      })
-      .then(function (response) {
-        console.log(response.data)
       })
       .then(function (error) {
         console.log(error)
       })
     }
+    // getYearStat () {
+    //   let startTime = this.moment().startOf('year').format('YYYY-MM-DD')
+    //   let endTime = this.moment().format('YYYY-MM-DD')
+    //   this.axios.get('ideat/dataManage/getYearStat', {
+    //     params: {
+    //       start: 0,
+    //       limit: 12,
+    //       userId: this.userId,
+    //       startTime: startTime,
+    //       endTime: endTime
+    //     }
+    //   })
+    //   .then(function (response) {
+    //     console.log(response.data)
+    //   })
+    //   .then(function (error) {
+    //     console.log(error)
+    //   })
+    // }
   },
   mounted () {
     this.userId = sessionStorage.getItem('username')
     this.initEchart()
-    this.getDayStat()
-    this.getMonthStat()
-    this.getYearStat()
+    let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
+    let endTime = this.moment().format('YYYY-MM-DD')
+    this.getDayStat(startTime, endTime, 'week')
+    // this.getDayStat()
+    // this.getMonthStat()
   }
 }
 </script>
