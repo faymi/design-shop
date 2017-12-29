@@ -46,7 +46,7 @@
             </div>
             <div class="ipt-wrap">
               <p>双面：</p>{{scope.row.doublePrice == '' ?  scope.row.doubleCost : scope.row.doublePrice}}
-              <el-button @click.native.prevent="editRowPrice(scope.row, tableData)" type="text" size="small">编辑</el-button>              
+              <el-button @click.native.prevent="editRowPrice(scope.row, tableData)" style="margin-left: 10px; margin-top: -22px;" type="text" size="small">编辑</el-button>              
             </div>
           </template>
         </el-table-column>
@@ -373,8 +373,8 @@ export default {
       fileData: [],
       dialogImageUrl: '',
       goodsPicPath: '',
-      frontImg: require('../assets/logo.png'),
-      backImg: require('../assets/logo.png'),
+      frontImg: require('../assets/user.png'),
+      backImg: require('../assets/user.png'),
       options: [
         {
           value: '1',
@@ -508,7 +508,7 @@ export default {
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
       this.params = []
-      this.frontImg = this.backImg = require('../assets/logo.png')
+      this.frontImg = this.backImg = require('../assets/user.png')
       this.goodName = this.skill = this.singleCost = this.doubleCost = this.singlePrice = this.doublePrice = this.textarea = ''
       this.value = '1'
       this.$refs.upload.clearFiles()
@@ -853,6 +853,10 @@ export default {
           })
           return
         }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: '添加商品成功！'
+        })
         _this.dialogFormVisible = false
         _this.getData(_this.start, _this.limit)
       })

@@ -4,21 +4,21 @@
       <el-row :gutter="40">
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥{{dayIncome}}</span>
+              <span class="font-bold">￥{{todayTurnOver}}</span>
               <br>
               <span>今日成交额</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥{{dayOrder}}</span>
+              <span class="font-bold">￥{{todayOrderCount}}</span>
               <br>
               <span>今日订单数</span>
             </div>
           </el-col>
           <el-col :span="8">
             <div class="grid-content bg-blue">
-              <span class="font-bold">￥{{dayToatalIncome}}</span>
+              <span class="font-bold">￥{{totalTurnOver}}</span>
               <br>
               <span>今日总成交额</span>
             </div>
@@ -42,9 +42,9 @@ export default {
   data () {
     return {
       userId: '',
-      dayIncome: 36042,
-      dayOrder: 5412,
-      dayToatalIncome: 45617,
+      totalTurnOver: 0,
+      todayOrderCount: 0,
+      todayTurnOver: 0,
       value: '1',
       selectData: [
         {
@@ -208,7 +208,7 @@ export default {
           })
         }
       })
-      .then(function (error) {
+      .catch(function (error) {
         console.log(error)
       })
     },
@@ -242,7 +242,7 @@ export default {
           ]
         })
       })
-      .then(function (error) {
+      .catch(function (error) {
         console.log(error)
       })
     }
@@ -253,6 +253,30 @@ export default {
     let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
     let endTime = this.moment().format('YYYY-MM-DD')
     this.getDayStat(startTime, endTime, 'week')
+    let _this = this
+    // 获取今日收益数据
+    this.axios.get('/ideat/dataManage/getTodayStat', {
+      params: {
+        userId: this.userId,
+        checkTime: this.moment().format('YYYY-MM-DD')
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      _this.todayTurnOver = data.body.todayTurnOver
+      _this.todayOrderCount = data.body.todayOrderCount
+      _this.totalTurnOver = data.body.totalTurnOver
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>

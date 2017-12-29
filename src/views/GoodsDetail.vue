@@ -17,9 +17,9 @@
             <div class="goods-detail">
               <div class="goods-name">
                 <span>{{detail.goodsName}}</span>
-                <el-select v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;" v-if="!authority">
-                  <el-option key="0" label="已上架" value="0"></el-option>
-                  <el-option key="1" label="已下架" value="1"></el-option>
+                <el-select disabled="disabled" v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;" v-if="!authority">
+                  <el-option key="0" label="已上架" value="1"></el-option>
+                  <el-option key="1" label="已下架" value="0"></el-option>
                 </el-select>
               </div>
               <div class="color-box">
@@ -259,8 +259,8 @@ export default {
       dialogImageUrl: '',
       goodsPicPath: '',
       imageList: [],
-      frontImg: require('../assets/logo.png'),
-      backImg: require('../assets/logo.png'),
+      frontImg: require('../assets/user.png'),
+      backImg: require('../assets/user.png'),
       delDialog: false,
       statusValue: '0',
       tabColorIndex: 0,
@@ -643,11 +643,16 @@ export default {
         if (data.code !== 0) {
           _this.$notify.error({
             title: '温馨提示',
-            message: '编辑商品成功！'
+            message: '编辑商品失败！'
           })
           return
         }
+        _this.$notify.success({
+          title: '温馨提示',
+          message: '编辑商品成功！'
+        })
         _this.dialogFormVisible = false
+        _this.getGoodsInfo()
       })
       .catch(function (error) {
         console.log(error)
@@ -718,69 +723,74 @@ export default {
       // console.log(file)
       this.preViewDialog = true
       this.dialogImageUrl = file.url
+    },
+    getGoodsInfo () {
+      let _this = this
+      this.goodsId = this.$route.query.goodsId
+      // console.log(this.goodsId)
+      // this.params = [
+      //   {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
+      //   {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
+      //   {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
+      // ]
+      this.axios.get('ideat/goodsManage/getGoodsInfo', {
+        params: {
+          goodsId: this.goodsId
+        }
+      })
+      .then(function (response) {
+        // console.log(response)
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        let result = data.body
+        _this.goodName = _this.detail.goodsName = result.goodsName
+        _this.detail.statusValue = String(result.status)
+        _this.singlePrice = _this.detail.singlePrice = result.singlePrice
+        _this.textarea = _this.detail.goodsDescript = result.goodsDescript
+        _this.doublePrice = _this.detail.doublePrice = result.doublePrice
+        _this.singleCost = _this.detail.singleCost = result.singleCost
+        _this.doubleCost = _this.detail.doubleCost = result.doubleCost
+        _this.skill = _this.detail.printing = result.printing
+        let imageInfo = result.imageInfo
+        _this.imageList = []
+        _this.fileList = []
+        for (let i = 0; i < imageInfo.length; i++) {
+          _this.imageList.push(imageInfo[i].goodsPicPath)
+          if (imageInfo[i].goodsPicType === 0) { // 素材图
+            let item = {}
+            item.name = ''
+            item.goodsPicId = imageInfo[i].goodsPicId
+            item.url = imageInfo[i].goodsPicPath
+            _this.fileList.push(item)
+          }
+          if (imageInfo[i].side === 0 && imageInfo[i].goodsPicType === 1) {
+            _this.frontImg = imageInfo[i].goodsPicPath
+          }
+          if (imageInfo[i].side === 1 && imageInfo[i].goodsPicType === 1) {
+            _this.backImg = imageInfo[i].goodsPicPath
+          }
+        }
+        _this.extraInfo = result.extraInfo
+        _this.params = result.extraInfo
+        for (let i = 0; i < _this.params.length; i++) {
+          _this.params[i].color = Number(_this.params[i].color)
+        }
+        _this.colorClick(0, {color: 1})
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
   },
   mounted () {
     this.authority = sessionStorage.getItem('authority') === 'true' // 添加商品权限
-    let _this = this
-    this.goodsId = this.$route.query.goodsId
-    // console.log(this.goodsId)
-    // this.params = [
-    //   {color: 1, detail: [{sizeId: 'S', amount: 100}, {sizeId: 'M', amount: 145}, {sizeId: 'L', amount: 654}]},
-    //   {color: 2, detail: [{sizeId: 'S', amount: 101}, {sizeId: 'M', amount: 645}, {sizeId: 'L', amount: 484}]},
-    //   {color: 3, detail: [{sizeId: 'S', amount: 651}, {sizeId: 'M', amount: 444}, {sizeId: 'L', amount: 997}]}
-    // ]
-    this.axios.get('ideat/goodsManage/getGoodsInfo', {
-      params: {
-        goodsId: this.goodsId
-      }
-    })
-    .then(function (response) {
-      // console.log(response)
-      let data = response.data
-      if (data.code !== 0) {
-        _this.$notify.error({
-          title: '温馨提示',
-          message: data.msg
-        })
-        return
-      }
-      let result = data.body
-      _this.goodName = _this.detail.goodsName = result.goodsName
-      _this.detail.statusValue = String(result.status)
-      _this.singlePrice = _this.detail.singlePrice = result.singlePrice
-      _this.textarea = _this.detail.goodsDescript = result.goodsDescript
-      _this.doublePrice = _this.detail.doublePrice = result.doublePrice
-      _this.singleCost = _this.detail.singleCost = result.singleCost
-      _this.doubleCost = _this.detail.doubleCost = result.doubleCost
-      _this.skill = _this.detail.printing = result.printing
-      let imageInfo = result.imageInfo
-      for (let i = 0; i < imageInfo.length; i++) {
-        _this.imageList.push(imageInfo[i].goodsPicPath)
-        if (imageInfo[i].goodsPicType === 0) { // 素材图
-          let item = {}
-          item.name = ''
-          item.goodsPicId = imageInfo[i].goodsPicId
-          item.url = imageInfo[i].goodsPicPath
-          _this.fileList.push(item)
-        }
-        if (imageInfo[i].side === 0 && imageInfo[i].goodsPicType === 1) {
-          _this.frontImg = imageInfo[i].goodsPicPath
-        }
-        if (imageInfo[i].side === 1 && imageInfo[i].goodsPicType === 1) {
-          _this.backImg = imageInfo[i].goodsPicPath
-        }
-      }
-      _this.extraInfo = result.extraInfo
-      _this.params = result.extraInfo
-      for (let i = 0; i < _this.params.length; i++) {
-        _this.params[i].color = Number(_this.params[i].color)
-      }
-      _this.colorClick(0, {color: 1})
-    })
-    .catch(function (error) {
-      console.log(error)
-    })
+    this.getGoodsInfo()
   }
 }
 </script>

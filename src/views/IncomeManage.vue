@@ -5,14 +5,14 @@
       <el-row :gutter="40">
           <el-col :span="12">
             <div class="left">
-              <span>总收益</span><span class="font-bold">￥{{totalIncome}}</span>
+              <span>总收益</span><span class="font-bold">￥{{totalProfit}}</span>
               <br>
-              <span>成交额</span><span class="font-bold">￥{{turnVolume}}</span>
+              <span>成交额</span><span class="font-bold">￥{{totalTurnOver}}</span>
             </div>
           </el-col>
           <el-col :span="12">
             <div class="right">
-              <span>可提现</span><span class="font-bold">￥{{cash}}</span>
+              <span>可提现</span><span class="font-bold">￥{{totalBalance}}</span>
               <el-button @click.native.prevent="deleteRow(scope.$index, tableData4)" type="text" size="small">提现</el-button>
             </div>
           </el-col>
@@ -20,13 +20,18 @@
     </div>
     <div class="table-box">
       <el-table @row-dblclick="rowClick" :data="tableData" align="left" style="width: 100%">
-        <el-table-column prop="order_num" label="订单号"></el-table-column>
+        <el-table-column type="index" :index="indexMethod" label="编号" width="50"></el-table-column>
+        <el-table-column  prop="userId" label="用户账户"></el-table-column>
+        <el-table-column prop="shopName" label="店名"></el-table-column>
+        <el-table-column prop="expenseCount" label="提现金额"></el-table-column>
+        <el-table-column prop="expenseTime" label="提现时间"></el-table-column>
+        <!-- <el-table-column prop="order_num" label="订单号"></el-table-column>
         <el-table-column  prop="goods" label="交易内容"></el-table-column>
         <el-table-column prop="name" label="客户"></el-table-column>
         <el-table-column prop="date" label="交易时间"></el-table-column>
         <el-table-column  prop="total" label="总价"></el-table-column>
         <el-table-column  prop="gainsharing" label="分成"></el-table-column>        
-        <el-table-column  prop="status" label="状态"></el-table-column>
+        <el-table-column  prop="status" label="状态"></el-table-column> -->
         
       </el-table>
     </div>
@@ -35,13 +40,10 @@
       <div class="block">
         <el-pagination
           background
-          @size-change="handleSizeChange"
           @current-change="handleCurrentChange"
-          :current-page="currentPage4"
-          :page-sizes="[100, 200, 300, 400]"
-          :page-size="100"
-          layout="total, sizes, prev, pager, next, jumper"
-          :total="400">
+          :current-page="currentPage"
+          layout="total, prev, pager, next"
+          :total="total">
         </el-pagination>
       </div>
     </div>
@@ -53,13 +55,13 @@ export default {
   name: 'IncomeManage',
   data () {
     return {
-      totalIncome: 16125,
-      turnVolume: 45415,
-      cash: 2455,
-      currentPage1: 5,
-      currentPage2: 5,
-      currentPage3: 5,
-      currentPage4: 4,
+      totalProfit: 0,
+      totalTurnOver: 0,
+      totalBalance: 0,
+      start: 0,
+      limit: 10,
+      total: 0,
+      currentPage: 1,
       tableData: [
         {
           order_num: 20171206125010,
@@ -111,12 +113,67 @@ export default {
   },
   methods: {
     rowClick (row, event, column) {},
-    handleSizeChange (val) {
-      console.log(`每页 ${val} 条`)
+    // 序号
+    indexMethod (index) {
+      return index + this.start + 1
     },
+    // 分页事件
     handleCurrentChange (val) {
-      console.log(`当前页: ${val}`)
+      this.start = this.limit * (val - 1)
+      this.getData(this.start, this.limit)
+    },
+    // 获取收益明细列表
+    getData (start, limit) {
+      let _this = this
+      this.axios.get('/ideat/dataManage/getExpenseRecord', {
+        params: {
+          start: start,
+          limit: limit,
+          userId: this.userId
+        }
+      })
+      .then(function (response) {
+        let data = response.data
+        if (data.code !== 0) {
+          _this.$notify.error({
+            title: '温馨提示',
+            message: data.msg
+          })
+          return
+        }
+        _this.tableData = data.body.expenseList
+        _this.total = data.body.total
+      })
+      .catch(function (error) {
+        console.log(error)
+      })
     }
+  },
+  mounted () {
+    this.userId = sessionStorage.getItem('username')
+    this.getData(this.start, this.limit)
+    let _this = this
+    this.axios.get('/ideat/dataManage/getTotalStat', {
+      params: {
+        userId: this.userId
+      }
+    })
+    .then(function (response) {
+      let data = response.data
+      if (data.code !== 0) {
+        _this.$notify.error({
+          title: '温馨提示',
+          message: data.msg
+        })
+        return
+      }
+      _this.totalProfit = data.body.totalProfit
+      _this.totalTurnOver = data.body.totalTurnOver
+      _this.totalBalance = data.body.totalBalance
+    })
+    .catch(function (error) {
+      console.log(error)
+    })
   }
 }
 </script>
