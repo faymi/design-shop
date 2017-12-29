@@ -45,8 +45,6 @@ export default {
       dayIncome: 36042,
       dayOrder: 5412,
       dayToatalIncome: 45617,
-      start: 0,
-      limit: 7,
       value: '1',
       selectData: [
         {
@@ -88,7 +86,7 @@ export default {
         xAxis: {
           type: 'category',
           boundaryGap: false,
-          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+          data: []
         },
         yAxis: {
           type: 'value',
@@ -100,7 +98,7 @@ export default {
           {
             name: '收益',
             type: 'line',
-            data: [541, 687, 321, 541, 121, 184, 761],
+            data: [],
             markPoint: {
               data: [
                 {type: 'max', name: '最大值'},
@@ -130,19 +128,6 @@ export default {
         let startTime = this.moment().startOf('month').format('YYYY-MM-DD')
         let endTime = this.moment().format('YYYY-MM-DD')
         this.getDayStat(startTime, endTime, 'month')
-        // this.myChart.setOption({
-        //   title: {
-        //     text: '本月收益'
-        //   },
-        //   xAxis: {
-        //     data: monthDaysList
-        //   },
-        //   series: [
-        //     {
-        //       data: [123, 687, 134, 541, 121, 184, 223, 411, 674, 324, 345, 333]
-        //     }
-        //   ]
-        // })
       } else { // 本年
         this.getMonthStat()
       }
@@ -166,34 +151,58 @@ export default {
       .then(function (response) {
         let result = response.data.body
         let dayProfit = []
-        for (let i = 0; i < result.length; i++) {
-          // console.log(result[i].statMonth + '===' + result[i].monthProfit)
-          dayProfit.push(result[i].dayProfit)
-        }
-        console.log(dayProfit)
-        console.log(sign)
         if (sign === 'week') {
+          let weekdays = _this.moment(endTime).format('E')
+          let weekStartDay = Number(_this.moment(startTime).format('D'))
+          let weekEndDay = Number(_this.moment(endTime).format('D'))
+          // 将每天的数据对应上
+          for (let k = 0; k < weekdays; k++, weekStartDay++) {
+            if (weekStartDay <= weekEndDay) {
+              for (let i = 0; i < result.length; i++) {
+                if (result[i].recordTime && weekStartDay === Number(_this.moment(result[i].recordTime).format('D'))) {
+                  dayProfit[k] = result[i].dayProfit
+                  break
+                } else {
+                  dayProfit[k] = 0
+                }
+              }
+            }
+          }
           _this.myChart.setOption({
             title: {
               text: '本周收益'
             },
+            xAxis: {
+              data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+            },
             series: [
               {
-                data: dayProfit.slice(1, dayProfit.length)
+                data: dayProfit
               }
             ]
           })
         } else {
+          // 将每天的数据对应上
+          for (let k = 1; k <= curMonthDays; k++) {
+            for (let i = 0; i < result.length; i++) {
+              if (result[i].recordTime && k === Number(_this.moment(result[i].recordTime).format('D'))) {
+                dayProfit[k - 1] = result[i].dayProfit
+                break
+              } else {
+                dayProfit[k - 1] = 0
+              }
+            }
+          }
           _this.myChart.setOption({
             title: {
               text: '本月收益'
             },
             xAxis: {
-              data: dayProfit
+              data: monthDaysList
             },
             series: [
               {
-                data: dayProfit.slice(1, dayProfit.length)
+                data: dayProfit
               }
             ]
           })
@@ -217,8 +226,7 @@ export default {
         let result = response.data.body
         let monthProfit = []
         for (let i = 0; i < result.length; i++) {
-          // console.log(result[i].statMonth + '===' + result[i].monthProfit)
-          monthProfit[result[i].statMonth] = result[i].monthProfit
+          monthProfit[result[i].statMonth - 1] = result[i].monthProfit
         }
         _this.myChart.setOption({
           title: {
@@ -229,7 +237,7 @@ export default {
           },
           series: [
             {
-              data: monthProfit.slice(1, monthProfit.length)
+              data: monthProfit
             }
           ]
         })
@@ -238,25 +246,6 @@ export default {
         console.log(error)
       })
     }
-    // getYearStat () {
-    //   let startTime = this.moment().startOf('year').format('YYYY-MM-DD')
-    //   let endTime = this.moment().format('YYYY-MM-DD')
-    //   this.axios.get('ideat/dataManage/getYearStat', {
-    //     params: {
-    //       start: 0,
-    //       limit: 12,
-    //       userId: this.userId,
-    //       startTime: startTime,
-    //       endTime: endTime
-    //     }
-    //   })
-    //   .then(function (response) {
-    //     console.log(response.data)
-    //   })
-    //   .then(function (error) {
-    //     console.log(error)
-    //   })
-    // }
   },
   mounted () {
     this.userId = sessionStorage.getItem('username')
@@ -264,8 +253,6 @@ export default {
     let startTime = this.moment().add(-(this.moment().weekday() - 1), 'day').format('YYYY-MM-DD')
     let endTime = this.moment().format('YYYY-MM-DD')
     this.getDayStat(startTime, endTime, 'week')
-    // this.getDayStat()
-    // this.getMonthStat()
   }
 }
 </script>
