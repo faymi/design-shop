@@ -1,8 +1,9 @@
 <template>
   <div class="list-wrap">
+    <v-header :logo-img="logoImg" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="item in list">
+        <li v-for="(item, index) in list" :key="index">
           <img class="cloth-img" :src="item.shirt_src">
           <div class="item-cls">
             <div class="item-name">
@@ -24,13 +25,17 @@
 
 <script>
 import Footer from '@/components/Footer'
+import Header from '@/components/Header'
 export default {
   name: 'List',
   components: {
-    'v-footer': Footer
+    'v-footer': Footer,
+    'v-header': Header
   },
   data () {
     return {
+      logoImg: require('../assets/usered.png'),
+      shopName: 'idea2t',
       list: [
         {
           shirt_src: require('../assets/t-shirt.png'),
@@ -89,6 +94,7 @@ export default {
     min-height: 100%;
     width: 96%;
     text-align: center;
+    margin-top: px2rem(116px);
     ul {
       margin: 0 auto;
       padding-bottom: px2rem(120px);

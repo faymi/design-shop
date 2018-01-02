@@ -16,7 +16,7 @@
       </div>
       <div class="pay-btn">
         <button>稍后付款</button>
-        <button>微信支付</button>
+        <button @click="weChatPay">微信支付</button>
       </div>
     </div>
   </div>
@@ -29,6 +29,9 @@ export default {
     return {}
   },
   methods: {
+    weChatPay () {
+      this.$router.push('/pay-success')
+    }
   }
 }
 </script>

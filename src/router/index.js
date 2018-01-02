@@ -9,6 +9,8 @@ import Address from '@/views/Address'
 import AddAddress from '@/views/AddAddress'
 import Pay from '@/views/Pay'
 import User from '@/views/User'
+import ShopCart from '@/views/ShopCart'
+import PaySuccess from '@/views/PaySuccess'
 
 Vue.use(Router)
 
@@ -35,6 +37,11 @@ export default new Router({
       component: Total
     },
     {
+      path: '/shopCart',
+      name: 'ShopCart',
+      component: ShopCart
+    },
+    {
       path: '/address',
       name: 'Address',
       component: Address
@@ -48,6 +55,11 @@ export default new Router({
       path: '/pay',
       name: 'Pay',
       component: Pay
+    },
+    {
+      path: '/pay-success',
+      name: 'PaySuccess',
+      component: PaySuccess
     },
     {
       path: '/user',

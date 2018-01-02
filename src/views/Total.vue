@@ -52,9 +52,14 @@
           </div>
         </div>
       </div>
-      <div class="total-bottom">
+      <div class="total-bottom-left">
         <router-link to="/address">
-          <button>下一步</button>
+          <button>加入购物车</button>
+        </router-link>
+      </div>
+      <div class="total-bottom-right">
+        <router-link to="/address">
+          <button>直接下单</button>
         </router-link>
       </div>
     </div>
@@ -165,18 +170,32 @@ export default {
         }
       }
     }
-    .total-bottom {
+    .total-bottom-left {
       position: fixed;
       bottom: 0;
       left: 0;
-      width: 100%;
+      width: 50%;
+      button {
+        border: none;
+        width: 100%;
+        height: px2rem(110px);
+        background-color: $btn-add-color;
+        color: $btn-font-color;
+        font-size: 16px;
+      }
+    }
+    .total-bottom-right {
+      position: fixed;
+      bottom: 0;
+      right: 0;
+      width: 50%;
       button {
         border: none;
         width: 100%;
         height: px2rem(110px);
         background-color: $btn-color;
         color: $btn-font-color;
-        font-size: 20px;
+        font-size: 16px;
       }
     }
   }

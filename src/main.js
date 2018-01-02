@@ -4,6 +4,7 @@ import Vue from 'vue'
 import App from './App'
 import router from './router'
 import axios from 'axios'
+import store from './store/index'
 import './assets/css/reset.scss'
 import 'font-awesome/css/font-awesome.css'
 import colorPicker from './assets/js/vue-color-picker'
@@ -19,6 +20,7 @@ router.push('/list')
 new Vue({
   el: '#app',
   router,
+  store,
   template: '<App/>',
   components: { App }
 })
