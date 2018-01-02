@@ -3,7 +3,7 @@
     <v-header :logo-img="logoImg" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="(item, index) in list" :key="index">
+        <li v-for="(item, index) in list" :key="index" @click="toDesign">
           <img class="cloth-img" :src="item.shirt_src">
           <div class="item-cls">
             <div class="item-name">
@@ -76,6 +76,7 @@ export default {
     }
   },
   methods: {
+    toDesign () {}
   }
 }
 </script>

@@ -172,7 +172,6 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/css/function';
-@import '../../static/com-icon/style';
 @import '../assets/css/fonts';
 
 .wrap {
