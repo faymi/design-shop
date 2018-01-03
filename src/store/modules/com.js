@@ -4,7 +4,9 @@ import * as types from '../types'
 
 const state = {
   showAlert: false,
-  alertMsg: '退出登录'
+  alertMsg: '退出登录',
+  loadingMsg: '正在加载',
+  showLoading: false
 }
 
 const actions = {
@@ -13,11 +15,18 @@ const actions = {
   },
   alertMsg ({ commit }, msg) {
     commit(types.COM_ALERT_MSG, msg)
+  },
+  loading ({ commit }, msg) {
+    commit(types.COM_LOADING, msg)
+  },
+  showLoading ({ commit }, status) {
+    commit(types.COM_SHOW_LOADING, status)
   }
 }
 
 const getters = {
-  showAlert: state => state.showAlert
+  showAlert: state => state.showAlert,
+  showLoading: state => state.showLoading
 }
 
 const mutations = {
@@ -26,6 +35,12 @@ const mutations = {
   },
   [types.COM_ALERT_MSG] (state, msg) {
     state.alertMsg = msg
+  },
+  [types.COM_LOADING] (state, msg) {
+    state.loadingMsg = msg
+  },
+  [types.COM_SHOW_LOADING] (state, status) {
+    state.showLoading = status
   }
 }
 

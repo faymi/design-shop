@@ -13,3 +13,16 @@ export function alert (msg) {
     store.dispatch('showAlert', false)
   }, 2000)
 }
+
+/**
+ * loading 公共方法
+ */
+export function showLoading (msg) {
+  store.dispatch('showLoading', true)
+  store.dispatch('loading', msg)
+}
+
+export function closeLoading () {
+  store.dispatch('showLoading', false)
+  store.dispatch('loading', '正在加载')
+}

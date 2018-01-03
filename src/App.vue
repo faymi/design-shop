@@ -1,6 +1,7 @@
 <template>
   <div id="app">
     <v-alert v-show="showAlert"></v-alert>
+    <v-loading v-show="showLoading"></v-loading>
     <div class="container">
       <transition :name="transitionName" mode="out-in">
         <router-view class="child-view"></router-view>
@@ -11,11 +12,13 @@
 
 <script>
 import alert from '@/components/Alert'
+import loading from '@/components/Loading'
 import { mapGetters } from 'vuex'
 export default {
   name: 'app',
   components: {
-    'v-alert': alert
+    'v-alert': alert,
+    'v-loading': loading
   },
   data () {
     return {
@@ -24,7 +27,8 @@ export default {
   },
   computed: {
     ...mapGetters([
-      'showAlert'
+      'showAlert',
+      'showLoading'
     ])
   },
   mounted () {
