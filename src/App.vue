@@ -1,5 +1,6 @@
 <template>
   <div id="app">
+    <v-alert v-show="showAlert"></v-alert>
     <div class="container">
       <transition :name="transitionName" mode="out-in">
         <router-view class="child-view"></router-view>
@@ -9,18 +10,28 @@
 </template>
 
 <script>
+import alert from '@/components/Alert'
+import { mapGetters } from 'vuex'
 export default {
   name: 'app',
+  components: {
+    'v-alert': alert
+  },
   data () {
     return {
       transitionName: 'slide-left'
     }
   },
+  computed: {
+    ...mapGetters([
+      'showAlert'
+    ])
+  },
   mounted () {
   },
   watch: {
     '$route' (to, from) {
-      const list = ['list', 'goods-detail', 'customized', 'total', 'add-to-cart', 'address', 'add-address', 'pay', 'pay-success', 'user', 'phone-call', 'shop-cart']
+      const list = ['list', 'goods-detail', 'customized', 'total', 'add-to-cart', 'address', 'add-address', 'shop-cart', 'pay', 'pay-success', 'user', 'phone-call']
       const toDepth = to.path.split('/')
       const fromDepth = from.path.split('/')
       this.transitionName = list.indexOf(toDepth[1]) < list.indexOf(fromDepth[1]) ? 'slide-right' : 'slide-left'

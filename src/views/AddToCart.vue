@@ -26,8 +26,8 @@ export default {
   },
   mounted () {
     let textObj = document.getElementsByClassName('text')
-    textObj[0].style.height = document.body.scrollHeight / 2 + 'px'
-    textObj[0].style.lineHeight = document.body.scrollHeight / 2 + 'px'
+    textObj[0].style.height = document.documentElement.clientHeight / 2 + 'px'
+    textObj[0].style.lineHeight = document.documentElement.clientHeight / 2 + 'px'
   }
 }
 </script>

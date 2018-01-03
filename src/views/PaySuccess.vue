@@ -12,6 +12,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'PaySuccess',
   data () {
@@ -21,8 +22,8 @@ export default {
   },
   mounted () {
     let textObj = document.getElementsByClassName('text')
-    textObj[0].style.height = document.body.scrollHeight / 2 + 'px'
-    textObj[0].style.lineHeight = document.body.scrollHeight / 2 + 'px'
+    textObj[0].style.height = document.documentElement.clientHeight / 2 + 'px'
+    textObj[0].style.lineHeight = document.documentElement.clientHeight / 2 + 'px'
   }
 }
 </script>
@@ -32,6 +33,8 @@ export default {
 @import '../assets/css/function';
 .pay-wrap {
   .text {
+    height: px2rem(330px);
+    line-height: px2rem(360px);
     width: 100%;
     font-size: 20px;
   }
