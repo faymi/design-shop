@@ -11,6 +11,9 @@ import Pay from '@/views/Pay'
 import User from '@/views/User'
 import ShopCart from '@/views/ShopCart'
 import PaySuccess from '@/views/PaySuccess'
+import GoodsDetail from '@/views/GoodsDetail'
+import PhoneCall from '@/views/PhoneCall'
+import AddToCart from '@/views/AddToCart'
 
 Vue.use(Router)
 
@@ -37,7 +40,7 @@ export default new Router({
       component: Total
     },
     {
-      path: '/shopCart',
+      path: '/shop-cart',
       name: 'ShopCart',
       component: ShopCart
     },
@@ -65,6 +68,21 @@ export default new Router({
       path: '/user',
       name: 'User',
       component: User
+    },
+    {
+      path: '/goods-detail',
+      name: 'GoodsDetail',
+      component: GoodsDetail
+    },
+    {
+      path: '/phone-call',
+      name: 'PhoneCall',
+      component: PhoneCall
+    },
+    {
+      path: '/add-to-cart',
+      name: 'AddToCart',
+      component: AddToCart
     }
   ]
 })

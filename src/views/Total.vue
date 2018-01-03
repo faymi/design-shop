@@ -53,7 +53,7 @@
         </div>
       </div>
       <div class="total-bottom-left">
-        <router-link to="/address">
+        <router-link to="/add-to-cart">
           <button>加入购物车</button>
         </router-link>
       </div>

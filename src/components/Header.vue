@@ -48,7 +48,7 @@ export default {
   },
   methods: {
     toShopCart () {
-      this.$router.push('/shopCart')
+      this.$router.push('/shop-cart')
     }
   },
   mounted () {

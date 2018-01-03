@@ -3,8 +3,8 @@
     <v-header :logo-img="logoImg" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="(item, index) in list" :key="index" @click="toDesign">
-          <img class="cloth-img" :src="item.shirt_src">
+        <li v-for="(item, index) in list" :key="index">
+          <img class="cloth-img" :src="item.shirt_src" @click="toDetail">
           <div class="item-cls">
             <div class="item-name">
               <span>{{item.name}}</span>
@@ -35,7 +35,7 @@ export default {
   data () {
     return {
       logoImg: require('../assets/usered.png'),
-      shopName: 'idea2t',
+      shopName: 'myshop',
       list: [
         {
           shirt_src: require('../assets/t-shirt.png'),
@@ -76,7 +76,12 @@ export default {
     }
   },
   methods: {
-    toDesign () {}
+    toDetail () {
+      this.$router.push('/goods-detail')
+    }
+  },
+  mounted () {
+    document.title = 'idea2t-myshop'
   }
 }
 </script>

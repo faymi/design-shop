@@ -3,9 +3,9 @@
     <div class="user-content">
       <div class="user-top">
         <div class="head">
-          <span>收货地址</span>
+          <span @click="toAddress">收货地址</span>
           <span><img src="../assets/usered.png" alt=""></span>
-          <span>联系客户</span>
+          <span @click="toPhoneCall">联系客户</span>
         </div>
         <div class="user">
           <p>FAYMI</p>
@@ -51,6 +51,12 @@ export default {
     return {}
   },
   methods: {
+    toAddress () {
+      this.$router.push('/address')
+    },
+    toPhoneCall () {
+      this.$router.push('/phone-call')
+    }
   }
 }
 </script>
