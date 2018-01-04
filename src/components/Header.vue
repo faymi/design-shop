@@ -54,8 +54,8 @@ export default {
     // 分类
     sort (val) {
       let params = {
-        userId: 'admin',
-        type: val
+        domain: '246e0a61f62d4790863742bad02025fa',
+        goodsType: val
       }
       this.showList = false
       this.$store.dispatch('getGoodsList', params)
@@ -94,10 +94,12 @@ export default {
         width: 100%;
         height: 100%;
         display: inline-block;
+        border-radius: px2rem(50px);
       }
       span {
         line-height: px2rem(110px);
         margin-left: px2rem(10px);
+        white-space: nowrap;
       }
     }
   }

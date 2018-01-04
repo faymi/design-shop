@@ -1,14 +1,14 @@
 <template>
   <div class="list-wrap">
-    <v-header :logo-img="logoImg" :shop-name="shopName"></v-header>
+    <v-header :logo-img="logo" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="(item, index) in goodsList" :key="index">
-          <img class="cloth-img" :src="item.shirt_src" @click="toDetail">
+        <li v-for="(item, index) in goodsList" :key="item.goodsId">
+          <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail">
           <div class="item-cls">
             <div class="item-name">
-              <span>{{item.name}}</span>
-              <span>￥{{item.price}}</span>
+              <span>{{item.goodsName}}</span>
+              <span>￥{{item.goodsPrice}}</span>
             </div>
             <div class="item-btm">
               <router-link to="/customized">
@@ -35,51 +35,16 @@ export default {
   },
   data () {
     return {
-      logoImg: require('../assets/usered.png'),
-      shopName: 'myshop',
-      list: [
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        },
-        {
-          shirt_src: require('../assets/txu.jpg'),
-          name: '纯棉T恤',
-          price: 69
-        }
-      ]
+      // logoImg: require('../assets/usered.png'),
+      // shopName: 'myshop'
     }
   },
   computed: {
-    ...mapGetters([
-      'goodsList'
-    ])
+    ...mapGetters({
+      goodsList: 'goodsList',
+      logo: 'logo',
+      shopName: 'shopName'
+    })
   },
   methods: {
     toDetail () {
@@ -87,7 +52,11 @@ export default {
     }
   },
   mounted () {
-    document.title = 'idea2t-myshop'
+    let params = {
+      domain: '246e0a61f62d4790863742bad02025fa',
+      goodsType: 0
+    }
+    this.$store.dispatch('getGoodsList', params)
   }
 }
 </script>

@@ -62,6 +62,6 @@ export default {
     return fetch('get', '/ideat/login', params)
   },
   GetGoodsList (params) {
-    return fetch('get', '/ideat/getGoodsList', params)
+    return fetch('get', '/ideat/commonManage/getGoodsList', params)
   }
 }
