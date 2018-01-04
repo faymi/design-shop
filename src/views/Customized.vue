@@ -3,14 +3,12 @@
     <div class="color-bar">
       <div class="div-ul">
         <ul>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
-          <li></li>
+          <li :style="{border: '1px solid red'}"><div :style="{backgroundColor: 'white'}"></div></li>
+          <li><div :style="{backgroundColor: 'black'}"></div></li>
+          <li><div :style="{backgroundColor: 'red'}"></div></li>
+          <li><div :style="{backgroundColor: 'grey'}"></div></li>
+          <li><div :style="{backgroundColor: 'yellowgreen'}"></div></li>
+          <li><div :style="{backgroundColor: 'purple'}"></div></li>
         </ul>
       </div>
       <div class="done-btn">
@@ -48,13 +46,13 @@
     </div>
     <div class="main">
       <div class="main-design" v-show="isActive">
-        <img src="../assets/t-shirt-front.jpg">
+        <img :src="frontImg">
         <div class="canvas-wrap">
           <canvas id="c"></canvas>
         </div>
       </div>
       <div class="main-design" v-show="!isActive">
-        <img src="../assets/t-shirt.png">
+        <img :src="backImg">
         <div class="canvas-wrap">
           <canvas id="d"></canvas>
         </div>
@@ -96,6 +94,8 @@ export default {
       color_toggle: false,
       openStatus: false,
       color: '',
+      frontImg: require('../assets/t-shirt-front.jpg'),
+      backImg: require('../assets/t-shirt.png'),
       fonts: [
         {v: 'OpenSansCondensed'},
         {v: 'IndieFlower'},
@@ -469,6 +469,7 @@ export default {
       overflow: hidden;
       overflow-x:auto;
       white-space: nowrap;
+      background: #ececec;
       ul {
         width: 100%;
         height: 100%; 
@@ -477,9 +478,14 @@ export default {
         li {         
           width: px2rem(90px);
           height: px2rem(90px);
-          background-color: yellowgreen;
-          margin: px2rem(10px);
+          // background-color: yellowgreen;
+          margin: px2rem(10px) 0 px2rem(10px) px2rem(10px);
           display:inline-block;
+          div {
+            width: px2rem(80px);
+            height: px2rem(80px);
+            margin: px2rem(4px) auto;
+          }
         }
       }
       &::-webkit-scrollbar{
