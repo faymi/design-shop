@@ -12,7 +12,7 @@
       </div>
       <div class="list-drop" v-show="showList">
         <ul>
-          <li v-for="item in goodsSort" :key="item.val">{{item.key}}</li>
+          <li v-for="item in goodsSort" :key="item.val" @click="sort(item.val)">{{item.key}}</li>
         </ul>
       </div>
   </div>
@@ -34,6 +34,7 @@ export default {
       type: Array,
       default: function () {
         return [
+          {key: '全部', val: 0},
           {key: 'T恤', val: 1},
           {key: '卫衣', val: 2},
           {key: 'Polo衫', val: 3}
@@ -49,6 +50,15 @@ export default {
   methods: {
     toShopCart () {
       this.$router.push('/shop-cart')
+    },
+    // 分类
+    sort (val) {
+      let params = {
+        userId: 'admin',
+        type: val
+      }
+      this.showList = false
+      this.$store.dispatch('getGoodsList', params)
     }
   },
   mounted () {

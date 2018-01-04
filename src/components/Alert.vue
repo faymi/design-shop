@@ -28,13 +28,13 @@ export default {
   .alert-wrap {
     position: fixed;
     width: px2rem(250px);
-    height: px2rem(90px);
-    line-height: px2rem(90px);
+    height: px2rem(80px);
+    line-height: px2rem(80px);
     text-align: center;
     left: 50%;
     top: 50%;
     transform: translate(-50%, -50%);
-    border-radius: px2rem(45px);
+    border-radius: px2rem(20px);
     background: rgba(0, 0, 0, 0.6);
     z-index: 1000;
     .alertText {

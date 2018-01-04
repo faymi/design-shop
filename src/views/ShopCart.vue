@@ -1,76 +1,25 @@
 <template>
   <div class="cart-wrap">
     <div class="cart-content-wrap">
-      <div class="cart-content">
+      <div class="cart-content" v-for="(item,index) in orderList" :key="index">
         <div class="pay-list">
           <div class="list-top">
             <div class="left">
-              <img src="../assets/t-shirt.png">
+              <img :src="item.goodsImg">
               <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
+                <p>{{item.goodsName}}</p>
+                <p>￥{{item.price}}</p>
               </div>
             </div>
             <button class="right del-btn">删除</button>
           </div>
           <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
-      </div>
-      <div class="cart-content">
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/t-shirt.png">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <button class="right del-btn">删除</button>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
-      </div>
-      <div class="cart-content">
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/t-shirt.png">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <button class="right del-btn">删除</button>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
-      </div>
-      <div class="cart-content">
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/t-shirt.png">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <button class="right del-btn">删除</button>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
+            <span>共{{item.goodsNum}}件商品  合计：￥{{item.total}}（含运费￥{{item.deliveryCost}}）</span>
           </div>
         </div>
       </div>
       <div class="cost-total">
-        总合计：￥160.00
+        总合计：￥{{allTotal}}
       </div>
     </div>
     <div class="bottom-btn">
@@ -85,7 +34,43 @@
 export default {
   name: 'ShopCart',
   data () {
-    return {}
+    return {
+      allTotal: 1621,
+      orderList: [
+        {
+          goodsImg: require('../assets/txu.jpg'),
+          goodsName: '纯棉T恤',
+          price: 69,
+          goodsNum: 12,
+          total: 160.00,
+          deliveryCost: 10.00
+        },
+        {
+          goodsImg: require('../assets/txu.jpg'),
+          goodsName: '纯棉T恤',
+          price: 69,
+          goodsNum: 12,
+          total: 160.00,
+          deliveryCost: 10.00
+        },
+        {
+          goodsImg: require('../assets/txu.jpg'),
+          goodsName: '纯棉T恤',
+          price: 69,
+          goodsNum: 12,
+          total: 160.00,
+          deliveryCost: 10.00
+        },
+        {
+          goodsImg: require('../assets/txu.jpg'),
+          goodsName: '纯棉T恤',
+          price: 69,
+          goodsNum: 12,
+          total: 160.00,
+          deliveryCost: 10.00
+        }
+      ]
+    }
   },
   methods: {
   }

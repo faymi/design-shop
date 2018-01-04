@@ -60,5 +60,8 @@ export function fetch (method, url, params) {
 export default {
   Login (params) {
     return fetch('get', '/ideat/login', params)
+  },
+  GetGoodsList (params) {
+    return fetch('get', '/ideat/getGoodsList', params)
   }
 }

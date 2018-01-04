@@ -41,16 +41,22 @@
             </li>
           </ul>
           <div class="color-div" v-show="color_toggle">
-            <color-picker v-model="color":openToggle="openStatus" v-on:change="headleChangeColor"></color-picker>
+            <color-picker v-model="color" :openToggle="openStatus" v-on:change="headleChangeColor"></color-picker>
           </div>
         </div>
       </div>
     </div>
     <div class="main">
-      <div class="main-design">
-        <img src="../assets/t-shirt.png">
+      <div class="main-design" v-show="isActive">
+        <img src="../assets/t-shirt-front.jpg">
         <div class="canvas-wrap">
           <canvas id="c"></canvas>
+        </div>
+      </div>
+      <div class="main-design" v-show="!isActive">
+        <img src="../assets/t-shirt.png">
+        <div class="canvas-wrap">
+          <canvas id="d"></canvas>
         </div>
       </div> 
     </div>
@@ -67,6 +73,10 @@
       <div class="delete-btn" @click="delete_item">
         <i class="fa fa-trash-o fa-lg"></i>
       </div>
+      <div class="side">
+        <button :class="{ active: isActive }" @click="toSide('front')">正面</button>
+        <button :class="{ active: !isActive }" @click="toSide('back')">反面</button>
+      </div>
     </div>
   </div>
 </template>
@@ -74,11 +84,13 @@
 <script>
 import {fabric} from 'fabric'
 import * as FontFaceObserver from 'fontfaceobserver'
+import * as _ from '../util/tool'
 
 export default {
   name: 'Customized',
   data () {
     return {
+      isActive: true,
       font_toggle: false,
       size_toggle: false,
       color_toggle: false,
@@ -103,26 +115,43 @@ export default {
         {v: 24},
         {v: 48}
       ],
-      canvas: {}, // 画布
+      canvasFront: {}, // 画布
+      canvasBack: {},
       imgElement: {},
       Text: {},
-      textbox: {},
+      textboxFront: {},
+      textboxBack: {},
       imgInstance: {},
       imgFile: {},
       dataUrl: ''
     }
   },
   methods: {
+    // 点击正反面
+    toSide (type) {
+      if (type === 'front') {
+        this.isActive = true
+      } else {
+        this.isActive = false
+      }
+    },
     // 组件间openStatus双向通信
     on_openStatus_change (val) {
       this.openStatus = val
     },
     // 颜色面板选择颜色  字体颜色
     headleChangeColor () {
-      this.textbox.set({
-        'fill': this.color
-      }).setCoords()
-      this.canvas.requestRenderAll()
+      if (this.isActive) {
+        this.textboxFront.set({
+          'fill': this.color
+        }).setCoords()
+        this.canvasFront.requestRenderAll()
+      } else {
+        this.textboxBack.set({
+          'fill': this.color
+        }).setCoords()
+        this.canvasBack.requestRenderAll()
+      }
     },
     font_size_show () {
       this.font_toggle = false
@@ -206,8 +235,13 @@ export default {
           scale = (150 / width)
           this.dataUrl = reader.result
           fabric.Image.fromURL(this.dataUrl, function (oImg) {
-            _this.canvas.centerObject(oImg)
-            _this.canvas.add(oImg)
+            if (_this.isActive) {
+              _this.canvasFront.centerObject(oImg)
+              _this.canvasFront.add(oImg)
+            } else {
+              _this.canvasBack.centerObject(oImg)
+              _this.canvasBack.add(oImg)
+            }
           }, {
             originX: 'center',
             originY: 'center',
@@ -287,14 +321,25 @@ export default {
     // },
     // 添加字体
     add_font () {
-      this.textbox = new fabric.Textbox('双击输入文字', {
-        left: 30,
-        top: 100,
-        width: 150,
-        fontSize: 20,
-        textAlign: 'center'
-      })
-      this.canvas.add(this.textbox)
+      if (this.isActive) {
+        this.textboxFront = new fabric.Textbox('双击输入文字', {
+          left: 30,
+          top: 100,
+          width: 150,
+          fontSize: 20,
+          textAlign: 'center'
+        })
+        this.canvasFront.add(this.textboxFront)
+      } else {
+        this.textboxBack = new fabric.Textbox('双击输入文字', {
+          left: 30,
+          top: 100,
+          width: 150,
+          fontSize: 20,
+          textAlign: 'center'
+        })
+        this.canvasBack.add(this.textboxBack)
+      }
     },
     add_font_show () {
       this.color_toggle = false
@@ -303,7 +348,11 @@ export default {
     },
     // 清除active图层
     delete_item () {
-      this.canvas.remove(this.canvas.getActiveObject())
+      if (this.isActive) {
+        this.canvasFront.remove(this.canvasFront.getActiveObject())
+      } else {
+        this.canvasBack.remove(this.canvasBack.getActiveObject())
+      }
     },
     // 选择字体
     select_font (font) {
@@ -313,29 +362,46 @@ export default {
       var _this = this
       myfont.load()
         .then(function () {
-          // when font is loaded, use it.
-          _this.canvas.getActiveObject().set({
-            'fontFamily': font // 设置font-family
-            // 'fill': 'yellowgreen'  // 设置字体颜色
-          })
-          _this.canvas.requestRenderAll()
+          if (_this.isActive) {
+            // when font is loaded, use it.
+            _this.canvasFront.getActiveObject().set({
+              'fontFamily': font // 设置font-family
+              // 'fill': 'yellowgreen'  // 设置字体颜色
+            })
+            _this.canvasFront.requestRenderAll()
+          } else {
+            _this.canvasBack.getActiveObject().set({
+              'fontFamily': font
+            })
+            _this.canvasBack.requestRenderAll()
+          }
         }).catch(function (e) {
           // console.log(e)
-          alert('请先选中字体！')
+          _.alert('请先选中文字！')
         })
     },
     // 选择字体大小
     select_font_size (fontSize) {
       this.size_toggle = !this.size_toggle
-      this.textbox.set({
-        'fontSize': fontSize
-      }).setCoords()
-      this.canvas.requestRenderAll()
+      if (this.isActive) {
+        this.textboxFront.set({
+          'fontSize': fontSize
+        }).setCoords()
+        this.canvasFront.requestRenderAll()
+      } else {
+        this.textboxBack.set({
+          'fontSize': fontSize
+        }).setCoords()
+        this.canvasBack.requestRenderAll()
+      }
     },
-    create_cavans () {
-      this.canvas = new fabric.Canvas('c') // 利用fabric找到我们的画布
-      this.canvas.setWidth(200)
-      this.canvas.setHeight(300)
+    create_front_cavans () {
+      let itemObj = document.getElementsByClassName('canvas-wrap')
+      let canvasWidth = itemObj[0].clientWidth
+      let canvasHeight = itemObj[0].clientHeight
+      this.canvasFront = new fabric.Canvas('c') // 利用fabric找到我们的画布
+      this.canvasFront.setWidth(canvasWidth)
+      this.canvasFront.setHeight(canvasHeight)
       // this.imgElement = document.getElementById('vue-img')
       // this.imgInstance = new fabric.Image(this.dataUrl, {  // 设置图片在canvas中的位置和样子
       //   left: 10,
@@ -348,7 +414,7 @@ export default {
       //   backgroundColor: '#ececec'
       // })
       // this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
-      this.textbox = new fabric.Textbox('双击输入文字', {
+      this.textboxFront = new fabric.Textbox('双击输入文字', {
         left: 30,
         top: 50,
         width: 150,
@@ -356,11 +422,31 @@ export default {
         textAlign: 'center'
       })
 
-      this.canvas.add(this.textbox).setActiveObject(this.textbox) // 加入到canvas中
+      this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront) // 加入到canvas中
+    },
+    create_back_cavans () {
+      let itemObj = document.getElementsByClassName('canvas-wrap')
+      let canvasWidth = itemObj[0].clientWidth
+      let canvasHeight = itemObj[0].clientHeight
+      this.canvasBack = new fabric.Canvas('d') // 利用fabric找到我们的画布
+      this.canvasBack.setWidth(canvasWidth)
+      this.canvasBack.setHeight(canvasHeight)
+      this.textboxBack = new fabric.Textbox('双击输入文字', {
+        left: 30,
+        top: 50,
+        width: 150,
+        fontSize: 20,
+        textAlign: 'center'
+      })
+
+      this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack) // 加入到canvas中
     }
   },
   mounted () {
-    this.create_cavans()
+    this.create_front_cavans()
+    this.create_back_cavans()
+    let itemObj = document.getElementsByClassName('main-design')
+    itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
   }
 }
 </script>
@@ -460,23 +546,30 @@ export default {
     max-height: 100%;
     .main-design {
       width: 96%;
-      height: 100%;
+      // height: 100%;
       padding-bottom: px2rem(110px);
       margin: 0 auto;
+      background-size: cover;
       img {
         width: 100%;
-        height: 90%;
+        height: 100%;
       }
       .canvas-wrap {
         width: px2rem(400px);
-        height: px2rem(500px);
+        height: px2rem(600px);
         position: absolute;
-        top: 0;
-        right: 0;
-        bottom: 0;
-        left: 0;
-        margin: auto;
+        top: 50%;
+        /* right: 0; */
+        /* bottom: 0; */
+        left: 50%;
+        transform: translate(-50%,-50%);
+        margin: px2rem(40px) auto;
         #c {
+          width: 100%;
+          height: 100%;
+          border: px2rem(2px) dashed #000;
+        }
+        #d {
           width: 100%;
           height: 100%;
           border: px2rem(2px) dashed #000;
@@ -514,6 +607,31 @@ export default {
       border-radius: px2rem(40px);
       background-color: $btn-color;
       color: $btn-font-color;
+    }
+    .side {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%);
+      width: px2rem(200px);
+      height: px2rem(50px);
+      bottom: px2rem(150px);
+      color: $btn-font-color;
+      button {
+        border: none;
+        background: inherit;
+        color: inherit;
+        width: px2rem(80px);
+        height: 100%;
+        line-height: px2rem(50px);
+        border-radius: px2rem(10px);
+        background-color: $btn-color;
+        margin-right: px2rem(10px);
+        text-align: center;
+      }
+      .active {
+        color: #000;
+        background: #ececec;
+      }
     }
   }
 }

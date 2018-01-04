@@ -1,6 +1,6 @@
 <template>
   <div class="pay-wrap">
-    <div class="text">
+    <div class="text-cart">
       已加入购物车！
     </div>
     <div class="back-home ">
@@ -25,7 +25,7 @@ export default {
   methods: {
   },
   mounted () {
-    let textObj = document.getElementsByClassName('text')
+    let textObj = document.getElementsByClassName('text-cart')
     textObj[0].style.height = document.documentElement.clientHeight / 2 + 'px'
     textObj[0].style.lineHeight = document.documentElement.clientHeight / 2 + 'px'
   }
@@ -36,7 +36,7 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/function';
 .pay-wrap {
-  .text {
+  .text-cart {
     width: 100%;
     font-size: 20px;
   }

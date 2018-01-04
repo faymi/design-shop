@@ -1,18 +1,20 @@
 <template>
   <div class="pay-wrap">
     <div class="pay-content">
-      <div class="pay-top">
-        <p>纯棉T恤</p>
-        <div>数量：12件S码，12件M码，12件L码，12件XL码，共60件</div>
-        <div>总价：10*60 = 600元</div>
-      </div>
-      <div class="pay-img">
-        <img src="../assets/t-shirt.png">
-        <img src="../assets/t-shirt.png">
+      <div v-for="(item, index) in orderList" :key="index">
+        <div class="pay-top">
+          <p>{{item.goodsName}}</p>
+          <div>数量：12件S码，12件M码，12件L码，12件XL码，共60件</div>
+          <div>总价：10*60 = 600元</div>
+        </div>
+        <div class="pay-img">
+          <img :src="item.frontImg">
+          <img :src="item.backImg">
+        </div>
       </div>
       <div class="pay-address">
-        <div>Viaste   728721797</div>
-        <div>广东省深圳南山区留学生创业大厦</div>
+        <div>{{userId}}   {{phone}}</div>
+        <div>{{address}}</div>
       </div>
       <div class="pay-btn">
         <button>稍后付款</button>
@@ -26,7 +28,23 @@
 export default {
   name: 'Pay',
   data () {
-    return {}
+    return {
+      userId: 'faymi',
+      phone: '400880550',
+      address: '广东省深圳南山区留学生创业大厦',
+      orderList: [
+        {
+          frontImg: require('../assets/txu.jpg'),
+          backImg: require('../assets/txu-back.jpg'),
+          goodsName: '纯棉T恤'
+        },
+        {
+          frontImg: require('../assets/txu.jpg'),
+          backImg: require('../assets/txu-back.jpg'),
+          goodsName: '纯棉T恤'
+        }
+      ]
+    }
   },
   methods: {
     weChatPay () {
@@ -49,7 +67,8 @@ export default {
     margin-top: px2rem(20px);
     .pay-top {
       width: 100%;
-      border-bottom: px2rem(2px) solid #000;
+      margin-top: px2rem(20px);
+      border-bottom: px2rem(2px) solid #ececec;
       padding-bottom: px2rem(20px);
       p {
         font-size: 16px;
@@ -67,7 +86,7 @@ export default {
       margin-top: px2rem(20px);
       display: flex;
       justify-content: space-between;
-      border-bottom: px2rem(2px) solid #000; 
+      border-bottom: px2rem(2px) solid #ececec; 
       padding-bottom: px2rem(20px);
       img {
         width: px2rem(340px);
@@ -77,7 +96,7 @@ export default {
     .pay-address {
       width: 100%;
       margin-top: px2rem(20px); 
-      border-bottom: px2rem(2px) solid #000; 
+      border-bottom: px2rem(2px) solid #ececec; 
       padding-bottom: px2rem(20px);
       div {
         margin: px2rem(10px);

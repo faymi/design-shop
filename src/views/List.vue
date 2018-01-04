@@ -3,7 +3,7 @@
     <v-header :logo-img="logoImg" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="(item, index) in list" :key="index">
+        <li v-for="(item, index) in goodsList" :key="index">
           <img class="cloth-img" :src="item.shirt_src" @click="toDetail">
           <div class="item-cls">
             <div class="item-name">
@@ -24,6 +24,7 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 export default {
@@ -38,42 +39,47 @@ export default {
       shopName: 'myshop',
       list: [
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         },
         {
-          shirt_src: require('../assets/t-shirt.png'),
+          shirt_src: require('../assets/txu.jpg'),
           name: '纯棉T恤',
           price: 69
         }
       ]
     }
+  },
+  computed: {
+    ...mapGetters([
+      'goodsList'
+    ])
   },
   methods: {
     toDetail () {
