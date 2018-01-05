@@ -2,13 +2,13 @@
   <div class="address-wrap">
     <div class="address-list">
       <ul>
-        <li>
-          <div class="user">faymi  18819411111</div>
+        <li v-for="(item, index) in addressList" :key="index">
+          <div class="user">{{item.consignee}}  {{item.phone}}</div>
           <div class="address">
-            <span>广东省深圳南山区留学生创业大厦</span>
-            <button class="del-btn">删除</button>
+            <span>{{item.address}}</span>
+            <button class="del-btn" @click="deleteAddress(item.addressId)">删除</button>
           </div>
-          <div class="postcode">518053</div>
+          <div class="postcode">{{item.postcode}}</div>
         </li> 
       </ul>
     </div>
@@ -26,13 +26,46 @@
 </template>
 
 <script>
+import api from '@/api/fetch'
+import * as _ from '@/util/tool'
 
 export default {
   name: 'Address',
   data () {
-    return {}
+    return {
+      addressList: []
+    }
   },
   methods: {
+    // 获取地址列表
+    getAddressData () {
+      let params = {
+        customerId: 'linzhanhong'
+      }
+      api.getOrderAddress(params)
+      .then(res => {
+        // console.log(res)
+        this.addressList = res.body
+      })
+    },
+    // 删除地址
+    deleteAddress (addressId) {
+      let params = {
+        addressId: addressId
+      }
+      api.deleteAddress(params)
+      .then(res => {
+        if (res.code === 0) {
+          this.getAddressData()
+          _.alert('删除成功！')
+        } else {
+          _.alert('删除失败！')
+        }
+      })
+    }
+  },
+  mounted () {
+    this.getAddressData()
   }
 }
 </script>
@@ -48,8 +81,9 @@ export default {
     width: 100%;
     margin-top: px2rem(20px);
     ul > li{
-      border-top: px2rem(2px) solid #000;
-      border-bottom: px2rem(2px) solid #000;      
+      border-top: px2rem(2px) solid #e6e6e6;
+      border-bottom: px2rem(2px) solid #e6e6e6;   
+      margin-top: px2rem(20px);   
       div {
         margin: px2rem(20px);
         height: px2rem(40px);        

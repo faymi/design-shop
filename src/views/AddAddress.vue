@@ -3,23 +3,23 @@
     <div class="list-wrap">
       <div class="addlist">
         <p>收件人</p>
-        <input type="text">
+        <input type="text" v-model="consignee">
       </div>
       <div class="addlist">
         <p>联系电话</p>
-        <input type="text">
+        <input type="text" v-model="phone">
       </div>
       <div class="addlist">
         <p>收货地址</p>
-        <input type="text">
+        <input type="text" v-model="address">
       </div>
       <div class="addlist">
         <p>邮政编码</p>
-        <input type="text">
+        <input type="text" v-model="postcode">
       </div>
       <div class="bottom-btn">
-        <router-link to="/address">
-          <button>添加地址</button>
+        <router-link to="">
+          <button @click="addAddress">添加地址</button>
         </router-link>
       </div>
     </div>
@@ -27,13 +27,43 @@
 </template>
 
 <script>
+import api from '@/api/fetch'
+import * as _ from '@/util/tool'
 
 export default {
   name: 'AdddAddress',
   data () {
-    return {}
+    return {
+      consignee: '',
+      phone: '',
+      address: '',
+      postcode: ''
+    }
   },
   methods: {
+    addAddress () {
+      let _this = this
+      let params = {
+        consignee: this.consignee,
+        phone: this.phone,
+        address: this.address,
+        postcode: this.postcode,
+        customerId: 'linzhanhong',
+        insertTime: '2018-01-05 22:56:33'
+      }
+      api.addOrderAddress(params)
+      .then(res => {
+        // console.log(res)
+        if (res.code === 0) {
+          _.alert('添加成功！')
+          setTimeout(function () {
+            _this.$router.push('/address')
+          }, 1500)
+        } else {
+          _.alert('添加失败！')
+        }
+      })
+    }
   }
 }
 </script>

@@ -57,7 +57,7 @@ export default {
   },
   mounted () {
     let params = {
-      domain: '1092b56c4d494f63ac37bb16baf4c6be',
+      domain: '246e0a61f62d4790863742bad02025fa',
       goodsType: 0
     }
     this.$store.dispatch('getGoodsList', params)

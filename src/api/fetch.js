@@ -66,5 +66,14 @@ export default {
   },
   getCustomizationPic (params) {
     return fetch('get', '/ideat/commonManage/getGoodsList', params)
+  },
+  getOrderAddress (params) {
+    return fetch('get', '/ideat/commonManage/getOrderAddress', params)
+  },
+  addOrderAddress (params) {
+    return fetch('post', '/ideat/commonManage/addOrderAddress', params)
+  },
+  deleteAddress (params) {
+    return fetch('post', '/ideat/commonManage/deleteOrderAddress', params)
   }
 }
