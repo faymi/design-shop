@@ -50,10 +50,11 @@ export default {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
+  color: #393939;
   .container {
 		flex: 1;
 		overflow: auto;
-		overflow-x: hidden;
+    overflow-x: hidden;
   }
   /* 上面是为了保证滑动的时候不出现抖动情况 */
   .child-view {

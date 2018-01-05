@@ -3,7 +3,7 @@
     <v-header :logo-img="logo" :shop-name="shopName"></v-header>
     <div class="content-wrap clearfix">
       <ul>
-        <li v-for="(item, index) in goodsList" :key="item.goodsId">
+        <li v-for="item in goodsList" :key="item.goodsId">
           <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail">
           <div class="item-cls">
             <div class="item-name">
@@ -12,12 +12,13 @@
             </div>
             <div class="item-btm">
               <router-link to="/customized">
-                <button>定制此款</button>
+                <button @click="toDesign(item.goodsId)">定制此款</button>
               </router-link>
             </div>
           </div>
         </li>
       </ul>
+      <div v-show="goodsList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无该类商品</div>
     </div>
     <v-footer></v-footer>
   </div>
@@ -49,11 +50,14 @@ export default {
   methods: {
     toDetail () {
       this.$router.push('/goods-detail')
+    },
+    toDesign (goodsId) {
+      this.$store.dispatch('setGoodsId', goodsId)
     }
   },
   mounted () {
     let params = {
-      domain: '246e0a61f62d4790863742bad02025fa',
+      domain: '1092b56c4d494f63ac37bb16baf4c6be',
       goodsType: 0
     }
     this.$store.dispatch('getGoodsList', params)

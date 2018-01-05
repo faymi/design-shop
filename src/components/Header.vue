@@ -54,7 +54,7 @@ export default {
     // 分类
     sort (val) {
       let params = {
-        domain: '246e0a61f62d4790863742bad02025fa',
+        domain: '1092b56c4d494f63ac37bb16baf4c6be',
         goodsType: val
       }
       this.showList = false

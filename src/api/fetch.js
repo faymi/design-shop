@@ -63,5 +63,8 @@ export default {
   },
   GetGoodsList (params) {
     return fetch('get', '/ideat/commonManage/getGoodsList', params)
+  },
+  getCustomizationPic (params) {
+    return fetch('get', '/ideat/commonManage/getGoodsList', params)
   }
 }

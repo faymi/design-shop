@@ -3,17 +3,14 @@
     <div class="color-bar">
       <div class="div-ul">
         <ul>
-          <li :style="{border: '1px solid red'}"><div :style="{backgroundColor: 'white'}"></div></li>
-          <li><div :style="{backgroundColor: 'black'}"></div></li>
-          <li><div :style="{backgroundColor: 'red'}"></div></li>
-          <li><div :style="{backgroundColor: 'grey'}"></div></li>
-          <li><div :style="{backgroundColor: 'yellowgreen'}"></div></li>
-          <li><div :style="{backgroundColor: 'purple'}"></div></li>
+          <li v-for="(item, index) in goodsColors" :key="index" :id="'goodsColor_'+index" :class="{hadSelect: index == currentIndex}" @click="selectColor(index,item)">
+            <div :style="{backgroundColor: item.color}"></div>
+          </li>
         </ul>
       </div>
       <div class="done-btn">
         <router-link to="/total">
-          <button>完成</button>        
+          <button @click="doneMade">完成</button>        
         </router-link>
       </div>
     </div>
@@ -80,20 +77,32 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
 import {fabric} from 'fabric'
 import * as FontFaceObserver from 'fontfaceobserver'
-import * as _ from '../util/tool'
+import * as _ from '@/util/tool'
+// import api from '@/api/fetch'
 
 export default {
   name: 'Customized',
   data () {
     return {
       isActive: true,
+      hadSelect: false,
       font_toggle: false,
       size_toggle: false,
       color_toggle: false,
       openStatus: false,
       color: '',
+      currentIndex: 0,
+      goodsColors: [
+        {color: 'white', val: 0},
+        {color: 'black', val: 1},
+        {color: 'red', val: 2},
+        {color: 'grey', val: 3},
+        {color: 'yellowgreen', val: 4},
+        {color: 'purple', val: 5}
+      ],
       frontImg: require('../assets/t-shirt-front.jpg'),
       backImg: require('../assets/t-shirt.png'),
       fonts: [
@@ -126,7 +135,33 @@ export default {
       dataUrl: ''
     }
   },
+  computed: {
+    ...mapGetters({
+      goodsId: 'goodsId'
+    })
+  },
   methods: {
+    // 完成定制
+    doneMade () {
+      let data = {
+        frontMadeImg: this.canvasFront.toDataURL({format: 'png', multiplier: 1}),
+        backMadeImg: this.canvasBack.toDataURL({format: 'png', multiplier: 1})
+      }
+      this.$store.dispatch('setMadeImg', data)
+    },
+    // 颜色选择
+    selectColor (index, item) {
+      this.currentIndex = index
+      // let params = {
+      //   color: item.val,
+      //   goodsId: this.goodsId
+      // }
+      // api.getCustomizationPic(params)
+      // .then(res => {
+      //   this.frontImg = res.body.goodsList[0].goodsPicPath
+      //   this.backImg = res.body.goodsList[1].goodsPicPath
+      // })
+    },
     // 点击正反面
     toSide (type) {
       if (type === 'front') {
@@ -447,6 +482,8 @@ export default {
     this.create_back_cavans()
     let itemObj = document.getElementsByClassName('main-design')
     itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
+    let first = document.getElementById('goodsColor_0')
+    first.click()
   }
 }
 </script>
@@ -640,5 +677,8 @@ export default {
       }
     }
   }
+}
+.hadSelect {
+  border: px2rem(2px) solid red;
 }
 </style>

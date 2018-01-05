@@ -4,8 +4,18 @@
       <div class="total-top">
         <div class="total-top-left">
           <ul>
-            <li><img src="../assets/t-shirt.png"></li>
-            <li><img src="../assets/t-shirt.png"></li>
+            <li>
+              <img :src="frontImg">
+              <div class="img-front-made">
+                <img :src="frontImgMade" alt="">
+              </div>
+            </li>
+            <li>
+              <img :src="backImg">
+              <div class="img-front-made">
+                <img :src="backImgMade" alt="">
+              </div>
+            </li>
           </ul>
         </div>
         <div class="total-top-right">
@@ -13,7 +23,7 @@
             定制单价
           </span>
           <span>
-            ￥60
+            ￥{{designPrice}}
           </span>
         </div>
       </div>
@@ -23,25 +33,49 @@
           <li>
             <div class="left">S</div>
             <div class="right">
-              <i class="fa fa-minus-circle"></i>
-              <span>12</span>
-              <i class="fa fa-plus-circle"></i>
+              <i class="fa fa-minus" @click="minus('s')"></i>
+              <input type="text" v-model="inputS"/>
+              <i class="fa fa-plus" @click="plus('s')"></i>
             </div>
           </li>
           <li>
             <div class="left">M</div>
             <div class="right">
-              <i class="fa fa-minus-circle"></i>
-              <span>12</span>
-              <i class="fa fa-plus-circle"></i>
+              <i class="fa fa-minus" @click="minus('m')"></i>
+              <input type="text" v-model="inputM"/>
+              <i class="fa fa-plus" @click="plus('m')"></i>
             </div>
           </li>
           <li>
             <div class="left">L</div>
             <div class="right">
-              <i class="fa fa-minus-circle"></i>
-              <span>12</span>
-              <i class="fa fa-plus-circle"></i>
+              <i class="fa fa-minus" @click="minus('l')"></i>
+              <input type="text" v-model="inputL"/>
+              <i class="fa fa-plus" @click="plus('l')"></i>
+            </div>
+          </li>
+          <li>
+            <div class="left">XL</div>
+            <div class="right">
+              <i class="fa fa-minus" @click="minus('xl')"></i>
+              <input type="text" v-model="inputXL"/>
+              <i class="fa fa-plus" @click="plus('xl')"></i>
+            </div>
+          </li>
+          <li>
+            <div class="left">2XL</div>
+            <div class="right">
+              <i class="fa fa-minus" @click="minus('2xl')"></i>
+              <input type="text" v-model="input2XL"/>
+              <i class="fa fa-plus" @click="plus('2xl')"></i>
+            </div>
+          </li>
+          <li>
+            <div class="left">3XL</div>
+            <div class="right">
+              <i class="fa fa-minus" @click="minus('3xl')"></i>
+              <input type="text" v-model="input3XL"/>
+              <i class="fa fa-plus" @click="plus('3xl')"></i>
             </div>
           </li>
         </ul>
@@ -67,12 +101,117 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+import * as _ from '@/util/tool'
+
 export default {
   name: 'Total',
   data () {
-    return {}
+    return {
+      frontImg: require('../assets/t-shirt-front.jpg'),
+      // frontImgMade: require('../assets/txu.jpg'),
+      backImg: require('../assets/t-shirt.png'),
+      // backImgMade: require('../assets/logo.png'),
+      designPrice: 60,
+      inputS: 1,
+      inputM: 1,
+      inputL: 1,
+      inputXL: 1,
+      input2XL: 1,
+      input3XL: 1,
+      sizeMaxS: 10,
+      sizeMaxM: 10,
+      sizeMaxL: 10,
+      sizeMaxXL: 10,
+      sizeMax2XL: 10,
+      sizeMax3XL: 10
+    }
+  },
+  computed: {
+    ...mapGetters({
+      frontImgMade: 'frontMadeImg',
+      backImgMade: 'backMadeImg'
+    })
   },
   methods: {
+    // 减数量
+    minus (type) {
+      if (type === 's') {
+        if (this.inputS > 0) {
+          this.inputS--
+        }
+      }
+      if (type === 'm') {
+        if (this.inputM > 0) {
+          this.inputM--
+        }
+      }
+      if (type === 'l') {
+        if (this.inputL > 0) {
+          this.inputL--
+        }
+      }
+      if (type === 'xl') {
+        if (this.inputXL > 0) {
+          this.inputXL--
+        }
+      }
+      if (type === '2xl') {
+        if (this.input2XL > 0) {
+          this.input2XL--
+        }
+      }
+      if (type === '3xl') {
+        if (this.input3XL > 0) {
+          this.input3XL--
+        }
+      }
+    },
+    // 加数量
+    plus (type) {
+      if (type === 's') {
+        if (this.inputS < this.sizeMaxS) {
+          this.inputS++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+      if (type === 'm') {
+        if (this.inputM < this.sizeMaxM) {
+          this.inputM++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+      if (type === 'l') {
+        if (this.inputL < this.sizeMaxL) {
+          this.inputL++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+      if (type === 'xl') {
+        if (this.inputXL < this.sizeMaxXL) {
+          this.inputXL++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+      if (type === '2xl') {
+        if (this.input2XL < this.sizeMax2XL) {
+          this.input2XL++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+      if (type === '3xl') {
+        if (this.input3XL < this.sizeMax3XL) {
+          this.input3XL++
+        } else {
+          _.alert('货存不足！')
+        }
+      }
+    }
   }
 }
 </script>
@@ -94,7 +233,7 @@ export default {
     margin: 0 auto;
     .total-top {
       margin: px2rem(10px);
-      border: px2rem(2px) solid #000;
+      border: px2rem(2px) solid $border-color;
       border-radius: px2rem(20px);
       display: flex;
       justify-content: space-between;
@@ -108,9 +247,25 @@ export default {
             width: px2rem(220px);
             height: px2rem(240px);
             margin: px2rem(10px);
-            img {
+            background-size: cover;
+            position: relative;
+            >img {
               width: 100%;
               height: 100%;
+            }
+            div.img-front-made {
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              width: px2rem(120px);
+              height: px2rem(140px);
+              border: px2rem(2px) dashed #393939;
+              background-size: cover;
+              img {
+                width: 100%;
+                height: 100%;
+              }
             }
           }
         }
@@ -140,12 +295,12 @@ export default {
       margin-top: px2rem(20px);
       margin-left: px2rem(10px);
       margin-right: px2rem(10px);
-      border: px2rem(2px) solid #000;
+      border: px2rem(2px) solid $border-color;
       border-radius: px2rem(20px);
       p {
         text-align: left;
         margin: px2rem(20px);
-        font-size: 16px;
+        font-size: 14px;
         font-weight: bold;
       }
       ul {
@@ -156,11 +311,17 @@ export default {
           height: px2rem(80px);
           display: flex;
           justify-content: space-between;
+          input {
+            width: px2rem(80px);
+            text-align: center;
+            border: px2rem(2px) solid #e6e6e6;
+            margin: 0 px2rem(5px);
+          }
         }
       }
       .total-price {
         margin: px2rem(20px);
-        border-top: px2rem(2px) solid #000;
+        border-top: px2rem(2px) solid $border-color;
         display: flex;
         justify-content: space-between;
         div {

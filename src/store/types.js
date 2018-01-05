@@ -7,3 +7,7 @@ export const COM_SHOW_LOADING = 'COM_SHOW_LOADING'
 export const GET_GOODS_LIST = 'GET_GOODS_LIST' // 获取商品列表
 export const GET_SHOP_LOGO = 'GET_SHOP_LOGO'
 export const GET_SHOP_NAME = 'GET_SHOP_NAME'
+export const SET_GOODSID = 'SET_GOODSID'
+
+/* 保存定制图片 */
+export const SET_MADE_IMG = 'SET_MADE_IMG'
