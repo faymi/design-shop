@@ -6,7 +6,7 @@
           <div class='radio'>
             <input type='radio' :id="'radio'+index" name='radio[]' :value="item.addressId" v-model="seletedRadio">
             <label :for="'radio'+index" :id="'label_'+index">
-              <div class="user">{{item.consignee}} &nbsp;&nbsp; {{item.phone}}</div>
+              <div class="user"><b>{{item.consignee}}</b> &nbsp;&nbsp; {{item.phone}}</div>
               <div class="address">
                 <span>{{item.address}}</span>
               </div>
@@ -159,6 +159,12 @@ export default {
               span {
                 display: inline-block;
               }
+            }
+          }
+          div.user {
+            b {
+              font-weight: bold;
+              font-size:14px;
             }
           }
         }
