@@ -44,11 +44,13 @@ export default {
   methods: {
     // 获取地址列表
     getAddressData () {
+      this.$store.dispatch('showLoading', true)
       let params = {
         customerId: 'linzhanhong'
       }
       api.getOrderAddress(params)
       .then(res => {
+        this.$store.dispatch('showLoading', false)
         if (res.body.length === 0) {
           this.$router.replace('/add-address')
         }
@@ -75,6 +77,7 @@ export default {
     },
     // 下单
     toPay () {
+      console.log(this.seletedRadio)
       if (this.seletedRadio === '') {
         _.alert('请选中收货地址')
       } else {

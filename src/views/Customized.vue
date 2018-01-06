@@ -81,7 +81,7 @@ import {mapGetters} from 'vuex'
 import {fabric} from 'fabric'
 import * as FontFaceObserver from 'fontfaceobserver'
 import * as _ from '@/util/tool'
-// import api from '@/api/fetch'
+import api from '@/api/fetch'
 
 export default {
   name: 'Customized',
@@ -152,15 +152,17 @@ export default {
     // 颜色选择
     selectColor (index, item) {
       this.currentIndex = index
-      // let params = {
-      //   color: item.val,
-      //   goodsId: this.goodsId
-      // }
-      // api.getCustomizationPic(params)
-      // .then(res => {
-      //   this.frontImg = res.body.goodsList[0].goodsPicPath
-      //   this.backImg = res.body.goodsList[1].goodsPicPath
-      // })
+      let params = {
+        domain: '246e0a61f62d4790863742bad02025fa',
+        colorId: item.val,
+        goodsId: this.goodsId
+      }
+      api.getGoodsInfo(params)
+      .then(res => {
+        console.log(res)
+        // this.frontImg = res.body.goodsList[0].goodsPicPath
+        // this.backImg = res.body.goodsList[1].goodsPicPath
+      })
     },
     // 点击正反面
     toSide (type) {
@@ -482,6 +484,19 @@ export default {
     this.create_back_cavans()
     let itemObj = document.getElementsByClassName('main-design')
     itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
+    let params = {
+      domain: '246e0a61f62d4790863742bad02025fa',
+      // color: item.val,
+      goodsId: this.goodsId
+    }
+    api.getgoodsColor(params)
+    .then(res => {
+      console.log(res)
+      // if (res.code === 0) {
+      //   let first = document.getElementById('goodsColor_0')
+      //   first.click()
+      // }
+    })
     let first = document.getElementById('goodsColor_0')
     first.click()
   }

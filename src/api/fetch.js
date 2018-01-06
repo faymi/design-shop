@@ -58,21 +58,34 @@ export function fetch (method, url, params) {
 
 // 请求api集散中心
 export default {
+  // 登录
   Login (params) {
     return fetch('get', '/ideat/login', params)
   },
+  // 获取用户信息
+  GetUserInfo (params) {
+    return fetch('get', '/ideat/', params)
+  },
+  // 获取商品列表
   GetGoodsList (params) {
     return fetch('get', '/ideat/commonManage/getGoodsList', params)
   },
-  getCustomizationPic (params) {
-    return fetch('get', '/ideat/commonManage/getGoodsList', params)
+  // 获取商品信息
+  getGoodsInfo (params) {
+    return fetch('get', '/ideat/commonManage/getGoodsInfo', params)
   },
+  getgoodsColor (params) {
+    return fetch('get', '/ideat/commonManage/getColor', params)
+  },
+  // 获取收货地址
   getOrderAddress (params) {
     return fetch('get', '/ideat/commonManage/getOrderAddress', params)
   },
+  // 添加收货地址
   addOrderAddress (params) {
     return fetch('post', '/ideat/commonManage/addOrderAddress', params)
   },
+  // 删除收货地址
   deleteAddress (params) {
     return fetch('post', '/ideat/commonManage/deleteOrderAddress', params)
   }

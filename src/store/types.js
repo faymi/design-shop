@@ -11,3 +11,6 @@ export const SET_GOODSID = 'SET_GOODSID'
 
 /* 保存定制图片 */
 export const SET_MADE_IMG = 'SET_MADE_IMG'
+
+/* 加入购物车 */
+export const ADD_SHOPCART = 'ADD_SHOPCART'

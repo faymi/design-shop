@@ -11,7 +11,7 @@
                 <p>￥{{item.price}}</p>
               </div>
             </div>
-            <button class="right del-btn">删除</button>
+            <button class="right del-btn" @click="deleteGoods(item.goodsId)">删除</button>
           </div>
           <div class="total">
             <span>共{{item.goodsNum}}件商品  合计：￥{{item.total}}（含运费￥{{item.deliveryCost}}）</span>
@@ -24,7 +24,7 @@
     </div>
     <div class="bottom-btn">
       <router-link to="/pay">
-        <button>确认下单</button>
+        <button >确认下单</button>
       </router-link>
     </div>
   </div>

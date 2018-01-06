@@ -87,14 +87,10 @@
         </div>
       </div>
       <div class="total-bottom-left">
-        <router-link to="/add-to-cart">
-          <button>加入购物车</button>
-        </router-link>
+        <button @click="addToShopCart">加入购物车</button>
       </div>
       <div class="total-bottom-right">
-        <router-link to="/address">
-          <button>直接下单</button>
-        </router-link>
+        <button @click="makeOrder">直接下单</button>
       </div>
     </div>
   </div>
@@ -103,6 +99,7 @@
 <script>
 import {mapGetters} from 'vuex'
 import * as _ from '@/util/tool'
+// import api from '@/api/fetch'
 
 export default {
   name: 'Total',
@@ -134,6 +131,33 @@ export default {
     })
   },
   methods: {
+    addToShopCart () {
+      let params = {
+        color: 1,
+        size: [
+          {size: 'S', amount: this.inputS},
+          {size: 'M', amount: this.inputM},
+          {size: 'L', amount: this.inputL},
+          {size: 'XL', amount: this.inputXL},
+          {size: '2XL', amount: this.input2XL},
+          {size: '3XL', amount: this.input3XL}
+        ],
+        total: 600,
+        imgMade: [
+          {type: 0, frontImg: this.frontImgMade},
+          {type: 1, backImg: this.backImgMade}
+        ],
+        goodsImg: [
+          {type: 0, frontImg: this.frontImg},
+          {type: 1, backImg: this.backImg}
+        ]
+      }
+      this.$store.dispatch('addShopCart', params)
+      this.$router.push('/add-to-cart')
+    },
+    makeOrder () {
+      this.$router.push('/address')
+    },
     // 减数量
     minus (type) {
       if (type === 's') {

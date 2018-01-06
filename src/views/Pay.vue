@@ -13,7 +13,7 @@
         </div>
       </div>
       <div class="pay-address">
-        <div>{{userId}}   {{phone}}</div>
+        <div>{{userId}}&nbsp;&nbsp;{{phone}}</div>
         <div>{{address}}</div>
       </div>
       <div class="pay-btn">
@@ -25,6 +25,8 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Pay',
   data () {
@@ -46,10 +48,18 @@ export default {
       ]
     }
   },
+  computed: {
+    ...mapGetters({
+      shopcartList: 'shopcartList'
+    })
+  },
   methods: {
     weChatPay () {
       this.$router.push('/pay-success')
     }
+  },
+  mounted () {
+    console.log(this.shopcartList)
   }
 }
 </script>
