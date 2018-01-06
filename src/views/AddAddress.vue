@@ -18,9 +18,7 @@
         <input type="text" v-model="postcode">
       </div>
       <div class="bottom-btn">
-        <router-link to="">
-          <button @click="addAddress">添加地址</button>
-        </router-link>
+        <button @click="addAddress">添加地址</button>
       </div>
     </div>
   </div>
@@ -43,6 +41,22 @@ export default {
   methods: {
     addAddress () {
       let _this = this
+      if (this.consignee === '') {
+        _.alert('请输入收件人')
+        return
+      }
+      if (this.consignee === '') {
+        _.alert('请输入联系电话')
+        return
+      }
+      if (this.consignee === '') {
+        _.alert('请输入收货地址')
+        return
+      }
+      if (this.consignee === '') {
+        _.alert('请输入邮政编码')
+        return
+      }
       let params = {
         consignee: this.consignee,
         phone: this.phone,
@@ -64,6 +78,11 @@ export default {
         }
       })
     }
+  },
+  mounted () {
+    var windheight = window.innerHeight
+    var bottomx = document.getElementsByClassName('bottom-btn')
+    console.log(windheight, bottomx)
   }
 }
 </script>
