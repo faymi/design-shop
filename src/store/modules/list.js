@@ -2,10 +2,10 @@ import * as types from '../types'
 import api from '@/api/fetch'
 
 const state = {
-  goodsList: [],
-  logo: '',
-  shopName: '',
-  goodsId: ''
+  goodsList: [], // 商品列表
+  logo: '', // logo图片
+  shopName: '', // 店铺名称
+  goodsId: '' // 商品id
 }
 
 const actions = {

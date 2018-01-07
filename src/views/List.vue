@@ -44,7 +44,8 @@ export default {
     ...mapGetters({
       goodsList: 'goodsList',
       logo: 'logo',
-      shopName: 'shopName'
+      shopName: 'shopName',
+      domain: 'domain'
     })
   },
   methods: {
@@ -57,7 +58,7 @@ export default {
   },
   mounted () {
     let params = {
-      domain: '246e0a61f62d4790863742bad02025fa',
+      domain: this.domain,
       goodsType: 0
     }
     this.$store.dispatch('getGoodsList', params)

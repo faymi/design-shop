@@ -5,16 +5,16 @@
         <div class="pay-list">
           <div class="list-top">
             <div class="left">
-              <img :src="item.goodsImg">
+              <img :src="item.frontXGPath">
               <div>
                 <p>{{item.goodsName}}</p>
                 <p>￥{{item.price}}</p>
               </div>
             </div>
-            <button class="right del-btn" @click="deleteGoods(item.goodsId)">删除</button>
+            <button class="right del-btn" @click="deleteGoods(item.cartRecordId)">删除</button>
           </div>
           <div class="total">
-            <span>共{{item.goodsNum}}件商品  合计：￥{{item.total}}（含运费￥{{item.deliveryCost}}）</span>
+            <span>共{{item.goodsCount}}件商品 &nbsp;&nbsp; 合计：￥{{item.total}}（含运费￥{{item.deliveryCost}}）</span>
           </div>
         </div>
       </div>
@@ -31,48 +31,58 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+import { MessageBox } from 'mint-ui'
+import api from '@/api/fetch'
+import * as _ from '@/util/tool'
+
 export default {
   name: 'ShopCart',
   data () {
     return {
       allTotal: 1621,
-      orderList: [
-        {
-          goodsImg: require('../assets/txu.jpg'),
-          goodsName: '纯棉T恤',
-          price: 69,
-          goodsNum: 12,
-          total: 160.00,
-          deliveryCost: 10.00
-        },
-        {
-          goodsImg: require('../assets/txu.jpg'),
-          goodsName: '纯棉T恤',
-          price: 69,
-          goodsNum: 12,
-          total: 160.00,
-          deliveryCost: 10.00
-        },
-        {
-          goodsImg: require('../assets/txu.jpg'),
-          goodsName: '纯棉T恤',
-          price: 69,
-          goodsNum: 12,
-          total: 160.00,
-          deliveryCost: 10.00
-        },
-        {
-          goodsImg: require('../assets/txu.jpg'),
-          goodsName: '纯棉T恤',
-          price: 69,
-          goodsNum: 12,
-          total: 160.00,
-          deliveryCost: 10.00
-        }
-      ]
+      orderList: []
     }
   },
   methods: {
+    deleteGoods (cartRecordId) {
+      let params = {
+        cartRecordId: cartRecordId
+      }
+      MessageBox.confirm('确定删除?').then(action => {
+        api.deleteCartRecordId(params)
+        .then(res => {
+          if (res.code === 0) {
+            this.getShopCartData()
+            _.alert('删除商品成功')
+          } else {
+            _.alert('删除商品失败')
+          }
+        })
+      })
+    },
+    getShopCartData () {
+      let params = {
+        shopCartId: this.shopCartId
+      }
+      this.$store.dispatch('showLoading', true)
+      api.getShopCartList(params)
+      .then(res => {
+        this.$store.dispatch('showLoading', false)
+        if (res.code === 0) {
+          this.allTotal = res.body.cartTotal
+          this.orderList = res.body.cartResult
+        }
+      })
+    }
+  },
+  computed: {
+    ...mapGetters({
+      shopCartId: 'shopCartId'
+    })
+  },
+  mounted () {
+    this.getShopCartData()
   }
 }
 </script>

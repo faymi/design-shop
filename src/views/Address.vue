@@ -30,6 +30,7 @@
 
 <script>
 import { MessageBox } from 'mint-ui'
+import { mapGetters } from 'vuex'
 import api from '@/api/fetch'
 import * as _ from '@/util/tool'
 
@@ -46,7 +47,7 @@ export default {
     getAddressData () {
       this.$store.dispatch('showLoading', true)
       let params = {
-        customerId: 'linzhanhong'
+        customerId: this.customerId
       }
       api.getOrderAddress(params)
       .then(res => {
@@ -63,7 +64,6 @@ export default {
         addressId: addressId
       }
       MessageBox.confirm('确定删除?').then(action => {
-        console.log(action)
         api.deleteAddress(params)
         .then(res => {
           if (res.code === 0) {
@@ -77,13 +77,31 @@ export default {
     },
     // 下单
     toPay () {
-      console.log(this.seletedRadio)
       if (this.seletedRadio === '') {
         _.alert('请选中收货地址')
       } else {
-        this.$router.push('/pay')
+        let params = {
+          addressId: this.seletedRadio,
+          customerId: this.customerId,
+          ...this.singleOrderData,
+          insertTime: this.moment().format('YYYY-MM-DD hh:mm:ss')
+        }
+        this.$store.dispatch('showLoading', true)
+        api.addSingleOrder(params)
+        .then(res => {
+          if (res.code === 0) {
+            this.$store.dispatch('showLoading', false)
+            this.$router.push('/pay')
+          }
+        })
       }
     }
+  },
+  computed: {
+    ...mapGetters({
+      singleOrderData: 'singleOrderData',
+      customerId: 'customerId'
+    })
   },
   mounted () {
     this.getAddressData()

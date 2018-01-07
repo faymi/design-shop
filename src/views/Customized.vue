@@ -95,14 +95,13 @@ export default {
       openStatus: false,
       color: '',
       currentIndex: 0,
-      goodsColors: [
-        {color: 'white', val: 0},
-        {color: 'black', val: 1},
-        {color: 'red', val: 2},
-        {color: 'grey', val: 3},
-        {color: 'yellowgreen', val: 4},
-        {color: 'purple', val: 5}
+      colorList: [
+        {color: 'white', 'colorId': '1'},
+        {color: 'black', 'colorId': '2'},
+        {color: 'red', 'colorId': '3'},
+        {color: 'green', 'colorId': '4'}
       ],
+      goodsColors: [],
       frontImg: require('../assets/t-shirt-front.jpg'),
       backImg: require('../assets/t-shirt.png'),
       fonts: [
@@ -137,7 +136,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      goodsId: 'goodsId'
+      goodsId: 'goodsId',
+      domain: 'domain'
     })
   },
   methods: {
@@ -153,15 +153,23 @@ export default {
     selectColor (index, item) {
       this.currentIndex = index
       let params = {
-        domain: '246e0a61f62d4790863742bad02025fa',
-        colorId: item.val,
+        domain: this.domain,
+        colorId: item.colorId,
         goodsId: this.goodsId
       }
+      this.$store.dispatch('showLoading', true)
       api.getGoodsInfo(params)
       .then(res => {
-        console.log(res)
-        // this.frontImg = res.body.goodsList[0].goodsPicPath
-        // this.backImg = res.body.goodsList[1].goodsPicPath
+        this.$store.dispatch('showLoading', false)
+        if (res.code === 0) {
+          let goodsInfo = {
+            colorId: item.colorId,
+            ...res.body
+          }
+          this.$store.dispatch('setGoodsInfo', goodsInfo)
+          this.frontImg = res.body.imageList[0].frontXGPath
+          this.backImg = res.body.imageList[0].backXGPath
+        }
       })
     },
     // 点击正反面
@@ -484,21 +492,30 @@ export default {
     this.create_back_cavans()
     let itemObj = document.getElementsByClassName('main-design')
     itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
+    itemObj[1].style.height = document.documentElement.scrollHeight - 152 + 'px'
     let params = {
-      domain: '246e0a61f62d4790863742bad02025fa',
+      domain: this.domain,
       // color: item.val,
       goodsId: this.goodsId
     }
+    this.$store.dispatch('showLoading', true)
     api.getgoodsColor(params)
     .then(res => {
-      console.log(res)
-      // if (res.code === 0) {
-      //   let first = document.getElementById('goodsColor_0')
-      //   first.click()
-      // }
+      if (res.code === 0) {
+        this.$store.dispatch('showLoading', false)
+        for (let i in res.body) {
+          for (let k in this.colorList) {
+            if (res.body[i].colorId === this.colorList[k].colorId) {
+              this.goodsColors.push(this.colorList[k])
+            }
+          }
+        }
+        this.$nextTick(function () {
+          let first = document.getElementById('goodsColor_0')
+          first.click()
+        })
+      }
     })
-    let first = document.getElementById('goodsColor_0')
-    first.click()
   }
 }
 </script>

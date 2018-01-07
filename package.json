@@ -16,6 +16,7 @@
     "font-awesome": "^4.7.0",
     "fontfaceobserver": "^2.0.13",
     "mint-ui": "^2.2.13",
+    "moment": "^2.20.1",
     "swiper": "^4.0.7",
     "vue": "^2.5.2",
     "vue-router": "^3.0.1",

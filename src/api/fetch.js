@@ -74,6 +74,7 @@ export default {
   getGoodsInfo (params) {
     return fetch('get', '/ideat/commonManage/getGoodsInfo', params)
   },
+  // 获取商品颜色
   getgoodsColor (params) {
     return fetch('get', '/ideat/commonManage/getColor', params)
   },
@@ -88,5 +89,21 @@ export default {
   // 删除收货地址
   deleteAddress (params) {
     return fetch('post', '/ideat/commonManage/deleteOrderAddress', params)
+  },
+  // 直接下单
+  addSingleOrder (params) {
+    return fetch('post', '/ideat/commonManage/addSingleOrder', params)
+  },
+  // 添加购物车
+  addShopCart (params) {
+    return fetch('post', '/ideat/commonManage/addCartGoods', params)
+  },
+  // 获取购物车列表数据
+  getShopCartList (params) {
+    return fetch('get', '/ideat/commonManage/getCartGoods', params)
+  },
+  // 删除购物车某一件商品
+  deleteCartRecordId (params) {
+    return fetch('post', '/ideat/commonManage/deleteCartGoods', params)
   }
 }

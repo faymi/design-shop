@@ -30,7 +30,7 @@
       <div class="total-center">
         <p>选择商品数量&尺寸</p>
         <ul>
-          <li>
+          <li v-if="showS">
             <div class="left">S</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('s')"></i>
@@ -38,7 +38,7 @@
               <i class="fa fa-plus" @click="plus('s')"></i>
             </div>
           </li>
-          <li>
+          <li v-if="showM">
             <div class="left">M</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('m')"></i>
@@ -46,7 +46,7 @@
               <i class="fa fa-plus" @click="plus('m')"></i>
             </div>
           </li>
-          <li>
+          <li v-if="showL">
             <div class="left">L</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('l')"></i>
@@ -54,7 +54,7 @@
               <i class="fa fa-plus" @click="plus('l')"></i>
             </div>
           </li>
-          <li>
+          <li v-if="showXL">
             <div class="left">XL</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('xl')"></i>
@@ -62,7 +62,7 @@
               <i class="fa fa-plus" @click="plus('xl')"></i>
             </div>
           </li>
-          <li>
+          <li v-if="show2XL">
             <div class="left">2XL</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('2xl')"></i>
@@ -70,7 +70,7 @@
               <i class="fa fa-plus" @click="plus('2xl')"></i>
             </div>
           </li>
-          <li>
+          <li v-if="show3XL">
             <div class="left">3XL</div>
             <div class="right">
               <i class="fa fa-minus" @click="minus('3xl')"></i>
@@ -82,7 +82,8 @@
         <div class="total-price">
           <div class="left">总价</div>
           <div class="right">
-            10*60 = 600 元
+            <span v-if="totalPrice == 0">{{totalPrice}} 元</span>
+            <span v-else>{{totalNum}}*{{designPrice}} = {{totalPrice}} 元</span>
           </div>
         </div>
       </div>
@@ -99,7 +100,7 @@
 <script>
 import {mapGetters} from 'vuex'
 import * as _ from '@/util/tool'
-// import api from '@/api/fetch'
+import api from '@/api/fetch'
 
 export default {
   name: 'Total',
@@ -109,54 +110,99 @@ export default {
       // frontImgMade: require('../assets/txu.jpg'),
       backImg: require('../assets/t-shirt.png'),
       // backImgMade: require('../assets/logo.png'),
-      designPrice: 60,
-      inputS: 1,
-      inputM: 1,
-      inputL: 1,
-      inputXL: 1,
-      input2XL: 1,
-      input3XL: 1,
-      sizeMaxS: 10,
-      sizeMaxM: 10,
-      sizeMaxL: 10,
-      sizeMaxXL: 10,
-      sizeMax2XL: 10,
-      sizeMax3XL: 10
+      designPrice: 0,
+      totalPrice: 0,
+      totalNum: 0,
+      inputS: 0,
+      inputM: 0,
+      inputL: 0,
+      inputXL: 0,
+      input2XL: 0,
+      input3XL: 0,
+      sizeMaxS: 0,
+      sizeMaxM: 0,
+      sizeMaxL: 0,
+      sizeMaxXL: 0,
+      sizeMax2XL: 0,
+      sizeMax3XL: 0,
+      showS: false,
+      showM: false,
+      showL: false,
+      showXL: false,
+      show2XL: false,
+      show3XL: false
     }
   },
   computed: {
     ...mapGetters({
       frontImgMade: 'frontMadeImg',
-      backImgMade: 'backMadeImg'
+      backImgMade: 'backMadeImg',
+      goodsInfo: 'goodsInfo',
+      goodsId: 'goodsId',
+      domain: 'domain',
+      shopCartId: 'shopCartId'
     })
   },
   methods: {
-    addToShopCart () {
-      let params = {
-        color: 1,
-        size: [
-          {size: 'S', amount: this.inputS},
-          {size: 'M', amount: this.inputM},
-          {size: 'L', amount: this.inputL},
-          {size: 'XL', amount: this.inputXL},
-          {size: '2XL', amount: this.input2XL},
-          {size: '3XL', amount: this.input3XL}
-        ],
-        total: 600,
-        imgMade: [
-          {type: 0, frontImg: this.frontImgMade},
-          {type: 1, backImg: this.backImgMade}
-        ],
-        goodsImg: [
-          {type: 0, frontImg: this.frontImg},
-          {type: 1, backImg: this.backImg}
-        ]
+    addShopCartData (type) {
+      let detail = []
+      if (this.inputS !== 0) {
+        detail.push({sizeId: 'S', amount: this.inputS})
       }
-      this.$store.dispatch('addShopCart', params)
-      this.$router.push('/add-to-cart')
+      if (this.inputM !== 0) {
+        detail.push({sizeId: 'M', amount: this.inputM})
+      }
+      if (this.inputL !== 0) {
+        detail.push({sizeId: 'L', amount: this.inputL})
+      }
+      if (this.inputXL !== 0) {
+        detail.push({sizeId: 'XL', amount: this.inputXL})
+      }
+      if (this.input2XL !== 0) {
+        detail.push({sizeId: 'XXL', amount: this.input2XL})
+      }
+      if (this.input3XL !== 0) {
+        detail.push({sizeId: 'XXXL', amount: this.input3XL})
+      }
+      if (detail.length === 0) {
+        _.alert('请先添加商品数量')
+        return
+      }
+      let params = {
+        goodsId: this.goodsId,
+        colorId: this.goodsInfo.colorId,
+        printing: this.goodsInfo.printing,
+        goodsName: this.goodsInfo.goodsName,
+        detail: detail,
+        total: this.totalPrice,
+        goodsCount: this.totalNum,
+        frontImg: this.frontImgMade,
+        backImg: this.backImgMade
+      }
+      // 0 添加购物车  1 直接下单
+      if (type === '0') {
+        params.shopCartId = this.shopCartId
+        params.insertTime = this.moment().format('YYYY-MM-DD hh:mm:ss')
+        this.$store.dispatch('addShopCart', params)
+        this.$store.dispatch('showLoading', true)
+        api.addShopCart(params)
+        .then(res => {
+          if (res.code === 0) {
+            this.$store.dispatch('showLoading', false)
+            this.$router.push('/add-to-cart')
+          }
+        })
+      } else {
+        params.domain = this.domain
+        this.$store.dispatch('addSingleOrder', params)
+        this.$router.push('/address')
+      }
+    },
+    addToShopCart () {
+      this.addShopCartData('0')
     },
     makeOrder () {
-      this.$router.push('/address')
+      this.addShopCartData('1')
     },
     // 减数量
     minus (type) {
@@ -190,6 +236,8 @@ export default {
           this.input3XL--
         }
       }
+      this.totalNum = this.inputS + this.inputM + this.inputL + this.inputXL + this.input2XL + this.input3XL
+      this.totalPrice = this.totalNum * this.designPrice
     },
     // 加数量
     plus (type) {
@@ -235,7 +283,53 @@ export default {
           _.alert('货存不足！')
         }
       }
+      this.totalNum = this.inputS + this.inputM + this.inputL + this.inputXL + this.input2XL + this.input3XL
+      this.totalPrice = this.totalNum * this.designPrice
     }
+  },
+  mounted () {
+    let params = {
+      domain: this.domain,
+      colorId: this.goodsInfo.colorId,
+      goodsId: this.goodsId
+    }
+    this.$store.dispatch('showLoading', true)
+    api.getGoodsInfo(params)
+    .then(res => {
+      this.$store.dispatch('showLoading', false)
+      if (res.code === 0) {
+        this.frontImg = res.body.imageList[0].frontXGPath
+        this.backImg = res.body.imageList[0].backXGPath
+        this.designPrice = res.body.doublePrice
+        let sizeList = res.body.sizeList
+        for (let i in sizeList) {
+          if (sizeList[i].sizeId === 'S') {
+            this.showS = true
+            this.sizeMaxS = sizeList[i].amount
+          }
+          if (sizeList[i].sizeId === 'M') {
+            this.showM = true
+            this.sizeMaxM = sizeList[i].amount
+          }
+          if (sizeList[i].sizeId === 'L') {
+            this.showL = true
+            this.sizeMaxL = sizeList[i].amount
+          }
+          if (sizeList[i].sizeId === 'XL') {
+            this.showXL = true
+            this.sizeMaxXL = sizeList[i].amount
+          }
+          if (sizeList[i].sizeId === 'XXL') {
+            this.show2XL = true
+            this.sizeMax2XL = sizeList[i].amount
+          }
+          if (sizeList[i].sizeId === 'XXXL') {
+            this.show3XL = true
+            this.sizeMax3XL = sizeList[i].amount
+          }
+        }
+      }
+    })
   }
 }
 </script>
@@ -348,10 +442,12 @@ export default {
         border-top: px2rem(2px) solid $border-color;
         display: flex;
         justify-content: space-between;
-        div {
+        div{
           margin-top: px2rem(20px);
-          font-size: 16px;
-          font-weight: bold;
+          span {
+            font-size: 16px;
+            font-weight: bold;
+          }
         }
       }
     }
