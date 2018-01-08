@@ -54,22 +54,24 @@
           <p>效果图：</p>
           <div class="img-wrap">
             <div class="img-card">
-              <img src="../assets/logo.png" alt="">
+              <canvas id="canvas-01" width="600" height="400"></canvas>
+              <!-- <img src="../assets/logo.png" alt=""> -->
               <span>正面</span>
             </div>
             <div class="img-card">
-              <img src="../assets/logo.png" alt="">
+              <canvas id="canvas-02" width="600" height="400"></canvas>
+              <!-- <img src="../assets/logo.png" alt=""> -->
               <span>反面</span>
             </div>
           </div>
         </div>
         <div class="detail-right">
           <p>素材图下载：</p>
-          <a href="javascipt: void(0)">{{frontImg}}</a>
-          <a href="javascipt: void(0)s">{{backImg}}</a>
+          <a href="javascipt: void(0)">{{frontImgName}}</a>
+          <a href="javascipt: void(0)">{{backImgName}}</a>
           <p class="p-2">效果图下载：</p>
-          <a href="javascipt: void(0)">{{frontImg}}</a>
-          <a href="javascipt: void(0)s">{{backImg}}</a>
+          <a href="javascipt: void(0)" @click="saveFrontImg('frontImg-01')" id="frontImg-01">{{frontImgName}}</a>
+          <a href="javascipt: void(0)"  @click="saveBackImg('backImg-01')" id="backImg-01">{{backImgName}}</a>
         </div>
       </div>
     </div>
@@ -93,8 +95,12 @@ export default {
       printAmount: 2,
       cost: 29,
       invoice: '无',
-      frontImg: '201711300755Z.png',
-      backImg: '201711300755Z.png',
+      frontImgName: '201711300755Z.png',
+      backImgName: '201711300755Z.png',
+      frontImg: require('../assets/user.png'),
+      frontImgMade: require('../assets/logo.png'),
+      backImg: require('../assets/logo.png'),
+      backImgMade: require('../assets/user.png'),
       totalPrice: '160.00',
       deliveryPrice: '10.00',
       deliveryNum: '',
@@ -106,9 +112,60 @@ export default {
     closeOrder () {
     },
     deliver () {
+    },
+    // base64 转二进制格式
+    base64Img2Blob (code) {
+      var parts = code.split(';base64,')
+      var contentType = parts[0].split(':')[1]
+      var raw = window.atob(parts[1])
+      var rawLength = raw.length
+      var uInt8Array = new Uint8Array(rawLength)
+      for (var i = 0; i < rawLength; ++i) {
+        uInt8Array[i] = raw.charCodeAt(i)
+      }
+      return new Blob([uInt8Array], {type: contentType})
+    },
+    // 下载正面效果图
+    saveFrontImg (id) {
+      let aLink = document.getElementById(id)
+      var myCanvas = document.getElementById('canvas-01')
+      var image = myCanvas.toDataURL('image/png', 1.0)
+      var blob = this.base64Img2Blob(image)
+      aLink.download = this.frontImgName
+      aLink.href = URL.createObjectURL(blob)
+    },
+    // 下载反面效果图
+    saveBackImg (id) {
+      let aLink = document.getElementById(id)
+      var myCanvas = document.getElementById('canvas-02')
+      var image = myCanvas.toDataURL('image/png', 1.0)
+      var blob = this.base64Img2Blob(image)
+      aLink.download = this.backImgName
+      aLink.href = URL.createObjectURL(blob)
+    },
+    // 添加图片至画布
+    imageToCanvas (canvas, image, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+      image.onload = function () {
+        canvas.getContext('2d').drawImage(image, x, y, width, height)
+      }
     }
   },
   mounted () {
+    let canvas01 = document.getElementById('canvas-01')
+    // console.log(canvas01.width, canvas01.height)
+    let img01 = new Image()
+    img01.src = this.frontImg
+    this.imageToCanvas(canvas01, img01)
+    let img01Made = new Image()
+    img01Made.src = this.frontImgMade
+    this.imageToCanvas(canvas01, img01Made, canvas01.width / 4, canvas01.height / 4, canvas01.width / 2, canvas01.height / 2)
+    let canvas02 = document.getElementById('canvas-02')
+    let img02 = new Image()
+    img02.src = this.backImg
+    this.imageToCanvas(canvas02, img02)
+    let img02Made = new Image()
+    img02Made.src = this.backImgMade
+    this.imageToCanvas(canvas02, img02Made, canvas02.width / 4, canvas02.height / 4, canvas02.width / 2, canvas02.height / 2)
     let _this = this
     this.axios.get('ideat/orderManage/getOrderInfo', {
       params: {
@@ -125,7 +182,6 @@ export default {
         return false
       }
       let result = data.body
-      console.log(result)
       return result
     })
     .catch(function (error) {
@@ -224,6 +280,10 @@ export default {
       .img-card {
         text-align: center;
         margin-right: 20px;
+        canvas {
+          width: 140px;
+          height: 160px;
+        }
         span {
           display: block;
         }
