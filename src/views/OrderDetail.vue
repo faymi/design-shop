@@ -1,6 +1,6 @@
 <template>
-  <div class="wrap-all">
-    <div class="content-wrap">
+  <div class="content-wrap">
+    <div class="info-wrap">
       <div class="table-wrap">
         <div class="table-left">
           <ul>
@@ -194,127 +194,137 @@ export default {
 
 <style lang="scss" scoped>
 @import '../assets/css/function.scss';
-.table-wrap {
-  margin: 0px 60px 0px 60px;
-  border:1px solid #000;
+.info-wrap {
+  margin: 0px 60px 20px 60px;
+  // border:1px solid #000;
   font-size: 14px;
-  display: flex;
   padding: 10px;
-  justify-content: space-around;
-  .table-left, .table-right {
-    width: 50%;
-    height: 150px;
-    text-align: left;
-  }
-  .table-left > ul {
-    li {
-      margin: 10px 0px 10px 0px;
-      p > b {
-        font-size: 16px;
-        font-weight: bold;
-      }
-      span {
-        display: inline-block;
-        width: 150px;
-        margin-right: 20px;
-      }
+  .table-wrap {
+    margin: 0px 60px 0px 60px;
+    // border:1px solid #000;
+    border: 1px solid #ececec;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+    font-size: 14px;
+    display: flex;
+    padding: 10px;
+    justify-content: space-around;
+    .table-left, .table-right {
+      width: 50%;
+      height: 150px;
+      text-align: left;
     }
-  }
-  .table-right {
-    position: relative;
-    p {
-      text-align: right;
-      font-size: 24px;
-      font-weight: bold;
-    }
-    .deliver {
-      display: flex;
-      justify-content: flex-end;
-      position: absolute;
-      top: 40px;
-      right: 0;
-      .input-with-select {
-        width: 350px;
-      }
-      .delivery-class {
-        width: 100px;
-        margin-left: 10px;
-      }
-    }
-    >span {
-      display: inline-block;
-      position: absolute;
-      bottom: 10px;
-      right: 0;
-    }
-  }
-}
-.table-detail {
-  font-size: 14px;
-  border:1px solid #000;
-  border-top: none;
-  margin: 0px 60px 0px 60px;
-  padding: 10px;  
-  display: flex;
-  justify-content: flex-start;
-  .detail-left {
-    width: 50%;
-    > ul {
+    .table-left > ul {
       li {
         margin: 10px 0px 10px 0px;
-        text-align: left;
+        p > b {
+          font-size: 16px;
+          font-weight: bold;
+        }
         span {
           display: inline-block;
           width: 150px;
           margin-right: 20px;
-          margin-top: 10px;
         }
       }
     }
-    p {
+    .table-right {
+      position: relative;
+      p {
+        text-align: right;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .deliver {
+        display: flex;
+        justify-content: flex-end;
+        position: absolute;
+        top: 40px;
+        right: 0;
+        .input-with-select {
+          width: 350px;
+        }
+        .delivery-class {
+          width: 100px;
+          margin-left: 10px;
+        }
+      }
+      >span {
+        display: inline-block;
+        position: absolute;
+        bottom: 10px;
+        right: 0;
+      }
+    }
+  }
+  .table-detail {
+    font-size: 14px;
+    // border:1px solid #000;
+    border: 1px solid #ececec;
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
+    border-top: none;
+    margin: 10px 60px 0px 60px;
+    padding: 10px;  
+    display: flex;
+    justify-content: flex-start;
+    .detail-left {
+      width: 50%;
+      > ul {
+        li {
+          margin: 10px 0px 10px 0px;
+          text-align: left;
+          span {
+            display: inline-block;
+            width: 150px;
+            margin-right: 20px;
+            margin-top: 10px;
+          }
+        }
+      }
+      p {
+        text-align: left;
+      }
+      .img-wrap {
+        display: flex;
+        justify-content: flex-start;
+        .img-card {
+          text-align: center;
+          margin-right: 20px;
+          canvas {
+            width: 140px;
+            height: 160px;
+          }
+          span {
+            display: block;
+          }
+          img {
+            width: 140px;
+            height: 160px;
+          }
+        }
+      }
+    }
+    .detail-right {
+      width: 60%;
       text-align: left;
-    }
-    .img-wrap {
-      display: flex;
-      justify-content: flex-start;
-      .img-card {
-        text-align: center;
-        margin-right: 20px;
-        canvas {
-          width: 140px;
-          height: 160px;
-        }
-        span {
-          display: block;
-        }
-        img {
-          width: 140px;
-          height: 160px;
-        }
+      .p-2 {
+        margin: 20px 0px 0px 0px;
+      }
+      a {
+        display: block;
+        color: #33a6ff;
+        margin:  10px 0px;
       }
     }
   }
-  .detail-right {
-    width: 60%;
-    text-align: left;
-    .p-2 {
-      margin: 20px 0px 0px 0px;
+  .table-btn {
+    margin-top: 70px;
+    font-size: 14px;
+    border-top: none;
+    display: flex;
+    justify-content: flex-end;
+    .btn-size {
+      width: 100px;
     }
-    a {
-      display: block;
-      color: #33a6ff;
-      margin:  10px 0px;
-    }
-  }
-}
-.table-btn {
-  margin-top: 70px;
-  font-size: 14px;
-  border-top: none;
-  display: flex;
-  justify-content: flex-end;
-  .btn-size {
-    width: 100px;
   }
 }
 </style>

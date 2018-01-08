@@ -90,11 +90,11 @@ export default {
   },
   created () {
     this.path = this.currentPath = this.$route.path
-    if (this.path === '/login' || this.path === '/orderDetail' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
+    if (this.path === '/login' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
       this.header_show = false
       this.aside_show = false
       this.ismain = false
-    } else if (this.path === '/accountInfo') {
+    } else if (this.path === '/accountInfo' || this.path === '/orderDetail') {
       this.header_show = true
       this.aside_show = false
       this.ismain = false
