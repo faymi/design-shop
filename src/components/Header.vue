@@ -19,6 +19,8 @@
 </template>
 
 <script>
+import {mapGetters} from 'vuex'
+
 export default {
   name: 'Header',
   props: {
@@ -47,6 +49,11 @@ export default {
       showList: false
     }
   },
+  computed: {
+    ...mapGetters({
+      domain: 'domain'
+    })
+  },
   methods: {
     toShopCart () {
       this.$router.push('/shop-cart')
@@ -54,7 +61,7 @@ export default {
     // 分类
     sort (val) {
       let params = {
-        domain: '246e0a61f62d4790863742bad02025fa',
+        domain: this.domain,
         goodsType: val
       }
       this.showList = false

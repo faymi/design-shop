@@ -1,7 +1,7 @@
 import * as types from '../types'
 
 const state = {
-  domain: '246e0a61f62d4790863742bad02025fa', // 域名id
+  domain: '', // 域名id
   customerId: 'linzhanhong', // 登录用户id
   shopCartId: '1', // 购物车id
   frontMadeImg: '', // 正面定制图片
