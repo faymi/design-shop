@@ -4,9 +4,7 @@
       客服电话：{{phoneNumber}}
     </div>
     <div class="add-address">
-      <router-link to="">
-        <button>拨打电话</button>
-      </router-link>
+      <a :href="'tel: ' + phoneNumber + '#mp.weixin.qq.com'">拨打电话</a>
     </div>
   </div>
 </template>
@@ -21,6 +19,8 @@ export default {
     }
   },
   methods: {
+  },
+  mounted () {
   }
 }
 </script>
@@ -44,13 +44,14 @@ export default {
     height: px2rem(110px);
     line-height: px2rem(110px);    
     margin-top: px2rem(20px);
-    button {
+    a {
       width: 100%;
       height: 100%;
       border: none;
       background-color: $btn-pay-color;
       color: $btn-font-color;
       font-size: 16px;
+      display: inline-block;
     }
   }
 }
