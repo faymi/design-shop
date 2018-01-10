@@ -184,12 +184,17 @@ export default {
       let time = this.moment().format('YYYY-MM-DD HH:mm:ss')
       let userId = this.userId
       this.editDialog = true
-      this.axios.post('ideat/userManage/editUserInfo', {
-        servicePhone: _this.phone,
-        shopName: _this.shopName,
+      let params = {
+        servicePhone: this.phone,
+        shopName: this.shopName,
         updateTime: time,
-        userId: userId,
-        logoPic: _this.dataUrl
+        userId: userId
+      }
+      if (/^data:/.test(this.dataUrl)) {
+        params.logoPic = this.dataUrl
+      }
+      this.axios.post('ideat/userManage/editUserInfo', {
+        ...params
       })
       .then(function (response) {
         // console.log(response)

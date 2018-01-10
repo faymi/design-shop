@@ -139,7 +139,7 @@
           </div>
           <div class="domain-cls">
             <span>域名：</span>
-            <span>{{domain}}</span>
+            <b>{{domain}}</b>
           </div>
           <div class="domain-cls">
             <span>客服电话：</span>
