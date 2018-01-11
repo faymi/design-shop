@@ -282,7 +282,8 @@ export default {
       value: '1',
       preViewDialog: false,
       dialogFormVisible: false,
-      extraInfo: []
+      extraInfo: [],
+      loading: {}
     }
   },
   methods: {
@@ -571,6 +572,12 @@ export default {
     // },
     // 编辑商品完成事件
     addGoods () {
+      this.loading = this.$loading({
+        lock: true,
+        text: '图片上传中',
+        // spinner: 'el-icon-loading',
+        background: 'rgba(255, 255, 255, 0.7)'
+      })
       this.$refs.upload.submit()
       // 去除detail为空的数组项
       for (let i = 0; i < this.params.length; i++) {
@@ -593,6 +600,7 @@ export default {
       .then(function (response) {
         let data = response.data
         if (data.code !== 0) {
+          _this.loading.close()
           _this.$notify.error({
             title: '温馨提示',
             message: data.msg
@@ -620,6 +628,7 @@ export default {
       .then(function (response) {
         let data = response.data
         if (data.code !== 0) {
+          _this.loading.close()
           _this.$notify.error({
             title: '温馨提示',
             message: data.msg
@@ -641,12 +650,14 @@ export default {
       }).then(function (response) {
         let data = response.data
         if (data.code !== 0) {
+          _this.loading.close()
           _this.$notify.error({
             title: '温馨提示',
             message: '编辑商品失败！'
           })
           return
         }
+        _this.loading.close()
         _this.$notify.success({
           title: '温馨提示',
           message: '编辑商品成功！'
