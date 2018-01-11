@@ -330,6 +330,7 @@ export default {
         params.side = side
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
+        // params.colorId = _this.currentColor
         if (side === 0 && type === 1) {
           _this.frontImg = reader.result
         }
@@ -467,7 +468,6 @@ export default {
         item.detail = []
         this.params.push(item)
       }
-      console.log(this.params)
       // 切换回来已输入尺寸的色块时显示已输入的尺寸
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === this.currentColor) {

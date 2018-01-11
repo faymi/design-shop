@@ -509,6 +509,7 @@ export default {
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
       this.params = []
+      this.dataUrl = []
       this.frontImg = this.backImg = require('../assets/user.png')
       this.goodName = this.skill = this.singleCost = this.doubleCost = this.singlePrice = this.doublePrice = this.textarea = ''
       this.value = '1'
@@ -529,6 +530,7 @@ export default {
         params.side = side
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
+        params.colorId = _this.currentColor
         if (side === 0 && type === 1) {
           _this.frontImg = reader.result
         }
@@ -666,7 +668,7 @@ export default {
         item.detail = []
         this.params.push(item)
       }
-      console.log(this.params)
+      // console.log(this.params)
       // 切换回来已输入尺寸的色块时显示已输入的尺寸
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === this.currentColor) {
@@ -704,6 +706,24 @@ export default {
               }
             }
           }
+        }
+      }
+      // 切换显示上传的图片
+      // console.log(this.dataUrl)
+      let imgItem = []
+      for (let i in this.dataUrl) {
+        if (this.dataUrl[i].colorId === this.currentColor) {
+          imgItem.push(this.dataUrl[i])
+        } else {
+          this.frontImg = require('../assets/user.png')
+          this.backImg = require('../assets/user.png')
+        }
+      }
+      for (let i in imgItem) {
+        if (imgItem[i].side === 0) {
+          this.frontImg = imgItem[i].goodsPicInfo
+        } else {
+          this.backImg = imgItem[i].goodsPicInfo
         }
       }
     },
@@ -767,7 +787,6 @@ export default {
           }
         }
       }
-      console.log(this.params)
     },
     // 尺寸点击事件
     // tabSizeClick (index, size, event) {
@@ -776,6 +795,7 @@ export default {
     // },
     // 添加商品完成事件
     addGoods () {
+      console.log(this.dataUrl)
       this.loading = this.$loading({
         lock: true,
         text: '图片上传中',
