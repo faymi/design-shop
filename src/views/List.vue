@@ -20,7 +20,7 @@
           </li>
         </ul>
       </div>
-      <div v-show="goodsList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无该类商品</div>
+      <div class="tips" v-show="goodsList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无该类商品</div>
       <v-footer></v-footer>
     </div>
   </div>
@@ -127,6 +127,12 @@ export default {
           }
         }
       } 
+    }
+    .tips {
+      position: absolute;
+      top: px2rem(200px);
+      left: 0;
+      right: 0;
     }
   }
 }

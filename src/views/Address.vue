@@ -5,14 +5,14 @@
         <li v-for="(item, index) in addressList" :key="index">
           <div class='radio'>
             <input type='radio' :id="'radio'+index" name='radio[]' :value="item.addressId" v-model="seletedRadio">
-            <label :for="'radio'+index" :id="'label_'+index">
+            <label :for="'radio'+index" :id="'label_'+index" @click="showDelete(index)">
               <div class="user"><b>{{item.consignee}}</b> &nbsp;&nbsp; {{item.phone}}</div>
               <div class="address">
                 <span>{{item.address}}</span>
               </div>
               <div class="postcode">{{item.postcode}}</div>
             </label>
-            <button class="del-btn" @click="deleteAddress(item.addressId)">删除</button>
+            <button class="del-btn" v-if="currentIndex == index" @click="deleteAddress(item.addressId)">删除</button>
           </div>
         </li> 
       </ul>
@@ -22,7 +22,7 @@
         <button>添加收货地址</button>
       </router-link>
     </div>
-    <div class="bottom-btn">
+    <div class="bottom-btn" v-if="nosign">
       <button @click="toPay">确认下单</button>
     </div>
   </div>
@@ -39,10 +39,16 @@ export default {
   data () {
     return {
       seletedRadio: '',
-      addressList: []
+      addressList: [],
+      nosign: false, // 隐藏确认下单按钮
+      currentIndex: 0
     }
   },
   methods: {
+    // 删除按钮显隐
+    showDelete (index) {
+      this.currentIndex = index
+    },
     // 获取地址列表
     getAddressData () {
       this.$store.dispatch('showLoading', true)
@@ -56,6 +62,11 @@ export default {
           this.$router.replace('/add-address')
         }
         this.addressList = res.body
+        // 默然选中第一个收货地址
+        this.$nextTick(function () {
+          let item = document.getElementById('label_0')
+          item.click()
+        })
       })
     },
     // 删除地址
@@ -104,6 +115,11 @@ export default {
     })
   },
   mounted () {
+    if (this.$route.query.nosign && this.$route.query.nosign === '1') {
+      this.nosign = false
+    } else {
+      this.nosign = true
+    }
     this.getAddressData()
   }
 }

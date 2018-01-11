@@ -98,7 +98,7 @@ export default {
   },
   methods: {
     toAddress () {
-      this.$router.push('/address')
+      this.$router.push('/address?nosign=1')
     },
     toPhoneCall () {
       this.$router.push('/phone-call')

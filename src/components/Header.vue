@@ -89,6 +89,7 @@ export default {
   top: 0;
   left: 0;
   font-size: 14px;
+  z-index: 1;
   .left {
     .img-wrap {
       margin-top: px2rem(5px);
@@ -120,7 +121,7 @@ export default {
   }
   .list-drop {
     position: absolute;
-    top: px2rem(120px);
+    top: px2rem(112px);
     left: 0;
     bottom: 0;
     width: 100%;
