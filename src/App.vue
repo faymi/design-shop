@@ -34,6 +34,8 @@ export default {
     ])
   },
   mounted () {
+    // IOS绑定touchstart事件才能使元素的:active生效
+    document.body.addEventListener('touchstart', function () {})
   },
   watch: {
     '$route' (to, from) {

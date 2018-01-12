@@ -2,10 +2,10 @@
   <div class="address-wrap">
     <div class="address-list">
       <ul>
-        <li v-for="(item, index) in addressList" :key="index">
+        <li v-for="(item, index) in addressList" :key="index" class="activeTouch">
           <div class='radio'>
             <input type='radio' :id="'radio'+index" name='radio[]' :value="item.addressId" v-model="seletedRadio">
-            <label :for="'radio'+index" :id="'label_'+index" @click="showDelete(index)">
+            <label :for="'radio'+index" :id="'label_'+index" @click="showDelete(index)" class="activeTouch">
               <div class="user"><b>{{item.consignee}}</b> &nbsp;&nbsp; {{item.phone}}</div>
               <div class="address">
                 <span>{{item.address}}</span>
@@ -134,14 +134,12 @@ export default {
   overflow: hidden;
   .address-list {
     width: 100%;
-    margin-top: px2rem(20px);
+    // margin-top: px2rem(20px);
     ul > li{
-      // border-top: px2rem(2px) solid #e6e6e6;
-      border-bottom: px2rem(2px) solid #e6e6e6;   
-      margin-top: px2rem(20px);   
+      border-bottom: px2rem(2px) solid #e6e6e6; 
       .radio {
         position: relative;
-        height: px2rem(160px);
+        height: px2rem(170px);
         input[type='radio'] {
           position: absolute;
           left: px2rem(20px);
@@ -152,8 +150,11 @@ export default {
         }
         label {
           position: absolute;
-          top: px2rem(-20px);
+          // top: px2rem(-10px);
+          top: 0;
           left: px2rem(50px);
+          right: 0;
+          bottom: 0;
           &:before {
             content: ' ';
             position: absolute;
@@ -214,7 +215,7 @@ export default {
         }
         .del-btn {
           position: absolute;
-          top: 0;
+          top: px2rem(60px);
           right: px2rem(20px);
           width: px2rem(100px);
           height: px2rem(40px);

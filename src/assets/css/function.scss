@@ -12,21 +12,29 @@ $border: px2rem(2px) solid #e6e6e6;
 $border-color: #e6e6e6;
 
 .bottom-btn {
-  position: fixed;
+  position: absolute;
   bottom: 0;
+  right: 0;
   left: 0;
   width: 100%;
+  height: px2rem(110px);
   button {
     border: none;
     width: 100%;
-    height: px2rem(110px);
+    height: 100%;
     background-color: $btn-color;
     color: $btn-font-color;
     font-size: 20px;
   }
 }
+
 .warn {
   color: #fb0f32;
+}
+
+// 点击元素状态改变效果
+.activeTouch:active {
+  background: rgb(243,243,243) !important;
 }
 
 // 加载 gif

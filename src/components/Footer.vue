@@ -1,10 +1,10 @@
 <template>
   <div class="footer">
-    <div class="product">
+    <div class="product activeTouch">
       <i class="fa fa-shopping-bag"></i>
-      <router-link class="" :to="{ name: 'List', params: {}}">商品</router-link>
+      <router-link class="" :to="{ name: 'List', query: {domain: domian}}">商品</router-link>
     </div>
-    <div class="user">
+    <div class="user activeTouch">
       <i class="fa fa-user-circle"></i>
       <router-link :to="{ name: 'User', params: {}}">我的</router-link>
     </div>
@@ -12,11 +12,18 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
+
 export default {
   name: 'Footer',
   data () {
     return {
     }
+  },
+  computed: {
+    ...mapGetters({
+      domian: 'domain'
+    })
   },
   methods: {
   }

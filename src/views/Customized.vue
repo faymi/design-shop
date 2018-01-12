@@ -21,17 +21,17 @@
         <span>旋转</span>
       </div>
       <div class="tool-right">
-        <span @click="add_font_show">字体</span>
-        <span @click="font_color_show">颜色</span>
-        <span @click="font_size_show">大小</span>
+        <span class="activeTouch" @click="add_font_show">字体</span>
+        <span class="activeTouch" @click="font_color_show">颜色</span>
+        <span class="activeTouch" @click="font_size_show">大小</span>
         <div class="font-show">
           <ul v-show="font_toggle">
-            <li v-for="item in fonts" @click="select_font(item.v)">
+            <li class="activeTouch" v-for="item in fonts" @click="select_font(item.v)">
               {{item.v}}
             </li>
           </ul>
           <ul v-show="size_toggle">
-            <li v-for="item in font_size" @click="select_font_size(item.v)">
+            <li class="activeTouch" v-for="item in font_size" @click="select_font_size(item.v)">
               {{item.v}}
             </li>
           </ul>
@@ -56,12 +56,12 @@
       </div> 
     </div>
     <div class="footer">
-      <div class="product" @click="add_pic">
+      <div class="product activeTouch" @click="add_pic">
         <i class="fa fa-picture-o"></i>
         <router-link :to="{}">添加图片</router-link>        
         <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
       </div>
-      <div class="user" @click="add_font">
+      <div class="user activeTouch" @click="add_font">
         <i class="fa fa-font"></i>
         <router-link :to="{}">添加文字</router-link>
       </div>

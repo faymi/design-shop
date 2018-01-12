@@ -3,16 +3,16 @@
     <div class="user-content">
       <div class="user-top">
         <div class="head">
-          <span @click="toAddress">收货地址</span>
+          <span @click="toAddress" class="activeTouch">收货地址</span>
           <span><img src="../assets/usered.png" alt=""></span>
-          <span @click="toPhoneCall">联系客户</span>
+          <span @click="toPhoneCall" class="activeTouch">联系客户</span>
         </div>
         <div class="user">
           <p>FAYMI</p>
           <p>广东 广州</p>
         </div>
         <div class="user-bar">
-          <span v-for="(item, index) in tab" :class="{activeTab: seletedIndex === index}" :key="index" @click="selectIndex(index)">{{item}}</span>
+          <span class="activeTouch" v-for="(item, index) in tab" :class="{activeTab: seletedIndex === index}" :key="index" @click="selectIndex(index)">{{item}}</span>
         </div>
       </div>
       <div class="user-middle">

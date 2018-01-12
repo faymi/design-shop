@@ -25,6 +25,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import api from '@/api/fetch'
 import * as _ from '@/util/tool'
 
@@ -38,6 +39,11 @@ export default {
       postcode: ''
     }
   },
+  computed: {
+    ...mapGetters({
+      customerId: 'customerId'
+    })
+  },
   methods: {
     addAddress () {
       let _this = this
@@ -45,15 +51,15 @@ export default {
         _.alert('请输入收件人')
         return
       }
-      if (this.consignee === '') {
+      if (this.phone === '') {
         _.alert('请输入联系电话')
         return
       }
-      if (this.consignee === '') {
+      if (this.address === '') {
         _.alert('请输入收货地址')
         return
       }
-      if (this.consignee === '') {
+      if (this.postcode === '') {
         _.alert('请输入邮政编码')
         return
       }
@@ -62,8 +68,8 @@ export default {
         phone: this.phone,
         address: this.address,
         postcode: this.postcode,
-        customerId: 'linzhanhong',
-        insertTime: '2018-01-05 22:56:33'
+        customerId: this.customerId,
+        insertTime: this.moment().format('YYYY-MM-DD hh:mm:ss')
       }
       api.addOrderAddress(params)
       .then(res => {
@@ -80,9 +86,6 @@ export default {
     }
   },
   mounted () {
-    var windheight = window.innerHeight
-    var bottomx = document.getElementsByClassName('bottom-btn')
-    console.log(windheight, bottomx)
   }
 }
 </script>

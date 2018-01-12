@@ -33,49 +33,49 @@
           <li v-if="showS">
             <div class="left">S</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('s')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('s')"></i>
               <input type="text" v-model="inputS"/>
-              <i class="fa fa-plus" @click="plus('s')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('s')"></i>
             </div>
           </li>
           <li v-if="showM">
             <div class="left">M</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('m')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('m')"></i>
               <input type="text" v-model="inputM"/>
-              <i class="fa fa-plus" @click="plus('m')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('m')"></i>
             </div>
           </li>
           <li v-if="showL">
             <div class="left">L</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('l')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('l')"></i>
               <input type="text" v-model="inputL"/>
-              <i class="fa fa-plus" @click="plus('l')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('l')"></i>
             </div>
           </li>
           <li v-if="showXL">
             <div class="left">XL</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('xl')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('xl')"></i>
               <input type="text" v-model="inputXL"/>
-              <i class="fa fa-plus" @click="plus('xl')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('xl')"></i>
             </div>
           </li>
           <li v-if="show2XL">
             <div class="left">2XL</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('2xl')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('2xl')"></i>
               <input type="text" v-model="input2XL"/>
-              <i class="fa fa-plus" @click="plus('2xl')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('2xl')"></i>
             </div>
           </li>
           <li v-if="show3XL">
             <div class="left">3XL</div>
             <div class="right">
-              <i class="fa fa-minus" @click="minus('3xl')"></i>
+              <i class="fa fa-minus activeTouch" @click="minus('3xl')"></i>
               <input type="text" v-model="input3XL"/>
-              <i class="fa fa-plus" @click="plus('3xl')"></i>
+              <i class="fa fa-plus activeTouch" @click="plus('3xl')"></i>
             </div>
           </li>
         </ul>

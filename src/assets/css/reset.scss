@@ -82,7 +82,7 @@ body {
 
 /* css of scrollbar*/
 ::-webkit-scrollbar {
-    width: 1px;
+    width: 0px; // 设置为零，不显示滚动条
     height: 5px;
 }
 
