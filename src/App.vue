@@ -63,11 +63,11 @@ export default {
     '$route' (to, from) {
       this.currentPath = to.path
       let path = to.path.split('/')[1]
-      if (path === 'login' || path === 'orderDetail' || path === 'accountDetail' || path === 'goodsDetail') {
+      if (path === 'login') {
         this.header_show = false
         this.aside_show = false
         this.ismain = false
-      } else if (path === 'accountInfo') {
+      } else if (path === 'accountInfo' || path === 'orderDetail' || path === 'accountDetail' || path === 'goodsDetail') {
         this.header_show = true
         this.aside_show = false
         this.ismain = false
@@ -90,16 +90,16 @@ export default {
   },
   created () {
     this.path = this.currentPath = this.$route.path
-    if (this.path === '/login' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
-      this.header_show = false
+    if (this.path === '/login') {
+      this.header_show = false // 隐藏所有
       this.aside_show = false
       this.ismain = false
-    } else if (this.path === '/accountInfo' || this.path === '/orderDetail') {
-      this.header_show = true
+    } else if (this.path === '/accountInfo' || this.path === '/orderDetail' || this.path === '/accountDetail' || this.path === '/goodsDetail') {
+      this.header_show = true // 只显示导航条
       this.aside_show = false
       this.ismain = false
     } else {
-      this.header_show = true
+      this.header_show = true // 显示所有
       this.aside_show = true
       this.ismain = true
       this.userId = sessionStorage.getItem('username')
@@ -113,6 +113,12 @@ export default {
     // if (this.authority === 'false' && this.menu.length === 6) {
     //   this.menu.splice(3, 1) // 隐藏accountInfo（账号详情页）
     // }
+    let _this = this
+    // 监听修改logo，并同步logo
+    this.Bus.$on('changeLogo', function (logo) {
+      _this.logoPic = logo
+      sessionStorage.setItem('logoPic', logo)
+    })
   }
 }
 </script>

@@ -57,9 +57,13 @@ axios.interceptors.request.use(
 //   return Promise.reject(error)
 // })
 
+// event bus
+const Bus = new Vue()
+
 Vue.prototype.axios = axios
 Vue.prototype.echarts = echarts
 Vue.prototype.moment = moment
+Vue.prototype.Bus = Bus
 
 Vue.config.productionTip = false
 Vue.use(ElementUI)

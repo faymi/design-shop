@@ -210,6 +210,7 @@ export default {
           title: '温馨提示',
           message: data.msg
         })
+        _this.Bus.$emit('changeLogo', _this.dataUrl)
         // _this.getData()
       })
       .catch(function (error) {

@@ -1,5 +1,4 @@
 <template>
-  <div class="wrap-all">
     <div class="content-wrap">
       <div class="account-wrap">
         <div class="inner-wrap">
@@ -103,7 +102,6 @@
           </div>
         </div>
       </div>
-    </div>
     <el-dialog title="删除账号" :visible.sync="delDialog" width="400px" center>
       <div class="del-dialog-wrap">
         <span>是否确认删除该账号“{{userId}}”？</span>
@@ -455,8 +453,9 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/function.scss';
 .account-wrap {
-  margin: 0px 60px 0px 60px;
-  border:1px solid #000;
+  margin: 0px 60px 60px 60px;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
   font-size: 14px;
   padding: 10px;
   .inner-wrap {

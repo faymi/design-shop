@@ -1,61 +1,59 @@
 <template>
-  <div class="wrap-all">
-    <div class="content-wrap">
-      <div class="goods-wrap">
-        <div class="inner-wrap">
-          <div class="goods-header">
-            <div class="header-left">
-              <p>商品详情</p>
-            </div>
-            <div class="header-right">
-              <el-button type="primary" @click="delDialog = true" v-if="authority">删除</el-button>
-              <el-button type="primary" @click="dialogFormVisible = true" v-if="authority">编辑</el-button>
-            </div>
+  <div class="content-wrap">
+    <div class="goods-wrap">
+      <div class="inner-wrap">
+        <div class="goods-header">
+          <div class="header-left">
+            <p>商品详情</p>
           </div>
-          <div class="goods-content">
-            <div class="goods-img"><img :src="imageList[0]" alt=""></div>
-            <div class="goods-detail">
-              <div class="goods-name">
-                <span>{{detail.goodsName}}</span>
-                <el-select disabled="disabled" v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;" v-if="!authority">
-                  <el-option key="0" label="已上架" value="1"></el-option>
-                  <el-option key="1" label="已下架" value="0"></el-option>
-                </el-select>
+          <div class="header-right">
+            <el-button type="primary" @click="delDialog = true" v-if="authority">删除</el-button>
+            <el-button type="primary" @click="dialogFormVisible = true" v-if="authority">编辑</el-button>
+          </div>
+        </div>
+        <div class="goods-content">
+          <div class="goods-img"><img :src="imageList[0]" alt=""></div>
+          <div class="goods-detail">
+            <div class="goods-name">
+              <span>{{detail.goodsName}}</span>
+              <el-select disabled="disabled" v-model="detail.statusValue" placeholder="请选择" size="small" style="width: 100px;" v-if="!authority">
+                <el-option key="0" label="已上架" value="1"></el-option>
+                <el-option key="1" label="已下架" value="0"></el-option>
+              </el-select>
+            </div>
+            <div class="color-box">
+              <ul class="color">
+                <li v-for="(color, index) in editColors" @click="colorClick(index, color)" :key="index+'_size'" :id="index+'_size'" :class="{selectedItem:index === colorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
+              </ul>
+            </div>
+            <div class="size-stock">
+              <p>尺寸&库存</p>
+              <span v-for="item in stock" :key="item.sizeId">{{item.sizeId}}/{{item.amount}}</span>
+            </div>
+            <div class="price-box">
+              <div class="price-left">
+                <p>成本单价</p>
+                <span>印花单面：￥{{detail.singleCost}}</span>
+                <span>印花双面：￥{{detail.doubleCost}}</span>
               </div>
-              <div class="color-box">
-                <ul class="color">
-                  <li v-for="(color, index) in editColors" @click="colorClick(index, color)" :key="index+'_size'" :id="index+'_size'" :class="{selectedItem:index === colorIndex}"><div :style="{backgroundColor: color.key}"></div></li>
-                </ul>
+              <div class="price-right">
+                <p>零售单价</p>
+                <span>印花单面：{{detail.singlePrice}}</span>
+                <span>印花双面：￥{{detail.doublePrice}}</span>
               </div>
-              <div class="size-stock">
-                <p>尺寸&库存</p>
-                <span v-for="item in stock" :key="item.sizeId">{{item.sizeId}}/{{item.amount}}</span>
-              </div>
-              <div class="price-box">
-                <div class="price-left">
-                  <p>成本单价</p>
-                  <span>印花单面：￥{{detail.singleCost}}</span>
-                  <span>印花双面：￥{{detail.doubleCost}}</span>
-                </div>
-                <div class="price-right">
-                  <p>零售单价</p>
-                  <span>印花单面：{{detail.singlePrice}}</span>
-                  <span>印花双面：￥{{detail.doublePrice}}</span>
-                </div>
-                <div class="price-right">
-                  <p>印花工艺</p>
-                  <span>{{detail.printing}}</span>
-                </div>
+              <div class="price-right">
+                <p>印花工艺</p>
+                <span>{{detail.printing}}</span>
               </div>
             </div>
           </div>
-          <div class="goods-introduction">
-            <p>商品简介</p>
-            <span>{{detail.goodsDescript}}</span>
-          </div>
-          <div class="goods-picture">
-            <img v-for="(item, index) in imageList" :key="index" :src="item" alt="">
-          </div>
+        </div>
+        <div class="goods-introduction">
+          <p>商品简介</p>
+          <span>{{detail.goodsDescript}}</span>
+        </div>
+        <div class="goods-picture">
+          <img v-for="(item, index) in imageList" :key="index" :src="item" alt="">
         </div>
       </div>
     </div>
@@ -809,8 +807,9 @@ export default {
 <style lang="scss" scoped>
 @import '../assets/css/function.scss';
 .goods-wrap {
-  margin: 0px 60px 20px 60px;
-  border:1px solid #000;
+  margin: 0px 60px 60px 60px;
+  border: 1px solid #ececec;
+  box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
   font-size: 14px;
   padding: 10px;
   .inner-wrap {
