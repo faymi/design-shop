@@ -4,16 +4,24 @@
       <div v-for="(item, index) in orderList" :key="index">
         <div class="pay-top">
           <p>{{item.goodsName}}</p>
-          <div>数量：12件S码，12件M码，12件L码，12件XL码，共60件</div>
-          <div>总价：10*60 = 600元</div>
+          <div class="order-status">{{status}}</div>
+          <div>订单号：{{orderId}}</div>
+          <div>数量：<span v-for="(sizeItem,index) in item.sizeList" :key="index">{{sizeItem.buyCount}}件{{sizeItem.sizeId}}码、</span>，共{{item.buyCount}}件</div>
+          <div>总价：{{item.buyCount}} x {{item.price}} = {{item.goodsTotalPrice}}元</div>
         </div>
         <div class="pay-img">
-          <img :src="item.frontImg">
-          <img :src="item.backImg">
+          <div class="pay-img-wrap">
+            <img :src="item.frontXGPath">
+            <div><img :src="item.frontSCPath"></div>
+          </div>
+          <div class="pay-img-wrap">
+            <img :src="item.backXGPath">
+            <div><img :src="item.backSCPath"></div>
+          </div>
         </div>
       </div>
       <div class="pay-address">
-        <div>{{userId}}&nbsp;&nbsp;{{phone}}</div>
+        <div><b>{{userId}}</b>&nbsp;&nbsp;{{phone}}</div>
         <div>{{address}}</div>
       </div>
       <div class="pay-btn">
@@ -26,31 +34,38 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import api from '@/api/fetch'
 
 export default {
   name: 'Pay',
   data () {
     return {
-      userId: 'faymi',
-      phone: '400880550',
-      address: '广东省深圳南山区留学生创业大厦',
+      userId: '',
+      phone: '',
+      address: '',
+      orderId: '',
+      status: '',
       orderList: [
         {
           frontImg: require('../assets/txu.jpg'),
           backImg: require('../assets/txu-back.jpg'),
-          goodsName: '纯棉T恤'
+          goodsName: '纯棉T恤',
+          status: 0
         },
         {
           frontImg: require('../assets/txu.jpg'),
           backImg: require('../assets/txu-back.jpg'),
-          goodsName: '纯棉T恤'
+          goodsName: '纯棉T恤',
+          status: 1
         }
-      ]
+      ],
+      goodsInfoResult: []
     }
   },
   computed: {
     ...mapGetters({
-      shopcartList: 'shopcartList'
+      shopcartList: 'shopcartList',
+      domain: 'domain'
     })
   },
   methods: {
@@ -59,7 +74,23 @@ export default {
     }
   },
   mounted () {
-    console.log(this.shopcartList)
+    this.$store.dispatch('showLoading', true)
+    this.orderId = this.$route.query.orderId
+    let params = {
+      orderId: this.orderId,
+      domain: this.domain
+    }
+    api.getOrderDetail(params)
+    .then(res => {
+      this.$store.dispatch('showLoading', false)
+      if (res.code === 0) {
+        this.orderList = res.body.goodsInfoResult
+        this.address = res.body.addressResult.address
+        this.phone = res.body.addressResult.phone
+        this.userId = res.body.addressResult.consignee
+        this.status = res.body.addressResult.status
+      }
+    })
   }
 }
 </script>
@@ -80,6 +111,12 @@ export default {
       margin-top: px2rem(20px);
       border-bottom: px2rem(2px) solid #ececec;
       padding-bottom: px2rem(20px);
+      position: relative;
+      .order-status {
+        position: absolute;
+        top: px2rem(10px);
+        right: px2rem(10px);
+      }
       p {
         font-size: 16px;
         font-weight: bold;
@@ -98,9 +135,23 @@ export default {
       justify-content: space-between;
       border-bottom: px2rem(2px) solid #ececec; 
       padding-bottom: px2rem(20px);
-      img {
+      div.pay-img-wrap {
         width: px2rem(340px);
         height: px2rem(400px);
+        position: relative;
+        img {
+          width: 100%;
+          height: 100%;
+          background-size: cover;
+        }
+        div {
+          width: px2rem(170px);
+          height: px2rem(200px);
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        }
       }
     }
     .pay-address {

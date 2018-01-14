@@ -91,27 +91,49 @@ export default {
       if (this.seletedRadio === '') {
         _.alert('请选中收货地址')
       } else {
-        let params = {
-          addressId: this.seletedRadio,
-          customerId: this.customerId,
-          ...this.singleOrderData,
-          insertTime: this.moment().format('YYYY-MM-DD hh:mm:ss')
-        }
-        this.$store.dispatch('showLoading', true)
-        api.addSingleOrder(params)
-        .then(res => {
-          if (res.code === 0) {
-            this.$store.dispatch('showLoading', false)
-            this.$router.push('/pay')
+        if (!this.$route.query.name || !this.$route.query.name === 'shopcartOrder') { // 直接下单
+          let params = {
+            addressId: this.seletedRadio,
+            customerId: this.customerId,
+            ...this.singleOrderData,
+            insertTime: this.moment().format('YYYY-MM-DD hh:mm:ss')
           }
-        })
+          this.$store.dispatch('showLoading', true)
+          api.addSingleOrder(params)
+          .then(res => {
+            if (res.code === 0) {
+              this.$store.dispatch('showLoading', false)
+              let orderId = res.body
+              this.$router.push({path: '/pay', query: { orderId: orderId }})
+            }
+          })
+        } else {
+          // 购物车下单
+          this.shopCartOrder()
+        }
       }
+    },
+    shopCartOrder () {
+      let params = {
+        shopCartId: this.shopCartId,
+        addressId: this.seletedRadio
+      }
+      this.$store.dispatch('showLoading', true)
+      api.addMultiOrder(params)
+      .then(res => {
+        if (res.code === 0) {
+          this.$store.dispatch('showLoading', false)
+          let orderId = res.body
+          this.$router.push({path: '/pay', query: { orderId: orderId }})
+        }
+      })
     }
   },
   computed: {
     ...mapGetters({
       singleOrderData: 'singleOrderData',
-      customerId: 'customerId'
+      customerId: 'customerId',
+      shopCartId: 'shopCartId'
     })
   },
   mounted () {

@@ -83,7 +83,7 @@
           <div class="left">总价</div>
           <div class="right">
             <span v-if="totalPrice == 0">{{totalPrice}} 元</span>
-            <span v-else>{{totalNum}}*{{designPrice}} = {{totalPrice}} 元</span>
+            <span v-else>{{totalNum}} x {{designPrice}} = {{totalPrice}} 元</span>
           </div>
         </div>
       </div>

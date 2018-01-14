@@ -94,6 +94,10 @@ export default {
   addSingleOrder (params) {
     return fetch('post', '/ideat/commonManage/addSingleOrder', params)
   },
+  // 购物车下单
+  addMultiOrder (params) {
+    return fetch('post', '/ideat/commonManage/addMultiOrder', params)
+  },
   // 添加购物车
   addShopCart (params) {
     return fetch('post', '/ideat/commonManage/addCartGoods', params)
@@ -105,5 +109,13 @@ export default {
   // 删除购物车某一件商品
   deleteCartRecordId (params) {
     return fetch('post', '/ideat/commonManage/deleteCartGoods', params)
+  },
+  // 获取订单列表
+  getOrderList (params) {
+    return fetch('get', '/ideat/commonManage/getOrderList', params)
+  },
+  // 获取订单详情
+  getOrderDetail (params) {
+    return fetch('get', '/ideat/commonManage/getOrderDetail', params)
   }
 }
