@@ -53,7 +53,7 @@
           <span>{{detail.goodsDescript}}</span>
         </div>
         <div class="goods-picture">
-          <img v-for="(item, index) in imageList" :key="index" :src="item" alt="">
+          <img v-for="(item, index) in fileList" :key="index" :src="item.url" alt="">
         </div>
       </div>
     </div>
@@ -253,6 +253,10 @@ export default {
       currentColor: '',
       imgFile: {},
       dataUrl: [],
+      imgArray: {
+        effectsImg: [],
+        descriptImg: []
+      },
       fileData: [],
       dialogImageUrl: '',
       goodsPicPath: '',
@@ -328,12 +332,48 @@ export default {
         params.side = side
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
-        // params.colorId = _this.currentColor
+        params.colorId = _this.currentColor
+        let effectsImg = _this.imgArray.effectsImg
+        // console.log(effectsImg)
+        let flag = false
         if (side === 0 && type === 1) {
           _this.frontImg = reader.result
+
+          if (_this.imgArray.effectsImg.length && _this.imgArray.effectsImg.length > 0) {
+            for (let i in effectsImg) {
+              if (_this.currentColor === _this.imgArray.effectsImg[i].colorId) {
+                _this.imgArray.effectsImg[i].frontImg = reader.result
+                flag = true
+              }
+            }
+          }
+          if (!flag) {
+            _this.imgArray.effectsImg.push({
+              frontImg: reader.result,
+              colorId: _this.currentColor
+            })
+          }
         }
         if (side === 1 && type === 1) {
           _this.backImg = reader.result
+
+          if (_this.imgArray.effectsImg.length && _this.imgArray.effectsImg.length > 0) {
+            for (let i in _this.imgArray.effectsImg) {
+              if (_this.currentColor === _this.imgArray.effectsImg[i].colorId) {
+                _this.imgArray.effectsImg[i].backImg = reader.result
+                flag = true
+              }
+            }
+          }
+          if (!flag) {
+            _this.imgArray.effectsImg.push({
+              backImg: reader.result,
+              colorId: _this.currentColor
+            })
+          }
+        }
+        if (type === 0) {
+          _this.imgArray.descriptImg.push(reader.result)
         }
         _this.dataUrl.push(params)
       }
@@ -505,6 +545,37 @@ export default {
           }
         }
       }
+
+      // console.log(this.imgArray)
+      let effectsImg = this.imgArray.effectsImg
+      for (let i in effectsImg) {
+        for (let j in this.imageList) {
+          if (this.imageList[j].colorId === String(effectsImg[i].colorId)) {
+            if (effectsImg[i].frontImg !== undefined) {
+              this.imageList[j].frontXGPath = effectsImg[i].frontImg
+            }
+            if (effectsImg[i].backImg !== undefined) {
+              this.imageList[j].backXGPath = effectsImg[i].backImg
+            }
+          }
+        }
+      }
+
+      for (let i in this.imageList) {
+        if (this.imageList[i].colorId === String(color.color)) {
+          // console.log(this.imageList[i])
+          if (this.imageList[i].frontXGPath !== '') {
+            this.frontImg = this.imageList[i].frontXGPath
+          } else {
+            this.frontImg = require('../assets/user.png')
+          }
+          if (this.imageList[i].backXGPath !== '') {
+            this.backImg = this.imageList[i].backXGPath
+          } else {
+            this.backImg = require('../assets/user.png')
+          }
+        }
+      }
     },
     // 尺寸输入框失去焦点事件
     inputBlur (type) {
@@ -548,7 +619,6 @@ export default {
           }
           break
       }
-      console.log(this.params)
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].color === this.currentColor) {
           if (itemChild.hasOwnProperty('sizeId')) {
@@ -561,7 +631,6 @@ export default {
           }
         }
       }
-      console.log(this.params)
     },
     // 尺寸点击事件
     // tabSizeClick (index, size, event) {
@@ -570,6 +639,7 @@ export default {
     // },
     // 编辑商品完成事件
     addGoods () {
+      // console.log(this.imgArray)
       this.loading = this.$loading({
         lock: true,
         text: '图片上传中',
@@ -766,31 +836,41 @@ export default {
         _this.singleCost = _this.detail.singleCost = result.singleCost
         _this.doubleCost = _this.detail.doubleCost = result.doubleCost
         _this.skill = _this.detail.printing = result.printing
-        let imageInfo = result.imageInfo
-        _this.imageList = []
-        _this.fileList = []
-        for (let i = 0; i < imageInfo.length; i++) {
-          _this.imageList.push(imageInfo[i].goodsPicPath)
-          if (imageInfo[i].goodsPicType === 0) { // 素材图
-            let item = {}
-            item.name = ''
-            item.goodsPicId = imageInfo[i].goodsPicId
-            item.url = imageInfo[i].goodsPicPath
-            _this.fileList.push(item)
-          }
-          if (imageInfo[i].side === 0 && imageInfo[i].goodsPicType === 1) {
-            _this.frontImg = imageInfo[i].goodsPicPath
-          }
-          if (imageInfo[i].side === 1 && imageInfo[i].goodsPicType === 1) {
-            _this.backImg = imageInfo[i].goodsPicPath
-          }
-        }
         _this.extraInfo = result.extraInfo
         _this.params = result.extraInfo
         for (let i = 0; i < _this.params.length; i++) {
           _this.params[i].color = Number(_this.params[i].color)
         }
         _this.colorClick(0, {color: 1})
+        let scImageInfo = result.scImageInfo
+        for (let i in scImageInfo) {
+          let item = {}
+          item.name = ''
+          item.goodsPicId = scImageInfo[i].goodsPicId
+          item.url = scImageInfo[i].goodsPicPath
+          _this.fileList.push(item)
+        }
+
+        _this.imageList = result.xgImageInfo
+        // let imageInfo = result.imageInfo
+        // _this.imageList = []
+        // _this.fileList = []
+        // for (let i = 0; i < imageInfo.length; i++) {
+        //   _this.imageList.push(imageInfo[i].goodsPicPath)
+        //   if (imageInfo[i].goodsPicType === 0) { // 素材图
+        //     let item = {}
+        //     item.name = ''
+        //     item.goodsPicId = imageInfo[i].goodsPicId
+        //     item.url = imageInfo[i].goodsPicPath
+        //     _this.fileList.push(item)
+        //   }
+        //   if (imageInfo[i].side === 0 && imageInfo[i].goodsPicType === 1) {
+        //     _this.frontImg = imageInfo[i].goodsPicPath
+        //   }
+        //   if (imageInfo[i].side === 1 && imageInfo[i].goodsPicType === 1) {
+        //     _this.backImg = imageInfo[i].goodsPicPath
+        //   }
+        // }
       })
       .catch(function (error) {
         console.log(error)

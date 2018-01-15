@@ -3,7 +3,7 @@
     <div class="header">
       <div class="left">商品管理</div>
       <div class="right">
-        <div class="search-btn" v-if="authority">
+        <div class="search-btn" v-if="true">
           <el-button type="primary" @click="dialogFormVisible = true">添加商品</el-button>
         </div>
       </div>
@@ -370,6 +370,10 @@ export default {
       fileList: [],
       imgFile: {},
       dataUrl: [],
+      imgArray: {
+        effectsImg: [],
+        descriptImg: []
+      },
       fileData: [],
       dialogImageUrl: '',
       goodsPicPath: '',
@@ -531,12 +535,50 @@ export default {
         params.goodsPicType = type
         params.goodsPicInfo = reader.result
         params.colorId = _this.currentColor
+        let effectsImg = _this.imgArray.effectsImg
+        // console.log(effectsImg)
+        let flag = false
         if (side === 0 && type === 1) {
           _this.frontImg = reader.result
+
+          if (_this.imgArray.effectsImg.length && _this.imgArray.effectsImg.length > 0) {
+            for (let i in effectsImg) {
+              if (_this.currentColor === _this.imgArray.effectsImg[i].colorId) {
+                _this.imgArray.effectsImg[i].frontImg = reader.result
+                flag = true
+              }
+            }
+          }
+          if (!flag) {
+            _this.imgArray.effectsImg.push({
+              frontImg: reader.result,
+              colorId: _this.currentColor
+            })
+          }
         }
         if (side === 1 && type === 1) {
           _this.backImg = reader.result
+
+          if (_this.imgArray.effectsImg.length && _this.imgArray.effectsImg.length > 0) {
+            for (let i in _this.imgArray.effectsImg) {
+              if (_this.currentColor === _this.imgArray.effectsImg[i].colorId) {
+                _this.imgArray.effectsImg[i].backImg = reader.result
+                flag = true
+              }
+            }
+          }
+          if (!flag) {
+            _this.imgArray.effectsImg.push({
+              backImg: reader.result,
+              colorId: _this.currentColor
+            })
+          }
         }
+        if (type === 0) {
+          _this.imgArray.descriptImg.push(reader.result)
+        }
+        // console.log('1111111111111')
+        // console.log(effectsImg)
         _this.dataUrl.push(params)
       }
       reader.readAsDataURL(file)
@@ -795,7 +837,8 @@ export default {
     // },
     // 添加商品完成事件
     addGoods () {
-      console.log(this.dataUrl)
+      // console.log(this.dataUrl)
+      console.log(this.imgArray)
       this.loading = this.$loading({
         lock: true,
         text: '图片上传中',
@@ -872,7 +915,7 @@ export default {
       let _this = this
       this.axios.post('ideat/goodsManage/addGoodsPic', {
         goodsId: this.goodsId,
-        params: this.dataUrl
+        params: this.imgArray
       }).then(function (response) {
         let data = response.data
         if (data.code !== 0) {
