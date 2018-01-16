@@ -3,7 +3,7 @@
     <div class="header">
       <div class="left">商品管理</div>
       <div class="right">
-        <div class="search-btn" v-if="true">
+        <div class="search-btn" v-if="authority">
           <el-button type="primary" @click="dialogFormVisible = true">添加商品</el-button>
         </div>
       </div>
@@ -514,6 +514,10 @@ export default {
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
       this.params = []
       this.dataUrl = []
+      this.imgArray = {
+        effectsImg: [],
+        descriptImg: []
+      }
       this.frontImg = this.backImg = require('../assets/user.png')
       this.goodName = this.skill = this.singleCost = this.doubleCost = this.singlePrice = this.doublePrice = this.textarea = ''
       this.value = '1'

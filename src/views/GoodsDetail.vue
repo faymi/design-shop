@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="goods-content">
-          <div class="goods-img"><img :src="imageList[0]" alt=""></div>
+          <div class="goods-img"><img :src="imageList[0].frontXGPath" alt=""></div>
           <div class="goods-detail">
             <div class="goods-name">
               <span>{{detail.goodsName}}</span>
@@ -316,6 +316,10 @@ export default {
     },
     // 关闭弹窗
     dialogClose () {
+      this.imgArray = {
+        effectsImg: [],
+        descriptImg: []
+      }
       // // 关闭后初始化
       // this.flagS = this.flagM = this.flagL = this.flag1L = this.flag2L = this.flag3L = false
       // this.sizeS = this.sizeM = this.sizeL = this.size1L = this.size2L = this.size3L = ''
@@ -546,35 +550,63 @@ export default {
         }
       }
 
-      // console.log(this.imgArray)
+      // 将新上传的图片筛选进行替换或新增
+      let findNewAdd = false
       let effectsImg = this.imgArray.effectsImg
       for (let i in effectsImg) {
         for (let j in this.imageList) {
           if (this.imageList[j].colorId === String(effectsImg[i].colorId)) {
+            findNewAdd = true
             if (effectsImg[i].frontImg !== undefined) {
               this.imageList[j].frontXGPath = effectsImg[i].frontImg
             }
             if (effectsImg[i].backImg !== undefined) {
               this.imageList[j].backXGPath = effectsImg[i].backImg
             }
+            effectsImg.splice(i, 1)
+            break
+          }
+          if (findNewAdd) {
+            break
           }
         }
       }
 
+      // 此处的effectsImg为某一商品颜色无图片时新增的图片数组
+      let newItem = {}
+      if (!findNewAdd && effectsImg.length > 0) {
+        for (let i in effectsImg) {
+          if (effectsImg[i].frontImg !== undefined) {
+            newItem.frontXGPath = effectsImg[i].frontImg
+          }
+          if (effectsImg[i].backImg !== undefined) {
+            newItem.backXGPath = effectsImg[i].backImg
+          }
+          newItem.colorId = String(effectsImg[i].colorId)
+          this.imageList.push(newItem)
+        }
+      }
+
+      // 通过切换颜色对应相应的商品图片
+      let find = false
       for (let i in this.imageList) {
         if (this.imageList[i].colorId === String(color.color)) {
-          // console.log(this.imageList[i])
-          if (this.imageList[i].frontXGPath !== '') {
+          find = true
+          if (this.imageList[i].frontXGPath !== '' && this.imageList[i].frontXGPath !== undefined) {
             this.frontImg = this.imageList[i].frontXGPath
           } else {
             this.frontImg = require('../assets/user.png')
           }
-          if (this.imageList[i].backXGPath !== '') {
+          if (this.imageList[i].backXGPath !== '' && this.imageList[i].backXGPath !== undefined) {
             this.backImg = this.imageList[i].backXGPath
           } else {
             this.backImg = require('../assets/user.png')
           }
         }
+      }
+      if (!find) {
+        this.frontImg = require('../assets/user.png')
+        this.backImg = require('../assets/user.png')
       }
     },
     // 尺寸输入框失去焦点事件
@@ -714,7 +746,7 @@ export default {
       let _this = this
       this.axios.post('ideat/goodsManage/editGoodsPic', {
         goodsId: this.goodsId,
-        params: this.dataUrl
+        params: this.imgArray
       }).then(function (response) {
         let data = response.data
         if (data.code !== 0) {
@@ -842,6 +874,7 @@ export default {
           _this.params[i].color = Number(_this.params[i].color)
         }
         _this.colorClick(0, {color: 1})
+        _this.fileList = []
         let scImageInfo = result.scImageInfo
         for (let i in scImageInfo) {
           let item = {}
