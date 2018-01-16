@@ -12,70 +12,28 @@
           <p>广东 广州</p>
         </div>
         <div class="user-bar">
-          <span class="activeTouch" v-for="(item, index) in tab" :class="{activeTab: seletedIndex === index}" :key="index" @click="selectIndex(index)">{{item}}</span>
+          <span class="activeTouch" v-for="(item, index) in tab" :class="{activeTab: seletedIndex === index}" :key="index" @click="selectIndex(item.val, index)">{{item.key}}</span>
         </div>
       </div>
       <div class="user-middle">
-        <div class="pay-list">
+        <div class="pay-list" v-for="(item, index) in orderList" :key="item.index">
           <div class="list-top">
             <div class="left">
-              <img src="../assets/t-shirt-front.jpg">
+              <div class="left-img-wrap">
+                <img :src="item.frontXGPath" @click="getOrderDetail(item.orderId)">
+              </div>
               <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
+                <p>{{item.orderId}}</p>
+                <!-- <p>￥69</p> -->
               </div>
             </div>
-            <div class="right warn">待付款</div>
+            <div class="right warn">{{item.status}}</div>
           </div>
           <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
+            <span>共{{item.goodsCount}}件商品 合计：￥{{item.orderTotal}}</span>
           </div>
         </div>
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/txu.jpg">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <div class="right warn">待付款</div>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/txu-back.jpg">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <div class="right warn">待付款</div>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
-        <div class="pay-list">
-          <div class="list-top">
-            <div class="left">
-              <img src="../assets/txu-back.jpg">
-              <div>
-                <p>纯棉T恤</p>
-                <p>￥69</p>
-              </div>
-            </div>
-            <div class="right warn">待付款</div>
-          </div>
-          <div class="total">
-            <span>共12件商品 合计：￥160.00（含运费￥10.00）</span>
-          </div>
-        </div>
+        <div v-show="orderList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无该类商品</div>
       </div>
       <v-footer></v-footer>
     </div>
@@ -84,6 +42,8 @@
 
 <script>
 import Footer from '@/components/Footer'
+import { mapGetters } from 'vuex'
+import api from '@/api/fetch'
 
 export default {
   name: 'User',
@@ -92,9 +52,24 @@ export default {
   },
   data () {
     return {
-      tab: ['全部', '待付款', '待发货', '待收货', '已签收'],
-      seletedIndex: 0
+      tab: [
+        {key: '全部', val: 5},
+        {key: '待付款', val: 0},
+        {key: '待发货', val: 1},
+        {key: '待收货', val: 2},
+        {key: '已签收', val: 3},
+        {key: '已关闭', val: 4}
+      ],
+      seletedIndex: 0,
+      status: 5,
+      orderList: []
     }
+  },
+  computed: {
+    ...mapGetters({
+      domain: 'domain',
+      customerId: 'customerId'
+    })
   },
   methods: {
     toAddress () {
@@ -103,9 +78,33 @@ export default {
     toPhoneCall () {
       this.$router.push('/phone-call')
     },
-    selectIndex (index) {
+    selectIndex (status, index) {
       this.seletedIndex = index
+      this.status = status
+      this.getOrderData()
+    },
+    getOrderData () {
+      let params = {
+        domain: this.domain,
+        customerId: this.customerId,
+        status: this.status
+      }
+      this.$store.dispatch('showLoading', true)
+      api.getOrderList(params)
+      .then(res => {
+        this.$store.dispatch('showLoading', false)
+        // console.log(res)
+        if (res.code === 0) {
+          this.orderList = res.body
+        }
+      })
+    },
+    getOrderDetail (orderId) {
+      this.$router.push({path: '/pay', query: { orderId: orderId }})
     }
+  },
+  mounted () {
+    this.getOrderData()
   }
 }
 </script>
@@ -178,10 +177,14 @@ export default {
           justify-content: space-between;
           >div.left, >div.right {
             width: 50%;
-            img {
+            .left-img-wrap {
               width: px2rem(200px);
               height: px2rem(200px);
-              float: left;
+              img {
+                width: 100%;
+                height: 100%;
+                background-size: cover;
+              }
             }
           }
           div.right {
@@ -190,9 +193,10 @@ export default {
             padding-right: px2rem(20px);
           }
           div.left {
-            display: flex;
-            justify-content: flex-start;
-            align-items: center;
+            display: -webkit-box;
+            // display: flex;
+            // justify-content: flex-start;
+            // align-items: center;
             p {
               margin: px2rem(10px);
               font-size: 14px;

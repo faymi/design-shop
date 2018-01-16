@@ -23,8 +23,8 @@
       </div>
     </div>
     <div class="bottom-btn">
-      <router-link to="/pay">
-        <button >确认下单</button>
+      <router-link :to="{path: '/address',query: {name: 'shopcartOrder'}}">
+        <button>确认下单</button>
       </router-link>
     </div>
   </div>
@@ -78,7 +78,8 @@ export default {
   },
   computed: {
     ...mapGetters({
-      shopCartId: 'shopCartId'
+      shopCartId: 'shopCartId',
+      customerId: 'customerId'
     })
   },
   mounted () {

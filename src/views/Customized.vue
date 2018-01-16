@@ -3,7 +3,7 @@
     <div class="color-bar">
       <div class="div-ul">
         <ul>
-          <li v-for="(item, index) in goodsColors" :key="index" :id="'goodsColor_'+index" :class="{hadSelect: index == currentIndex}" @click="selectColor(index,item)">
+          <li v-for="(item, index) in goodsColors" :key="index" :id="'goodsColor_'+(index+1)" :class="{hadSelect: index == currentIndex}" @click="selectColor(index,item)">
             <div :style="{backgroundColor: item.color}"></div>
           </li>
         </ul>
@@ -101,6 +101,7 @@ export default {
         {color: 'red', 'colorId': '3'},
         {color: 'green', 'colorId': '4'}
       ],
+      selectedColorId: '1',
       goodsColors: [],
       frontImg: require('../assets/t-shirt-front.jpg'),
       backImg: require('../assets/t-shirt.png'),
@@ -152,6 +153,7 @@ export default {
     // 颜色选择
     selectColor (index, item) {
       this.currentIndex = index
+      this.selectedColorId = item.colorId
       let params = {
         domain: this.domain,
         colorId: item.colorId,
@@ -493,6 +495,8 @@ export default {
     let itemObj = document.getElementsByClassName('main-design')
     itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
     itemObj[1].style.height = document.documentElement.scrollHeight - 152 + 'px'
+  },
+  activated () {
     let params = {
       domain: this.domain,
       // color: item.val,
@@ -511,7 +515,7 @@ export default {
           }
         }
         this.$nextTick(function () {
-          let first = document.getElementById('goodsColor_0')
+          let first = document.getElementById('goodsColor_' + this.selectedColorId)
           first.click()
         })
       }

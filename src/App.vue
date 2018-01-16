@@ -36,10 +36,16 @@ export default {
   mounted () {
     // IOS绑定touchstart事件才能使元素的:active生效
     document.body.addEventListener('touchstart', function () {})
+
+    window.addEventListener('popstate', function (e) {
+      if (this.showLoading) {
+        this.$store.dispatch('showLoading', false)
+      }
+    }, false)
   },
   watch: {
     '$route' (to, from) {
-      const list = ['', 'goods-detail', 'customized', 'total', 'add-to-cart', 'address', 'add-address', 'shop-cart', 'pay', 'pay-success', 'user', 'phone-call']
+      const list = ['', 'goods-detail', 'customized', 'total', 'add-to-cart', 'shop-cart', 'address', 'add-address', 'user', 'pay', 'pay-success', 'phone-call']
       const toDepth = to.path.split('/')
       const fromDepth = from.path.split('/')
       this.transitionName = list.indexOf(toDepth[1]) < list.indexOf(fromDepth[1]) ? 'slide-right' : 'slide-left'
