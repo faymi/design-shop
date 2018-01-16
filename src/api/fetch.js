@@ -74,6 +74,10 @@ export default {
   getGoodsInfo (params) {
     return fetch('get', '/ideat/commonManage/getGoodsInfo', params)
   },
+  // 获取商品详情
+  getGoodsDetail (params) {
+    return fetch('get', '/ideat/commonManage/getGoodsDetail', params)
+  },
   // 获取商品颜色
   getgoodsColor (params) {
     return fetch('get', '/ideat/commonManage/getColor', params)

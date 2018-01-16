@@ -2,7 +2,7 @@
   <div class="detail-wrap">
     <div class="swiper-container">
       <div class="swiper-wrapper">
-        <div class="swiper-slide" v-for="(str, index) in listImg" :key="index" :style="{ backgroundImage: 'url(' + str + ')' }"></div>
+        <div class="swiper-slide" v-for="(str, index) in listImg" :key="index" :style="{ backgroundImage: 'url(' + str.goodsPicPath + ')' }"></div>
       </div>
       <div class="swiper-pagination swiper-pagination-white"></div>
     </div>
@@ -14,12 +14,10 @@
       <span><b>印刷工艺：</b>{{printSkill}}</span>
     </div>
     <div class="goods-detail">
-      <span><b>商品简介：</b>{{goodsDescribe}}</span>
+      <span><b>商品简介：</b>{{goodsDescript}}</span>
     </div>
     <div class="bottom-btn">
-      <router-link to="/customized">
-        <button>立即定制</button>
-      </router-link>
+      <button @click="toDesign">立即定制</button>
     </div>
   </div>
 </template>
@@ -27,19 +25,31 @@
 <script>
 import Swiper from 'swiper'
 import 'swiper/dist/css/swiper.min.css'
+import {mapGetters} from 'vuex'
+import api from '@/api/fetch'
 
 export default {
   name: 'GoodsDetail',
   data () {
     return {
-      goodsName: '纯棉T恤',
-      price: 69,
-      printSkill: '兄弟打印机直喷',
-      goodsDescribe: '*✧⁺˚⁺ପ(๑･ω･)੭ु⁾⁾ 好好学习天天向上*✧⁺˚⁺ପ(๑･ω･)੭ु⁾⁾ 好好学习天天向上*✧⁺˚⁺ପ(๑･ω･)੭ु⁾⁾ 好好学习天天向上',
-      listImg: [require('../assets/logo.png'), require('../assets/t-shirt.png'), require('../assets/usered.png')]
+      goodsName: '',
+      price: 0,
+      printSkill: '',
+      goodsDescript: '',
+      listImg: [],
+      goodsId: ''
     }
   },
   methods: {
+    toDesign () {
+      this.$store.dispatch('setGoodsId', this.goodsId)
+      this.$router.push('/customized')
+    }
+  },
+  computed: {
+    ...mapGetters({
+      domain: 'domain'
+    })
   },
   mounted () {
     let swiper = new Swiper('.swiper-container', {
@@ -52,6 +62,22 @@ export default {
         touchEnd: function (event) {
           swiper.autoplay.start()
         }
+      }
+    })
+    this.goodsId = this.$route.query.goodsId
+    let params = {
+      goodsId: this.goodsId,
+      domain: this.domain
+    }
+    api.getGoodsDetail(params)
+    .then(res => {
+      if (res.code === 0) {
+        let result = res.body
+        this.listImg = result.scImageList
+        this.goodsDescript = result.goodsDescript
+        this.price = result.price
+        this.printSkill = result.printing
+        this.goodsName = result.goodsName
       }
     })
   }

@@ -5,7 +5,7 @@
       <div class="ul-wrap">
         <ul>
           <li v-for="item in goodsList" :key="item.goodsId">
-            <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail">
+            <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail(item.goodsId)">
             <div class="item-cls">
               <div class="item-name">
                 <span>{{item.goodsName}}</span>
@@ -51,8 +51,8 @@ export default {
     })
   },
   methods: {
-    toDetail () {
-      this.$router.push('/goods-detail')
+    toDetail (goodsId) {
+      this.$router.push({path: '/goods-detail', query: {goodsId: goodsId}})
     },
     toDesign (goodsId) {
       this.$store.dispatch('setGoodsId', goodsId)

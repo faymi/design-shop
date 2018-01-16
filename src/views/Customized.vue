@@ -16,9 +16,9 @@
     </div>
     <div class="tools-bar">
       <div class="tool-left">
-        <span>移动</span>
+        <!-- <span>移动</span>
         <span>缩放</span>
-        <span>旋转</span>
+        <span>旋转</span> -->
       </div>
       <div class="tool-right">
         <span class="activeTouch" @click="add_font_show">字体</span>
