@@ -33,7 +33,7 @@
                   <el-table-column prop="orderName" label="客户" width="100"></el-table-column>
                   <el-table-column  prop="orderPhone" label="联系电话" width="116"></el-table-column>
                   <el-table-column  prop="orderAddress" label="收货地址"></el-table-column>
-                  <el-table-column  prop="goodsName" label="商品"></el-table-column>
+                  <el-table-column  prop="consignee" label="收件人"></el-table-column>
                   <el-table-column  prop="orderTotal" label="总价"></el-table-column>
                   <el-table-column  prop="status" label="状态"></el-table-column>
                   <el-table-column prop="orderTime" label="日期" width="180"></el-table-column>

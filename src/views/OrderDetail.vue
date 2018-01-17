@@ -4,7 +4,7 @@
       <div class="table-wrap">
         <div class="table-left">
           <ul>
-            <li><p><b>订单号：{{orderNum}}</b></p></li>
+            <li><p><b>订单号：{{orderId}}</b></p></li>
             <li><p><b>客户：{{userName}}</b></p></li>
             <li><p>收货地址：{{address}}</p></li>
             <li><p>联系电话：{{phone}}</p></li>
@@ -16,7 +16,7 @@
           <p>{{status}}</p>
           <div class="deliver">
             <el-input placeholder="快递单号" v-model="deliveryNum" class="input-with-select">
-              <el-select v-model="select" slot="prepend" style="width: 120px;" placeholder="请选择">
+              <el-select v-model="select" slot="prepend" style="width: 80px;" placeholder="请选择">
                 <el-option label="顺丰" value="1"></el-option>
                 <el-option label="申通" value="2"></el-option>
                 <el-option label="圆通" value="3"></el-option>
@@ -34,44 +34,33 @@
           <!-- <span>合计：￥{{totalPrice}}（含运费￥{{deliveryPrice}}）</span> -->
         </div>
       </div>
-      <div class="table-detail">
+      <div class="table-detail" v-for="(item, index) in goodsInfoResult" :key="index">
         <div class="detail-left">
           <ul>
             <li>
-              <p>商品：{{goodsName}}</p>
-              <span>成本单价：￥{{cost}}</span>
-              <span>商品单价：￥{{price}}</span>
-              <span>印花工艺：{{printSkill}}</span>
-              <span>印花数量：{{printAmount}}</span>
+              <p>商品：{{item.goodsName}}</p>
+              <span>成本单价：￥{{item.cost}}</span>
+              <span>商品单价：￥{{item.price}}</span>
+              <span>印花工艺：{{item.printing}}</span>
+              <span>商品数量：{{item.buyCount}}</span>
             </li>
             <li>
-              <p>商品数量：12件S码，12件M码，12件L码，12件XL码，共60件</p>
+              <p>商品数量：<b v-for="size in item.sizeList">{{size.sizeId}}件{{size.buyCount}}码，</b>共{{item.buyCount}}件</p>
             </li>
             <li>
-              <p>总价：￥{{totalPrice}}</p>
+              <p>总价：￥{{item.goodsTotalPrice}}</p>
             </li>
           </ul>
           <p>效果图：</p>
-          <div class="img-wrap">
-            <div class="img-card">
-              <canvas id="canvas-01" width="600" height="400"></canvas>
-              <!-- <img src="../assets/logo.png" alt=""> -->
-              <span>正面</span>
-            </div>
-            <div class="img-card">
-              <canvas id="canvas-02" width="600" height="400"></canvas>
-              <!-- <img src="../assets/logo.png" alt=""> -->
-              <span>反面</span>
-            </div>
-          </div>
+          <v-picture :front-img="item.frontXGPath" :front-img-made="item.frontSCPath" :back-img="item.backXGPath" :back-img-made="item.backSCPath" :index="String(index)"></v-picture>
         </div>
         <div class="detail-right">
           <p>素材图下载：</p>
-          <a href="javascipt: void(0)">{{frontImgName}}</a>
-          <a href="javascipt: void(0)">{{backImgName}}</a>
+          <span><a :href="item.frontSCPath" download="">{{frontImgName}}</a></span>
+          <span><a :href="item.backSCPath"  download="">{{backImgName}}</a></span>
           <p class="p-2">效果图下载：</p>
-          <a href="javascipt: void(0)" @click="saveFrontImg('frontImg-01')" id="frontImg-01">{{frontImgName}}</a>
-          <a href="javascipt: void(0)"  @click="saveBackImg('backImg-01')" id="backImg-01">{{backImgName}}</a>
+          <span><a href="javascipt: void(0)" @click="saveFrontImg($event, index)">{{frontImgName}}</a></span>
+          <span><a href="javascipt: void(0)"  @click="saveBackImg($event, index)">{{backImgName}}</a></span>
         </div>
       </div>
     </div>
@@ -79,33 +68,31 @@
 </template>
 
 <script>
+import ComposePicture from '@/components/ComposePicture'
+
 export default {
   name: 'OrderDetail',
+  components: {
+    'v-picture': ComposePicture
+  },
   data () {
     return {
       status: '待付款',
-      orderNum: '201711300755',
-      userName: 'faymi',
-      address: '广东省深圳市南山区腾讯大厦',
-      goodsName: '纯棉T恤',
+      userName: '',
+      address: '',
+      goodsName: '',
       amount: 15,
       price: 19,
       phone: 18819764214,
-      printSkill: '直喷',
-      printAmount: 2,
       cost: 29,
-      invoice: '无',
-      frontImgName: '201711300755Z.png',
-      backImgName: '201711300755Z.png',
-      frontImg: require('../assets/user.png'),
-      frontImgMade: require('../assets/logo.png'),
-      backImg: require('../assets/logo.png'),
-      backImgMade: require('../assets/user.png'),
-      totalPrice: '160.00',
-      deliveryPrice: '10.00',
+      frontImgName: '正面',
+      backImgName: '反面',
+      deliveryPrice: '',
       deliveryNum: '',
       select: '1',
-      value: ''
+      value: '',
+      orderId: '',
+      goodsInfoResult: []
     }
   },
   methods: {
@@ -126,50 +113,30 @@ export default {
       return new Blob([uInt8Array], {type: contentType})
     },
     // 下载正面效果图
-    saveFrontImg (id) {
-      let aLink = document.getElementById(id)
-      var myCanvas = document.getElementById('canvas-01')
+    saveFrontImg (e, index) {
+      let aLink = e.currentTarget
+      var myCanvas = document.getElementById('canvas-front-0' + String(index))
       var image = myCanvas.toDataURL('image/png', 1.0)
       var blob = this.base64Img2Blob(image)
       aLink.download = this.frontImgName
       aLink.href = URL.createObjectURL(blob)
     },
     // 下载反面效果图
-    saveBackImg (id) {
-      let aLink = document.getElementById(id)
-      var myCanvas = document.getElementById('canvas-02')
+    saveBackImg (e, index) {
+      let aLink = e.currentTarget
+      var myCanvas = document.getElementById('canvas-back-0' + String(index))
       var image = myCanvas.toDataURL('image/png', 1.0)
       var blob = this.base64Img2Blob(image)
       aLink.download = this.backImgName
       aLink.href = URL.createObjectURL(blob)
-    },
-    // 添加图片至画布
-    imageToCanvas (canvas, image, x = 0, y = 0, width = canvas.width, height = canvas.height) {
-      image.onload = function () {
-        canvas.getContext('2d').drawImage(image, x, y, width, height)
-      }
     }
   },
   mounted () {
-    let canvas01 = document.getElementById('canvas-01')
-    // console.log(canvas01.width, canvas01.height)
-    let img01 = new Image()
-    img01.src = this.frontImg
-    this.imageToCanvas(canvas01, img01)
-    let img01Made = new Image()
-    img01Made.src = this.frontImgMade
-    this.imageToCanvas(canvas01, img01Made, canvas01.width / 4, canvas01.height / 4, canvas01.width / 2, canvas01.height / 2)
-    let canvas02 = document.getElementById('canvas-02')
-    let img02 = new Image()
-    img02.src = this.backImg
-    this.imageToCanvas(canvas02, img02)
-    let img02Made = new Image()
-    img02Made.src = this.backImgMade
-    this.imageToCanvas(canvas02, img02Made, canvas02.width / 4, canvas02.height / 4, canvas02.width / 2, canvas02.height / 2)
     let _this = this
+    this.orderId = this.$route.query.orderId
     this.axios.get('ideat/orderManage/getOrderInfo', {
       params: {
-        orderId: '1'
+        orderId: this.orderId
       }
     })
     .then(function (response) {
@@ -182,7 +149,14 @@ export default {
         return false
       }
       let result = data.body
-      return result
+      let addressResult = result.addressResult
+      _this.userName = addressResult.consignee
+      _this.address = addressResult.address
+      _this.phone = addressResult.phone
+      _this.amount = addressResult.goodsCount
+      _this.cost = addressResult.orderTotal
+      _this.status = addressResult.status
+      _this.goodsInfoResult = result.goodsInfoResult
     })
     .catch(function (error) {
       console.log(error)
@@ -283,25 +257,6 @@ export default {
       p {
         text-align: left;
       }
-      .img-wrap {
-        display: flex;
-        justify-content: flex-start;
-        .img-card {
-          text-align: center;
-          margin-right: 20px;
-          canvas {
-            width: 140px;
-            height: 160px;
-          }
-          span {
-            display: block;
-          }
-          img {
-            width: 140px;
-            height: 160px;
-          }
-        }
-      }
     }
     .detail-right {
       width: 60%;
@@ -309,10 +264,12 @@ export default {
       .p-2 {
         margin: 20px 0px 0px 0px;
       }
-      a {
+      span {
         display: block;
-        color: #33a6ff;
         margin:  10px 0px;
+        a {
+          color: #33a6ff;
+        }
       }
     }
   }
