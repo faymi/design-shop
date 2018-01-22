@@ -5,7 +5,7 @@
       <div class="ul-wrap">
         <ul>
           <li v-for="item in goodsList" :key="item.goodsId">
-            <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail(item.goodsId)">
+            <img class="cloth-img" :src="item.goodsPicPath" @click="toDetail(item.goodsId)" v-lazy="item.goodsPicPath">
             <div class="item-cls">
               <div class="item-name">
                 <span>{{item.goodsName}}</span>

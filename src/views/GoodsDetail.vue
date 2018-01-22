@@ -2,9 +2,12 @@
   <div class="detail-wrap">
     <div class="swiper-container">
       <div class="swiper-wrapper">
-        <div class="swiper-slide" v-for="(str, index) in listImg" :key="index" :style="{ backgroundImage: 'url(' + str.goodsPicPath + ')' }"></div>
+        <van-swipe>
+          <van-swipe-item v-for="(str, index) in listImg" :key="index">
+            <img v-lazy="str.goodsPicPath" />
+          </van-swipe-item>
+        </van-swipe>
       </div>
-      <div class="swiper-pagination swiper-pagination-white"></div>
     </div>
     <div class="goods-name">
       <span>{{goodsName}}</span>
@@ -23,8 +26,6 @@
 </template>
 
 <script>
-import Swiper from 'swiper'
-import 'swiper/dist/css/swiper.min.css'
 import {mapGetters} from 'vuex'
 import api from '@/api/fetch'
 
@@ -52,18 +53,18 @@ export default {
     })
   },
   mounted () {
-    let swiper = new Swiper('.swiper-container', {
-      pagination: {
-        el: '.swiper-pagination',
-        type: 'bullets'
-      },
-      autoplay: true,
-      on: {
-        touchEnd: function (event) {
-          swiper.autoplay.start()
-        }
-      }
-    })
+    // let swiper = new Swiper('.swiper-container', {
+    //   pagination: {
+    //     el: '.swiper-pagination',
+    //     type: 'bullets'
+    //   },
+    //   autoplay: true,
+    //   on: {
+    //     touchEnd: function (event) {
+    //       swiper.autoplay.start()
+    //     }
+    //   }
+    // })
     this.goodsId = this.$route.query.goodsId
     let params = {
       goodsId: this.goodsId,
@@ -94,22 +95,16 @@ export default {
     .swiper-wrapper {
       width: 100%;
       height: 100%;
-    }
-    .swiper-slide {
-      background-position: center;
-      background-size: cover;
-      width: 100%;
-      height: 100%;
-      img {
+      .van-swipe {
         width: 100%;
         height: 100%;
+        background-size: cover;
+        .van-swipe__track .van-swipe-item img {
+          height: 100%;
+          width: 100%;
+          background-size: cover;
+        }
       }
-    }
-    /deep/ .swiper-pagination-bullet {
-      // width:0.833rem;
-      // height: 0.833rem;
-      display: inline-block;
-      // background: rgba(255,255,255,0.8);
     }
   }
   .goods-name {

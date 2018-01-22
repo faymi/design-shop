@@ -45,7 +45,7 @@ export default {
   },
   watch: {
     '$route' (to, from) {
-      const list = ['', 'goods-detail', 'customized', 'total', 'add-to-cart', 'shop-cart', 'address', 'add-address', 'user', 'pay', 'pay-success', 'phone-call']
+      const list = ['', 'login', 'goods-detail', 'customized', 'total', 'add-to-cart', 'shop-cart', 'address', 'add-address', 'user', 'pay', 'pay-success', 'phone-call']
       const toDepth = to.path.split('/')
       const fromDepth = from.path.split('/')
       this.transitionName = list.indexOf(toDepth[1]) < list.indexOf(fromDepth[1]) ? 'slide-right' : 'slide-left'

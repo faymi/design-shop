@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 // import HelloWorld from '@/components/HelloWorld'
 // import design from '@/views/design'
+import Login from '@/views/Login'
 import List from '@/views/List'
 import Customized from '@/views/Customized'
 import Total from '@/views/Total'
@@ -28,6 +29,11 @@ export default new Router({
       path: '/',
       name: 'List',
       component: List
+    },
+    {
+      path: '/login',
+      name: 'Login',
+      component: Login
     },
     {
       path: '/customized',
