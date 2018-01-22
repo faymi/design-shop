@@ -2,8 +2,8 @@
   <div class="head">
       <div class="left">
         <div class="img-wrap">
-          <img :src="logoImg" alt="">
-          <span>{{shopName}}</span>
+          <img v-if="logoImg!=''" :src="logoImg" alt="">
+          <span v-if="logoImg==''">{{shopName}}</span>
         </div>
       </div>
       <div class="right">

@@ -5,7 +5,7 @@
         <div class="head">
           <span @click="toAddress" class="activeTouch">收货地址</span>
           <span><img src="../assets/usered.png" alt=""></span>
-          <span @click="toPhoneCall" class="activeTouch">联系客户</span>
+          <span @click="toPhoneCall" class="activeTouch">联系客服</span>
         </div>
         <div class="user">
           <p>FAYMI</p>

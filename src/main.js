@@ -23,16 +23,16 @@ Vue.use(colorPicker)
 Vue.use(MintUI)
 Vue.use(Vant)
 
-router.beforeEach((to, from, next) => {
-  if (to.name === 'List') {
-    if (to.query.domain) {
-      store.dispatch('setDomain', to.query.domain)
-    } else {
-      alert('域名不正确，请联系管理员！')
-    }
-  }
-  next()
-})
+// router.beforeEach((to, from, next) => {
+//   if (to.name === 'List') {
+//     if (to.query.domain) {
+//       store.dispatch('setDomain', to.query.domain)
+//     } else {
+//       alert('域名不正确，请联系管理员！')
+//     }
+//   }
+//   next()
+// })
 
 /* eslint-disable no-new */
 new Vue({
