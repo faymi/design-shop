@@ -1,7 +1,19 @@
 <template>
   <div class="add-wrap">
     <div class="list-wrap">
-      <div class="addlist">
+      <!-- 绑定删除按钮 => :addressInfo = "{id: addressInfo.id} -->
+      <van-address-edit
+        show-postal
+        show-delete
+        show-search-result
+        :is-saving="isSave"
+        :area-list="areaList"
+        :search-result="searchResult"
+        @save="onSave"
+        @delete="onDelete"
+        @change-detail="onChangeDetail"
+      />
+      <!-- <div class="addlist">
         <p>收件人</p>
         <input type="text" v-model="consignee">
       </div>
@@ -19,7 +31,7 @@
       </div>
       <div class="bottom-btn">
         <button @click="addAddress">添加地址</button>
-      </div>
+      </div> -->
     </div>
   </div>
 </template>
@@ -28,6 +40,7 @@
 import { mapGetters } from 'vuex'
 import api from '@/api/fetch'
 import * as _ from '@/util/tool'
+import areaList from '@/assets/area.json'
 
 export default {
   name: 'AdddAddress',
@@ -36,7 +49,10 @@ export default {
       consignee: '',
       phone: '',
       address: '',
-      postcode: ''
+      postcode: '',
+      areaList,
+      searchResult: [],
+      isSave: false
     }
   },
   computed: {
@@ -45,6 +61,44 @@ export default {
     })
   },
   methods: {
+    // 保存地址
+    onSave (content) {
+      let _this = this
+      let params = {
+        consignee: content.name,
+        phone: content.tel,
+        address: content.province + content.city + content.county + content.address_detail,
+        postcode: content.postal_code,
+        customerId: this.customerId,
+        insertTime: this.moment().format('YYYY-MM-DD hh:mm:ss')
+      }
+      this.isSave = true
+      api.addOrderAddress(params)
+      .then(res => {
+        if (res.code === 0) {
+          this.isSave = false
+          this.$toast('添加成功！')
+          setTimeout(function () {
+            _this.$router.push('/address')
+          }, 1500)
+        } else {
+          this.$toast('添加失败！')
+        }
+      })
+    },
+    onDelete () {
+      this.$toast('delete')
+    },
+    onChangeDetail (val) {
+      // if (val) {
+      //   this.searchResult = [{
+      //     name: '黄龙万科中心',
+      //     address: '杭州市西湖区'
+      //   }]
+      // } else {
+      //   this.searchResult = []
+      // }
+    },
     addAddress () {
       let _this = this
       if (this.consignee === '') {
@@ -98,9 +152,10 @@ export default {
   height: 100%;
   overflow: hidden;
   .list-wrap {
-    width: 96%;
-    display: flex;
-    flex-direction: column;
+    width: 100%;
+    // display: flex;
+    // flex-direction: column;
+    margin: 0 auto;
     margin-top: px2rem(20px); 
     .addlist {
       height: px2rem(140px);
