@@ -3,15 +3,15 @@
     <div class="input-wrap">
       <div class="input-item">
          <i class="fa fa-user-o"></i>
-        <input type="text" placeholder="用户名">
+        <input type="text" v-model="account" placeholder="用户名">
       </div>
       <div class="input-item">
         <i class="fa fa-key"></i>
-        <input type="password" placeholder="密码">
+        <input type="password" v-model="password" placeholder="密码">
       </div>
       <div class="input-item" v-show="!loginToggle">
         <i class="fa fa-key"></i>
-        <input type="password" placeholder="确认密码">
+        <input type="password" v-model="repPassword" placeholder="确认密码">
       </div>
       <div class="input-login" v-show="loginToggle">
         <van-button size="large" type="primary" @click="login">登录</van-button>
@@ -29,8 +29,8 @@
 
 
 <script>
-// import { mapGetters } from 'vuex'
-// import api from '@/api/fetch'
+import { mapGetters } from 'vuex'
+import api from '@/api/fetch'
 
 export default {
   name: 'Login',
@@ -38,6 +38,7 @@ export default {
     return {
       account: '',
       password: '',
+      repPassword: '',
       loginToggle: false,
       isOriginHei: true,
       screenHeight: document.body.clientHeight, // 这里是给到了一个默认值 （这个很重要）
@@ -45,10 +46,33 @@ export default {
     }
   },
   computed: {
+    ...mapGetters({
+      domain: 'domain'
+    })
   },
   methods: {
-    login () {},
-    resgist () {}
+    login () {
+      let params = {
+        account: this.account,
+        pwd: this.password,
+        domain: this.domain
+      }
+      api.login(params)
+      .then(res => {
+        console.log(res)
+      })
+    },
+    resgist () {
+      let params = {
+        account: this.account,
+        pwd: this.password,
+        domain: this.domain
+      }
+      api.register(params)
+      .then(res => {
+        console.log(res)
+      })
+    }
   },
   watch: {
     // 监测窗口大小变化，避免手机键盘将元素顶上去

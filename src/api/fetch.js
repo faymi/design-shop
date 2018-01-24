@@ -59,8 +59,12 @@ export function fetch (method, url, params) {
 // 请求api集散中心
 export default {
   // 登录
-  Login (params) {
-    return fetch('get', '/ideat/login', params)
+  login (params) {
+    return fetch('post', '/ideat/commonManage/login', params)
+  },
+  // 注册
+  register (params) {
+    return fetch('post', '/ideat/commonManage/register', params)
   },
   // 获取用户信息
   GetUserInfo (params) {
