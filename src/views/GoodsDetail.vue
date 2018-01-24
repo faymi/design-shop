@@ -91,7 +91,7 @@ export default {
 .detail-wrap {
   .swiper-container {
     width: 100%;
-    height: px2rem(600px);
+    height: px2rem(750px);
     .swiper-wrapper {
       width: 100%;
       height: 100%;

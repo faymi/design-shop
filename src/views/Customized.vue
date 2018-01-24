@@ -497,6 +497,7 @@ export default {
     itemObj[1].style.height = document.documentElement.scrollHeight - 152 + 'px'
   },
   activated () {
+    this.goodsColors = []
     let params = {
       domain: this.domain,
       // color: item.val,
@@ -538,11 +539,11 @@ export default {
     border-bottom: px2rem(2px) solid #ececec;
     display: flex;
     justify-content: space-between;
+    background: #e6e6e6;
     .div-ul {
       overflow: hidden;
       overflow-x:auto;
       white-space: nowrap;
-      background: #ececec;
       ul {
         width: 100%;
         height: 100%; 
@@ -624,7 +625,7 @@ export default {
     width: 100%;
     max-height: 100%;
     .main-design {
-      width: 96%;
+      // width: 96%;
       // height: 100%;
       padding-bottom: px2rem(110px);
       margin: 0 auto;

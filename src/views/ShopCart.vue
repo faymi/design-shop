@@ -19,7 +19,7 @@
         </div>
       </div>
       <div class="cost-total">
-        总合计：￥{{allTotal}}
+        总合计：￥{{allTotal}}元
       </div>
     </div>
     <div class="bottom-btn">
@@ -40,7 +40,7 @@ export default {
   name: 'ShopCart',
   data () {
     return {
-      allTotal: 1621,
+      allTotal: 0,
       orderList: []
     }
   },
