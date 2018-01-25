@@ -81,10 +81,10 @@ export default {
       userName: '',
       address: '',
       goodsName: '',
-      amount: 15,
-      price: 19,
-      phone: 18819764214,
-      cost: 29,
+      amount: 0,
+      price: 0,
+      phone: '',
+      cost: 0,
       frontImgName: '正面',
       backImgName: '反面',
       deliveryPrice: '',
@@ -96,9 +96,27 @@ export default {
     }
   },
   methods: {
-    closeOrder () {
+    editOrder (status) {
+      this.axios.post('ideat/orderManage/getOrderInfo', {
+        orderId: this.orderId,
+        status: status
+      })
+      .then(res => {
+        if (res.code === 0) {
+          this.$notify.success({
+            title: '温馨提示',
+            message: res.msg
+          })
+        }
+      })
     },
+    // 关闭订单
+    closeOrder () {
+      this.editOrder(4)
+    },
+    // 发货
     deliver () {
+      this.editOrder(2)
     },
     // base64 转二进制格式
     base64Img2Blob (code) {
