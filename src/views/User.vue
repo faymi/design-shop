@@ -8,8 +8,8 @@
           <span @click="toPhoneCall" class="activeTouch">联系客服</span>
         </div>
         <div class="user">
-          <p>FAYMI</p>
-          <p>广东 广州</p>
+          <p>{{customerId}}</p>
+          <p>&nbsp;</p>
         </div>
         <div class="user-bar">
           <span class="activeTouch" v-for="(item, index) in tab" :class="{activeTab: seletedIndex === index}" :key="index" @click="selectIndex(item.val, index)">{{item.key}}</span>
@@ -33,7 +33,7 @@
             <span>共{{item.goodsCount}}件商品 合计：￥{{item.orderTotal}}</span>
           </div>
         </div>
-        <div v-show="orderList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无该类商品</div>
+        <div v-show="orderList.length == 0"><i class="fa fa-info"></i>&nbsp;暂无相关订单</div>
       </div>
       <v-footer></v-footer>
     </div>
@@ -93,7 +93,6 @@ export default {
       api.getOrderList(params)
       .then(res => {
         this.$store.dispatch('showLoading', false)
-        // console.log(res)
         if (res.code === 0) {
           this.orderList = res.body
         }

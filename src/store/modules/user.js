@@ -2,8 +2,9 @@ import * as types from '../types'
 
 const state = {
   domain: '', // 域名id
-  customerId: 'linzhanhong', // 登录用户id
-  shopCartId: '1', // 购物车id
+  customerId: '', // 登录用户id
+  loginStatus: false, // 登录状态
+  shopCartId: '', // 购物车id
   frontMadeImg: '', // 正面定制图片
   backMadeImg: '', // 反面定制图片
   colorId: '', // 商品颜色id
@@ -17,6 +18,9 @@ const actions = {
   },
   setCustomerId ({ commit }, id) {
     commit(types.SET_CUSTOMER_ID, id)
+  },
+  setLoginStatus ({ commit }, status) {
+    commit(types.SET_LOGIN_STATUS, status)
   },
   setShopCartId ({ commit }, id) {
     commit(types.SET_SHOPCART_ID, id)
@@ -35,6 +39,7 @@ const actions = {
 const getters = {
   domain: state => state.domain,
   customerId: state => state.customerId,
+  loginStatus: state => state.loginStatus,
   shopCartId: state => state.shopCartId,
   frontMadeImg: state => state.frontMadeImg,
   backMadeImg: state => state.backMadeImg,
@@ -48,6 +53,9 @@ const mutations = {
   },
   [types.SET_CUSTOMER_ID] (state, id) {
     state.customerId = id
+  },
+  [types.SET_LOGIN_STATUS] (state, status) {
+    state.loginStatus = status
   },
   [types.SET_SHOPCART_ID] (state, id) {
     state.shopCartId = id

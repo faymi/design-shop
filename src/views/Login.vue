@@ -3,15 +3,15 @@
     <div class="input-wrap">
       <div class="input-item">
          <i class="fa fa-user-o"></i>
-        <input type="text" v-model="account" placeholder="用户名">
+        <input type="text" id="account" v-model="account" placeholder="用户名">
       </div>
       <div class="input-item">
         <i class="fa fa-key"></i>
-        <input type="password" v-model="password" placeholder="密码">
+        <input type="password" id="pwd" v-model="password" placeholder="密码">
       </div>
       <div class="input-item" v-show="!loginToggle">
         <i class="fa fa-key"></i>
-        <input type="password" v-model="repPassword" placeholder="确认密码">
+        <input type="password" id="repPwd" v-model="repPassword" placeholder="确认密码">
       </div>
       <div class="input-login" v-show="loginToggle">
         <van-button size="large" type="primary" @click="login">登录</van-button>
@@ -39,7 +39,7 @@ export default {
       account: '',
       password: '',
       repPassword: '',
-      loginToggle: false,
+      loginToggle: true,
       isOriginHei: true,
       screenHeight: document.body.clientHeight, // 这里是给到了一个默认值 （这个很重要）
       originHeight: document.body.clientHeight // 默认高度在watch里拿来做比较
@@ -51,7 +51,31 @@ export default {
     })
   },
   methods: {
+    validate (type) {
+      if (this.account === '') {
+        this.$toast('用户名不能为空')
+        return false
+      }
+      if (this.password === '') {
+        this.$toast('密码不能为空')
+        return false
+      }
+      if (type === 'resgist') {
+        if (this.repPassword === '') {
+          this.$toast('请确认密码')
+          return false
+        }
+        if (this.repPassword !== this.password) {
+          this.$toast('您两次输入的密码不同，请重新输入')
+          return false
+        }
+      }
+      return true
+    },
     login () {
+      if (!this.validate('login')) {
+        return
+      }
       let params = {
         account: this.account,
         pwd: this.password,
@@ -59,10 +83,23 @@ export default {
       }
       api.login(params)
       .then(res => {
-        console.log(res)
+        if (res.code === 0) {
+          this.$toast({type: 'success', duration: 1000, message: '登录成功'})
+          this.$store.dispatch('setLoginStatus', true)
+          this.$store.dispatch('setShopCartId', res.msg)
+          this.$store.dispatch('setCustomerId', this.account)
+          setTimeout(() => {
+            this.$router.push({path: '/', query: {domain: this.domain}})
+          }, 1000)
+        } else {
+          this.$toast(res.msg)
+        }
       })
     },
     resgist () {
+      if (!this.validate('resgist')) {
+        return
+      }
       let params = {
         account: this.account,
         pwd: this.password,
@@ -70,7 +107,17 @@ export default {
       }
       api.register(params)
       .then(res => {
-        console.log(res)
+        if (res.code === 0) {
+          this.$toast({type: 'success', duration: 1000, message: '注册成功'})
+          this.$store.dispatch('setLoginStatus', true)
+          this.$store.dispatch('setShopCartId', res.msg)
+          this.$store.dispatch('setCustomerId', this.account)
+          setTimeout(() => {
+            this.$router.push({path: '/', query: {domain: this.domain}})
+          }, 1000)
+        } else {
+          this.$toast(res.msg)
+        }
       })
     }
   },

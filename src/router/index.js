@@ -1,5 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
+import store from '@/store/index'
+
 // import HelloWorld from '@/components/HelloWorld'
 // import design from '@/views/design'
 import Login from '@/views/Login'
@@ -18,7 +20,7 @@ import AddToCart from '@/views/AddToCart'
 
 Vue.use(Router)
 
-export default new Router({
+const vueRouter = new Router({
   routes: [
     // {
     //   path: '/',
@@ -92,3 +94,21 @@ export default new Router({
     }
   ]
 })
+
+// 获取域名id
+vueRouter.beforeEach((to, from, next) => {
+  if (to.name === 'List') {
+    if (to.query.domain) {
+      store.dispatch('setDomain', to.query.domain)
+    }
+  }
+  // 登录状态判断
+  let loginStatus = store.state.user.loginStatus
+  if (!loginStatus && to.path.indexOf('login') === -1) {
+    return next('/login')
+  } else {
+    return next()
+  }
+})
+
+export default vueRouter

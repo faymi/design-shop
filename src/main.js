@@ -23,16 +23,6 @@ Vue.use(colorPicker)
 Vue.use(MintUI)
 Vue.use(Vant)
 
-// 获取域名id
-router.beforeEach((to, from, next) => {
-  if (to.name === 'List') {
-    if (to.query.domain) {
-      store.dispatch('setDomain', to.query.domain)
-    }
-  }
-  next()
-})
-
 /* eslint-disable no-new */
 new Vue({
   el: '#app',
