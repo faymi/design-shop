@@ -79,7 +79,7 @@ export default {
           this.isSave = false
           this.$toast('添加成功！')
           setTimeout(function () {
-            _this.$router.push('/address')
+            _this.$router.back()
           }, 1500)
         } else {
           this.$toast('添加失败！')

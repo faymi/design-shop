@@ -125,5 +125,9 @@ export default {
   // 获取订单详情
   getOrderDetail (params) {
     return fetch('get', '/ideat/commonManage/getOrderDetail', params)
+  },
+  // 获取客服电话
+  getPhone (params) {
+    return fetch('get', '/ideat/commonManage/getPhone', params)
   }
 }

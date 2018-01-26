@@ -3,7 +3,7 @@
     <v-alert v-show="showAlert"></v-alert>
     <v-loading v-show="showLoading"></v-loading>
     <div class="container">
-      <transition :name="transitionName" mode="out-in">
+      <transition :name="transitionName">
         <keep-alive include="Customized">
           <router-view class="child-view"></router-view>
         </keep-alive>

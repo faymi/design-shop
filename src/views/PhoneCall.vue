@@ -10,17 +10,37 @@
 </template>
 
 <script>
+import api from '@/api/fetch'
+import { mapGetters } from 'vuex'
 
 export default {
   name: 'PhoneCall',
   data () {
     return {
-      phoneNumber: '400-820-820'
+      phoneNumber: ''
     }
   },
   methods: {
   },
+  computed: {
+    ...mapGetters({
+      domain: 'domain'
+    })
+  },
   mounted () {
+    let params = {
+      domain: this.domain
+    }
+    api.getPhone(params)
+    .then(res => {
+      if (res.code === 0) {
+        if (res.body.phone !== '') {
+          this.phoneNumber = res.body.phone
+        } else {
+          this.phoneNumber = '暂无客服电话'
+        }
+      }
+    })
   }
 }
 </script>
