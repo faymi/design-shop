@@ -42,28 +42,32 @@ export default {
   },
   methods: {
     // 添加图片至画布
-    imageToCanvas (canvas, image, x = 0, y = 0, width = canvas.width, height = canvas.height) {
+    imageToCanvas (canvas, image, imageCover, src, x = 0, y = 0, width = canvas.width, height = canvas.height) {
       image.crossOrigin = 'anonymous' // 图片跨域处理
+      imageCover.crossOrigin = 'anonymous' // 图片跨域处理
+      let context = canvas.getContext('2d')
       image.onload = function () {
-        canvas.getContext('2d').drawImage(image, x, y, width, height)
+        context.drawImage(image, x, y, width, height)
+        context.drawImage(imageCover, width / 4, height / 4, width / 2, height / 2)
       }
+      image.src = src
     }
   },
   mounted () {
     let canvas01 = document.getElementById('canvas-front-0' + this.index)
     let img01 = new Image()
-    img01.src = this.frontImg
-    this.imageToCanvas(canvas01, img01)
+    // img01.src = this.frontImg
+    // this.imageToCanvas(canvas01, img01, this.frontImg)
     let img01Made = new Image()
     img01Made.src = this.frontImgMade
-    this.imageToCanvas(canvas01, img01Made, canvas01.width / 4, canvas01.height / 4, canvas01.width / 2, canvas01.height / 2)
+    this.imageToCanvas(canvas01, img01, img01Made, this.frontImg)
     let canvas02 = document.getElementById('canvas-back-0' + this.index)
     let img02 = new Image()
-    img02.src = this.backImg
-    this.imageToCanvas(canvas02, img02)
+    // img02.src = this.backImg
+    // this.imageToCanvas(canvas02, img02, this.backImg)
     let img02Made = new Image()
     img02Made.src = this.backImgMade
-    this.imageToCanvas(canvas02, img02Made, canvas02.width / 4, canvas02.height / 4, canvas02.width / 2, canvas02.height / 2)
+    this.imageToCanvas(canvas02, img02, img02Made, this.backImg)
   }
 }
 </script>

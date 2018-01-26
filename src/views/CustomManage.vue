@@ -14,7 +14,7 @@
     <div class="table">
       <el-table stripe :data="tableData" align="left" style="width: 100%">
         <el-table-column type="index" :index="indexMethod" label="序号" width="50"></el-table-column>
-        <el-table-column prop="customerName" label="用户名" width="100"></el-table-column>
+        <el-table-column prop="customerId" label="用户名" width="100"></el-table-column>
         <el-table-column  prop="customerPhone" label="联系电话"></el-table-column>
         <el-table-column  prop="address" label="地址"></el-table-column>
         <el-table-column prop="registerTime" label="首次登陆时间"></el-table-column>
