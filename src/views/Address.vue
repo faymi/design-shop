@@ -106,6 +106,11 @@ export default {
               let orderId = res.body
               this.$router.push({path: '/pay', query: { orderId: orderId }})
             }
+            if (res.code === 1) {
+              this.$store.dispatch('showLoading', false)
+              this.$toast(res.msg)
+              this.$router.push({path: '/total'})
+            }
           })
         } else {
           // 购物车下单
