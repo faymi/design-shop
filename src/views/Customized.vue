@@ -442,8 +442,10 @@ export default {
         this.canvasBack.requestRenderAll()
       }
     },
-    create_front_cavans () {
+    create_front_cavans (width, height) {
       let itemObj = document.getElementsByClassName('canvas-wrap')
+      itemObj[0].style.width = width
+      itemObj[0].style.height = height
       let canvasWidth = itemObj[0].clientWidth
       let canvasHeight = itemObj[0].clientHeight
       this.canvasFront = new fabric.Canvas('c') // 利用fabric找到我们的画布
@@ -471,8 +473,10 @@ export default {
 
       this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront) // 加入到canvas中
     },
-    create_back_cavans () {
+    create_back_cavans (width, height) {
       let itemObj = document.getElementsByClassName('canvas-wrap')
+      itemObj[1].style.width = width
+      itemObj[1].style.height = height
       let canvasWidth = itemObj[0].clientWidth
       let canvasHeight = itemObj[0].clientHeight
       this.canvasBack = new fabric.Canvas('d') // 利用fabric找到我们的画布
@@ -490,11 +494,14 @@ export default {
     }
   },
   mounted () {
-    this.create_front_cavans()
-    this.create_back_cavans()
-    let itemObj = document.getElementsByClassName('main-design')
-    itemObj[0].style.height = document.documentElement.scrollHeight - 152 + 'px'
-    itemObj[1].style.height = document.documentElement.scrollHeight - 152 + 'px'
+    let mainDesign = document.getElementsByClassName('main-design')
+    mainDesign[0].style.height = document.documentElement.clientHeight - 152 + 'px'
+    mainDesign[1].style.height = document.documentElement.clientHeight - 152 + 'px'
+    // 定制区域与商品图片的比例是 2:3
+    let width = mainDesign[0].clientWidth * 2 / 3 + 'px'
+    let height = mainDesign[0].clientHeight * 2 / 3 + 'px'
+    this.create_front_cavans(width, height)
+    this.create_back_cavans(width, height)
   },
   activated () {
     this.goodsColors = []
@@ -635,8 +642,8 @@ export default {
         height: 100%;
       }
       .canvas-wrap {
-        width: px2rem(400px);
-        height: px2rem(600px);
+        // width: px2rem(400px);
+        // height: px2rem(600px);
         position: absolute;
         top: 50%;
         /* right: 0; */
