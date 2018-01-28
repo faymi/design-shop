@@ -100,6 +100,7 @@
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :on-success="onSuccess"
+              :on-change="onFileChange"
               :before-upload="beforeUpload"
               :file-list="fileList"
               accept="image/*"
@@ -695,7 +696,10 @@ export default {
         singleCost: this.singleCost,
         doubleCost: this.doubleCost,
         goodsDescript: this.textarea,
-        insertTime: time
+        insertTime: time,
+        extraInfo: this.params,
+        imageInfo: this.imgArray,
+        goodsId: this.goodsId
       })
       .then(function (response) {
         let data = response.data
@@ -703,12 +707,19 @@ export default {
           _this.loading.close()
           _this.$notify.error({
             title: '温馨提示',
-            message: data.msg
+            message: '编辑商品失败！'
           })
           return
         }
+        _this.loading.close()
+        _this.$notify.success({
+          title: '温馨提示',
+          message: '编辑商品成功！'
+        })
+        _this.dialogFormVisible = false
+        _this.getGoodsInfo()
         // this.dialogFormVisible = false
-        _this.addGoodsExtra()
+        // _this.addGoodsExtra()
       })
       .catch(function (error) {
         console.log(error)
@@ -796,8 +807,12 @@ export default {
         console.log(error)
       })
     },
+    onFileChange (file, fileList) {
+      this.transformFileToDataUrl(file.raw, 0, 0)
+    },
     beforeUpload (file) {
       // this.fileData.push(file)
+      // 要用 this.$refs.upload.submit() 触发，但是是异步数据，有bug
       this.transformFileToDataUrl(file, 0, 0)
     },
     onSuccess (response, file, fileList) {
