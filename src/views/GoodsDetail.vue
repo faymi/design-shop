@@ -100,13 +100,17 @@
               :on-preview="handlePreview"
               :on-remove="handleRemove"
               :on-success="onSuccess"
+              :on-change="onFileChange"
               :before-upload="beforeUpload"
               :file-list="fileList"
               accept="image/*"
               list-type="picture-card"
+              :limit="6"
+              :on-exceed="handleExceed"
               :auto-upload="false">
               <i class="el-icon-plus avatar-uploader-icon"></i>
             </el-upload></li>
+            <li><el-alert style="margin-left: 30px;" class="alert-class" title="建议：尺寸应为750 x 750 (px)，小于500kb，不超过6张" type="info" show-icon :closable="false"></el-alert></li>
           </ul>
         </div>
         <div class="dialog-right">
@@ -181,6 +185,7 @@
                   </div>
                 </div>
               </li>
+              <li><el-alert class="alert-class" title="建议尺寸：750 x 1125 (px)" type="info" show-icon :closable="false"></el-alert></li>
             </ul>
           </div>
         </div>
@@ -696,7 +701,10 @@ export default {
         singleCost: this.singleCost,
         doubleCost: this.doubleCost,
         goodsDescript: this.textarea,
-        insertTime: time
+        insertTime: time,
+        extraInfo: this.params,
+        imageInfo: this.imgArray,
+        goodsId: this.goodsId
       })
       .then(function (response) {
         let data = response.data
@@ -704,12 +712,19 @@ export default {
           _this.loading.close()
           _this.$notify.error({
             title: '温馨提示',
-            message: data.msg
+            message: '编辑商品失败！'
           })
           return
         }
+        _this.loading.close()
+        _this.$notify.success({
+          title: '温馨提示',
+          message: '编辑商品成功！'
+        })
+        _this.dialogFormVisible = false
+        _this.getGoodsInfo()
         // this.dialogFormVisible = false
-        _this.addGoodsExtra()
+        // _this.addGoodsExtra()
       })
       .catch(function (error) {
         console.log(error)
@@ -797,8 +812,22 @@ export default {
         console.log(error)
       })
     },
+    // 超出限制上传图片个数的信息提示
+    handleExceed (files, fileList) {
+      this.$message.warning(`当前限制选择 6 个文件，本次共选择了 ${files.length + fileList.length} 个文件`)
+    },
+    onFileChange (file, fileList) {
+      // 限制商品图片大小不超过500kb
+      if (file.size / 1024 > 500) {
+        this.$message.warning(`当前限制上传图片大小不超过500kb`)
+        fileList.splice(fileList.length - 1, 1)
+        return
+      }
+      this.transformFileToDataUrl(file.raw, 0, 0)
+    },
     beforeUpload (file) {
       // this.fileData.push(file)
+      // 要用 this.$refs.upload.submit() 触发，但是是异步数据，有bug，弃用
       this.transformFileToDataUrl(file, 0, 0)
     },
     onSuccess (response, file, fileList) {
@@ -1073,6 +1102,13 @@ export default {
   display: flex;
   justify-content: space-between;
   margin: 0 auto;
+  .alert-class {
+    background: none;
+    padding: 0 0 8px 0;
+    /deep/ i, /deep/  div>span {
+      font-size: 12px;
+    }
+  }
   .dialog-left, .dialog-right {
     width: 50%;
     text-align: left;

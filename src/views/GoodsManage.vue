@@ -182,6 +182,7 @@
               action="https://jsonplaceholder.typicode.com/posts/"
               :on-preview="handlePreview"
               :on-success="onSuccess"
+              :on-change="onFileChange"
               :before-upload="beforeUpload"
               :on-remove="handleRemove"
               :file-list="fileList"
@@ -846,14 +847,14 @@ export default {
     // 添加商品完成事件
     addGoods () {
       // console.log(this.dataUrl)
-      console.log(this.imgArray)
+      // this.$refs.upload.submit()
+      // console.log(this.imgArray)
       this.loading = this.$loading({
         lock: true,
         text: '图片上传中',
         // spinner: 'el-icon-loading',
         background: 'rgba(255, 255, 255, 0.7)'
       })
-      this.$refs.upload.submit()
       // 去除detail为空的数组项
       for (let i = 0; i < this.params.length; i++) {
         if (this.params[i].detail.length === 0) {
@@ -870,7 +871,9 @@ export default {
         singleCost: this.singleCost,
         doubleCost: this.doubleCost,
         goodsDescript: this.textarea,
-        insertTime: time
+        insertTime: time,
+        extraInfo: this.params,
+        imageInfo: this.imgArray
       })
       .then(function (response) {
         let data = response.data
@@ -882,9 +885,26 @@ export default {
           })
           return
         }
-        // console.log(data)
-        _this.goodsId = data.body.goodsId
-        _this.addGoodsExtra()
+        _this.loading.close()
+        _this.$notify.success({
+          title: '温馨提示',
+          message: '添加商品成功！'
+        })
+        _this.dialogFormVisible = false
+        _this.getData(_this.start, _this.limit)
+
+        // let data = response.data
+        // if (data.code !== 0) {
+        //   _this.loading.close()
+        //   _this.$notify.error({
+        //     title: '温馨提示',
+        //     message: data.msg
+        //   })
+        //   return
+        // }
+        // // console.log(data)
+        // _this.goodsId = data.body.goodsId
+        // _this.addGoodsExtra()
         // this.dialogFormVisible = false
       })
       .catch(function (error) {
@@ -946,11 +966,22 @@ export default {
         console.log(error)
       })
     },
+    // 超出限制上传图片个数的信息提示
     handleExceed (files, fileList) {
       this.$message.warning(`当前限制选择 6 个文件，本次共选择了 ${files.length + fileList.length} 个文件`)
     },
+    onFileChange (file, fileList) {
+      // 限制商品图片大小不超过500kb
+      if (file.size / 1024 > 500) {
+        this.$message.warning(`当前限制上传图片大小不超过500kb`)
+        fileList.splice(fileList.length - 1, 1)
+        return
+      }
+      this.transformFileToDataUrl(file.raw, 0, 0)
+    },
     beforeUpload (file) {
       // this.fileData.push(file)
+      // 要用 this.$refs.upload.submit() 触发，但是是异步数据，有bug，弃用
       this.transformFileToDataUrl(file, 0, 0)
     },
     handleRemove (file, fileList) {
