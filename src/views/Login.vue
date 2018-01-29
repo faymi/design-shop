@@ -86,8 +86,8 @@ export default {
       this.loginLoading = true
       api.login(params)
       .then(res => {
+        this.loginLoading = false
         if (res.code === 0) {
-          this.loginLoading = false
           this.$toast({type: 'success', duration: 1000, message: '登录成功'})
           this.$store.dispatch('setLoginStatus', true)
           this.$store.dispatch('setShopCartId', res.msg)
@@ -112,8 +112,8 @@ export default {
       this.resgistLoading = true
       api.register(params)
       .then(res => {
+        this.resgistLoading = false
         if (res.code === 0) {
-          this.resgistLoading = false
           this.$toast({type: 'success', duration: 1000, message: '注册成功'})
           this.$store.dispatch('setLoginStatus', true)
           this.$store.dispatch('setShopCartId', res.msg)
