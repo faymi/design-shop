@@ -189,12 +189,12 @@ export default {
     // 颜色面板选择颜色  字体颜色
     headleChangeColor () {
       if (this.isActive) {
-        this.textboxFront.set({
+        this.canvasFront.getActiveObject().set({
           'fill': this.color
         }).setCoords()
         this.canvasFront.requestRenderAll()
       } else {
-        this.textboxBack.set({
+        this.canvasBack.getActiveObject().set({
           'fill': this.color
         }).setCoords()
         this.canvasBack.requestRenderAll()
@@ -376,7 +376,7 @@ export default {
           fontSize: 20,
           textAlign: 'center'
         })
-        this.canvasFront.add(this.textboxFront)
+        this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront)
       } else {
         this.textboxBack = new fabric.Textbox('双击输入文字', {
           left: 30,
@@ -385,7 +385,7 @@ export default {
           fontSize: 20,
           textAlign: 'center'
         })
-        this.canvasBack.add(this.textboxBack)
+        this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack)
       }
     },
     add_font_show () {

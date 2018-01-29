@@ -9,7 +9,7 @@
       </router-link>
     </div>
     <div class="back-home">
-      <router-link to="/list">
+      <router-link to="/">
         <button>继续购物</button>
       </router-link>
     </div>

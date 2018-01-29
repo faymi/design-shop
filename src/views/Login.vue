@@ -14,10 +14,10 @@
         <input type="password" id="repPwd" v-model="repPassword" placeholder="确认密码">
       </div>
       <div class="input-login" v-show="loginToggle">
-        <van-button size="large" type="primary" @click="login">登录</van-button>
+        <van-button size="large" type="primary" :loading="loginLoading" @click="login">登录</van-button>
       </div>
       <div class="input-login" v-show="!loginToggle">
-        <van-button size="large" type="primary" @click="resgist">注册</van-button>
+        <van-button size="large" type="primary" :loading="resgistLoading" @click="resgist">注册</van-button>
       </div>
     </div>
     <div class="tips">
@@ -41,6 +41,8 @@ export default {
       repPassword: '',
       loginToggle: true,
       isOriginHei: true,
+      loginLoading: false,
+      resgistLoading: false,
       screenHeight: document.body.clientHeight, // 这里是给到了一个默认值 （这个很重要）
       originHeight: document.body.clientHeight // 默认高度在watch里拿来做比较
     }
@@ -81,9 +83,11 @@ export default {
         pwd: this.password,
         domain: this.domain
       }
+      this.loginLoading = true
       api.login(params)
       .then(res => {
         if (res.code === 0) {
+          this.loginLoading = false
           this.$toast({type: 'success', duration: 1000, message: '登录成功'})
           this.$store.dispatch('setLoginStatus', true)
           this.$store.dispatch('setShopCartId', res.msg)
@@ -105,9 +109,11 @@ export default {
         pwd: this.password,
         domain: this.domain
       }
+      this.resgistLoading = true
       api.register(params)
       .then(res => {
         if (res.code === 0) {
+          this.resgistLoading = false
           this.$toast({type: 'success', duration: 1000, message: '注册成功'})
           this.$store.dispatch('setLoginStatus', true)
           this.$store.dispatch('setShopCartId', res.msg)
