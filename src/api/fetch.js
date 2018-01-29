@@ -129,5 +129,9 @@ export default {
   // 获取客服电话
   getPhone (params) {
     return fetch('get', '/ideat/commonManage/getPhone', params)
+  },
+  // 获取openID
+  getOpenId (params) {
+    return fetch('get', 'ideat/wxpay/getOpenId', params)
   }
 }

@@ -69,6 +69,15 @@ export default {
     }),
     onBridgeReady () {
       let _this = this
+      let code = '001Z1xcr1wkXPn0m2Ler17SBcr1Z1xcy'
+      let params = {
+        code: code
+      }
+      // 获取openID
+      api.getOpenId(params)
+      .then(res => {
+        console.log(res)
+      })
       WeixinJSBridge.invoke(
         'getBrandWCPayRequest', {
           'appId': 'wxd563a749db4ae9ed', // 公众号名称，由商户传入
