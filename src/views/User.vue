@@ -23,7 +23,7 @@
                 <img :src="item.frontXGPath" @click="getOrderDetail(item.orderId)">
               </div>
               <div>
-                <p>{{item.orderId}}</p>
+                <p>订单号：{{item.orderId}}</p>
                 <!-- <p>￥69</p> -->
               </div>
             </div>
