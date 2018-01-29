@@ -131,11 +131,11 @@
             <li><span>印花工艺：</span><el-input size="small" v-model="skill"></el-input></li>
             <li>
               <span>成本价格：</span>
-              <el-input style="width: 100px;height:32px;" v-model="singleCost">
+              <el-input style="width: 110px;height:32px;" v-model="singleCost">
                 <template slot="prepend">单面</template>
                 <template slot="append">元</template>
               </el-input>
-              <el-input v-model="doubleCost" style="width: 100px;margin-left: 24px;">
+              <el-input v-model="doubleCost" style="width: 110px;margin-left: 24px;">
                 <template slot="prepend">双面</template>
                 <template slot="append">元</template>
               </el-input>
@@ -187,11 +187,14 @@
               :file-list="fileList"
               accept="image/*"
               list-type="picture-card"
+              :limit="6"
+              :on-exceed="handleExceed"
               :auto-upload="false">
               <i class="el-icon-plus avatar-uploader-icon"></i>
               <!-- <el-button style="margin-left: 10px;" size="small" type="success" @click="submitUpload">上传到服务器</el-button> -->
               <!-- <div slot="tip" class="el-upload__tip">只能上传jpg/png文件，且不超过500kb</div> -->
             </el-upload></li>
+            <li><el-alert style="margin-left: 30px;" class="alert-class" title="建议：尺寸应为750 x 750 (px)，小于500kb，不超过6张" type="info" show-icon :closable="false"></el-alert></li>
             <!-- <li>
               <span>效果图：</span>
               <div class="img-cloth">
@@ -284,6 +287,7 @@
                   </div>
                 </div>
               </li>
+              <li><el-alert class="alert-class" title="建议尺寸：750 x 1125 (px)" type="info" show-icon :closable="false"></el-alert></li>
             </ul>
           </div>
         </div>
@@ -942,6 +946,9 @@ export default {
         console.log(error)
       })
     },
+    handleExceed (files, fileList) {
+      this.$message.warning(`当前限制选择 6 个文件，本次共选择了 ${files.length + fileList.length} 个文件`)
+    },
     beforeUpload (file) {
       // this.fileData.push(file)
       this.transformFileToDataUrl(file, 0, 0)
@@ -1100,6 +1107,13 @@ export default {
   .dialog-left, .dialog-right {
     width: 50%;
     text-align: left;
+  }
+  .alert-class {
+    background: none;
+    padding: 0 0 8px 0;
+    /deep/ i, /deep/  div>span {
+      font-size: 12px;
+    }
   }
   .dialog-left {
     ul > li {

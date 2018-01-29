@@ -12,7 +12,7 @@
           </div>
         </div>
         <div class="goods-content">
-          <div class="goods-img"><img :src="imageList[0].frontXGPath" alt=""></div>
+          <div class="goods-img"><img :src="goodsImage" alt=""></div>
           <div class="goods-detail">
             <div class="goods-name">
               <span>{{detail.goodsName}}</span>
@@ -285,7 +285,8 @@ export default {
       preViewDialog: false,
       dialogFormVisible: false,
       extraInfo: [],
-      loading: {}
+      loading: {},
+      goodsImage: ''
     }
   },
   methods: {
@@ -298,6 +299,7 @@ export default {
           this.stock = this.extraInfo[i].detail
         }
       }
+      this.goodsImage = this.imageList[index].frontXGPath
     },
     dialogOpen () {
       // 打开dialog时默认选中第一种颜色、S码
@@ -617,7 +619,6 @@ export default {
           if (this.sizeS !== '') {
             itemChild.sizeId = 'S'
             itemChild.amount = this.sizeS
-            console.log(this.sizeS)
           }
           break
         case 'M':
@@ -873,7 +874,6 @@ export default {
         for (let i = 0; i < _this.params.length; i++) {
           _this.params[i].color = Number(_this.params[i].color)
         }
-        _this.colorClick(0, {color: 1})
         _this.fileList = []
         let scImageInfo = result.scImageInfo
         for (let i in scImageInfo) {
@@ -885,6 +885,7 @@ export default {
         }
 
         _this.imageList = result.xgImageInfo
+        _this.colorClick(0, {color: 1})
         // let imageInfo = result.imageInfo
         // _this.imageList = []
         // _this.fileList = []

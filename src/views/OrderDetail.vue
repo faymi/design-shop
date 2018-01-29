@@ -28,8 +28,8 @@
           </div>
           <div class="table-btn">
             <el-button class="btn-size" type="primary" @click="closeOrder">关闭订单</el-button>
-            <el-button class="btn-size" type="primary" @click="deliver">发货</el-button>
-            <el-button class="btn-size" v-show="false" type="primary">已发货</el-button>
+            <el-button class="btn-size" type="primary" v-show="showDelivery" @click="deliver">发货</el-button>
+            <el-button class="btn-size" v-show="!showDelivery" disabled type="primary">已发货</el-button>
           </div>
           <!-- <span>合计：￥{{totalPrice}}（含运费￥{{deliveryPrice}}）</span> -->
         </div>
@@ -92,7 +92,8 @@ export default {
       select: '1',
       value: '',
       orderId: '',
-      goodsInfoResult: []
+      goodsInfoResult: [],
+      showDelivery: true
     }
   },
   methods: {
@@ -107,6 +108,7 @@ export default {
             title: '温馨提示',
             message: res.msg
           })
+          this.showDelivery = false
         }
       })
     },
