@@ -444,8 +444,8 @@ export default {
     },
     create_front_cavans (width, height) {
       let itemObj = document.getElementsByClassName('canvas-wrap')
-      itemObj[0].style.width = width
-      itemObj[0].style.height = height
+      itemObj[0].style.width = width + 'px'
+      itemObj[0].style.height = height + 'px'
       let canvasWidth = itemObj[0].clientWidth
       let canvasHeight = itemObj[0].clientHeight
       this.canvasFront = new fabric.Canvas('c') // 利用fabric找到我们的画布
@@ -475,8 +475,8 @@ export default {
     },
     create_back_cavans (width, height) {
       let itemObj = document.getElementsByClassName('canvas-wrap')
-      itemObj[1].style.width = width
-      itemObj[1].style.height = height
+      itemObj[1].style.width = width + 'px'
+      itemObj[1].style.height = height + 'px'
       let canvasWidth = itemObj[0].clientWidth
       let canvasHeight = itemObj[0].clientHeight
       this.canvasBack = new fabric.Canvas('d') // 利用fabric找到我们的画布
@@ -495,11 +495,35 @@ export default {
   },
   mounted () {
     let mainDesign = document.getElementsByClassName('main-design')
-    mainDesign[0].style.height = document.documentElement.clientHeight - 152 + 'px'
-    mainDesign[1].style.height = document.documentElement.clientHeight - 152 + 'px'
-    // 定制区域与商品图片的比例是 2:3
-    let width = mainDesign[0].clientWidth * 2 / 3 + 'px'
-    let height = mainDesign[0].clientHeight * 2 / 3 + 'px'
+    // 正反面底图高度
+    let imgHeight = document.documentElement.clientHeight - 152
+    // 正反面底图比例是 2:3
+    let weight = 2 / 3
+    // 定制区域相对正反图的缩小倍数 2:3
+    let scale = 2 / 3
+    // 屏幕宽度
+    let deviceWidth = document.documentElement.clientWidth
+
+    let width, height, imgWidth
+    imgWidth = imgHeight * weight
+
+    // 首先，底图高度固定，通过屏幕宽度和转换后的底图宽度进行对比，若小于等于屏幕宽度时显示当前宽度，大于时底图以屏幕宽度固定算出底图高度
+    if (imgWidth <= deviceWidth) {
+      mainDesign[0].style.height = imgHeight + 'px'
+      mainDesign[1].style.height = imgHeight + 'px'
+      mainDesign[0].style.width = imgWidth + 'px'
+      mainDesign[1].style.width = imgWidth + 'px'
+      width = imgWidth * scale
+      height = imgHeight * scale
+    } else {
+      mainDesign[0].style.width = deviceWidth + 'px'
+      mainDesign[1].style.width = deviceWidth + 'px'
+      mainDesign[0].style.height = deviceWidth / weight + 'px'
+      mainDesign[1].style.height = deviceWidth / weight + 'px'
+      width = deviceWidth * scale
+      height = deviceWidth / weight * scale
+    }
+
     this.create_front_cavans(width, height)
     this.create_back_cavans(width, height)
   },
