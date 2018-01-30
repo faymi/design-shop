@@ -50,17 +50,20 @@ const vueRouter = new Router({
     {
       path: '/shop-cart',
       name: 'ShopCart',
-      component: ShopCart
+      component: ShopCart,
+      meta: { requiresAuth: true }
     },
     {
       path: '/address',
       name: 'Address',
-      component: Address
+      component: Address,
+      meta: { requiresAuth: true }
     },
     {
       path: '/add-address',
       name: 'AddAddress',
-      component: AddAddress
+      component: AddAddress,
+      meta: { requiresAuth: true }
     },
     {
       path: '/pay',
@@ -75,7 +78,8 @@ const vueRouter = new Router({
     {
       path: '/user',
       name: 'User',
-      component: User
+      component: User,
+      meta: { requiresAuth: true }
     },
     {
       path: '/goods-detail',
@@ -90,7 +94,8 @@ const vueRouter = new Router({
     {
       path: '/add-to-cart',
       name: 'AddToCart',
-      component: AddToCart
+      component: AddToCart,
+      meta: { requiresAuth: true }
     }
   ]
 })
@@ -104,11 +109,27 @@ vueRouter.beforeEach((to, from, next) => {
   }
   // 登录状态判断
   let loginStatus = store.state.user.loginStatus
-  if (!loginStatus && to.path.indexOf('login') === -1) {
-    return next('/login')
+
+  if (to.matched.some(record => record.meta.requiresAuth)) {
+    // this route requires auth, check if logged in
+    // if not, redirect to login page.
+    if (!loginStatus) {
+      next({
+        path: '/login',
+        query: { redirect: to.fullPath }
+      })
+    } else {
+      next()
+    }
   } else {
-    return next()
+    next() // 确保一定要调用 next()
   }
+
+  // if (!loginStatus && to.path.indexOf('login') === -1) {
+  //   return next('/login')
+  // } else {
+  //   return next()
+  // }
 })
 
 export default vueRouter

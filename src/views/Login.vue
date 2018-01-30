@@ -93,7 +93,7 @@ export default {
           this.$store.dispatch('setShopCartId', res.msg)
           this.$store.dispatch('setCustomerId', this.account)
           setTimeout(() => {
-            this.$router.push({path: '/', query: {domain: this.domain}})
+            this.$router.push({path: this.$route.query.redirect, query: {domain: this.domain}})
           }, 1000)
         } else {
           this.$toast(res.msg)
@@ -119,7 +119,7 @@ export default {
           this.$store.dispatch('setShopCartId', res.msg)
           this.$store.dispatch('setCustomerId', this.account)
           setTimeout(() => {
-            this.$router.push({path: '/', query: {domain: this.domain}})
+            this.$router.push({path: this.$route.query.redirect, query: {domain: this.domain}})
           }, 1000)
         } else {
           this.$toast(res.msg)
