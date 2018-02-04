@@ -65,34 +65,54 @@ export default {
   computed: {
     ...mapGetters({
       shopcartList: 'shopcartList',
-      domain: 'domain'
+      domain: 'domain',
+      openid: 'openid',
+      code: 'code'
     }),
     onBridgeReady () {
-      let _this = this
-      let code = '001Z1xcr1wkXPn0m2Ler17SBcr1Z1xcy'
+      // let _this = this
+      let code = this.code
       let params = {
         code: code
       }
-      // 获取openID
-      api.getOpenId(params)
-      .then(res => {
-        console.log(res)
+      // alert('code:' + code)
+      if (this.openid.length === 0) {
+        // 获取openID
+        api.getOpenId(params)
+        .then(res => {
+          // console.log(res)
+          // alert(JSON.stringify(res))
+          if (res.code === 0) {
+            this.$store.dispatch('setOpenid', res.body.openId)
+            this.callpay()
+          }
+        })
+      } else {
+        this.callpay()
+      }
+    },
+    callpay () {
+      let _this = this
+      let wxParams = {
+        openId: this.openid,
+        orderId: this.orderId,
+        goodsDetail: 'idea2t',
+        totalFee: 1
+      }
+      api.getPrepayData(wxParams)
+      .then(result => {
+        let payParams = result.body
+
+        WeixinJSBridge.invoke(
+          'getBrandWCPayRequest',
+          payParams,
+          function (res) {
+            if (res.err_msg === 'get_brand_wcpay_request:ok') {
+              _this.$router.push('/pay-success')
+            }  // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg 将在用户支付成功后返回ok，但并不保证它绝对可靠
+          }
+        )
       })
-      WeixinJSBridge.invoke(
-        'getBrandWCPayRequest', {
-          'appId': 'wxd563a749db4ae9ed', // 公众号名称，由商户传入
-          'timeStamp': '1395712654', // 时间戳，自1970年以来的秒数
-          'nonceStr': 'e61463f8efa94090b1f366cccfbbb444', // 随机串
-          'package': 'prepay_id=u802345jgfjsdfgsdg888',
-          'signType': 'MD5', // 微信签名方式
-          'paySign': '70EA570631E4BB79628FBCA90534C63FF7FADD89' // 微信签名
-        },
-        function (res) {
-          if (res.err_msg === 'get_brand_wcpay_request:ok') {
-            _this.$router.push('/pay-success')
-          }  // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg 将在用户支付成功后返回ok，但并不保证它绝对可靠
-        }
-      )
     }
   },
   methods: {

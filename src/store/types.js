@@ -18,6 +18,8 @@ export const SET_SHOPCART_ID = 'SET_SHOPCART_ID'
 export const SET_MADE_IMG = 'SET_MADE_IMG'
 export const SET_GOODS_INFO = 'SET_GOODS_INFO'
 export const SET_USER_ADDRESS_INFO = 'SET_USER_ADDRESS_INFO'
+export const SET_OPENID = 'SET_OPENID'
+export const SET_CODE = 'SET_CODE'
 
 /* 加入购物车 */
 export const ADD_SHOPCART = 'ADD_SHOPCART'

@@ -1,6 +1,8 @@
 import * as types from '../types'
 
 const state = {
+  code: '', // 授权返回的code
+  openid: '', // openid
   domain: '', // 域名id
   customerId: '', // 登录用户id
   loginStatus: false, // 登录状态
@@ -13,6 +15,12 @@ const state = {
 }
 
 const actions = {
+  setCode ({commit}, code) {
+    commit(types.SET_CODE, code)
+  },
+  setOpenid ({ commit }, openid) {
+    commit(types.SET_OPENID, openid)
+  },
   setDomain ({ commit }, domain) {
     commit(types.SET_DOMAIN, domain)
   },
@@ -37,6 +45,8 @@ const actions = {
 }
 
 const getters = {
+  code: state => state.code,
+  openid: state => state.openid,
   domain: state => state.domain,
   customerId: state => state.customerId,
   loginStatus: state => state.loginStatus,
@@ -48,6 +58,12 @@ const getters = {
 }
 
 const mutations = {
+  [types.SET_CODE] (state, code) {
+    state.code = code
+  },
+  [types.SET_OPENID] (state, openid) {
+    state.openid = openid
+  },
   [types.SET_DOMAIN] (state, domain) {
     state.domain = domain
   },

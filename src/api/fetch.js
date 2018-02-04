@@ -133,5 +133,9 @@ export default {
   // 获取openID
   getOpenId (params) {
     return fetch('get', 'ideat/wxpay/getOpenId', params)
+  },
+  // 微信支付
+  getPrepayData (params) {
+    return fetch('get', 'ideat/wxpay/getPrepayData', params)
   }
 }

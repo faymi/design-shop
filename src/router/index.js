@@ -100,12 +100,24 @@ const vueRouter = new Router({
   ]
 })
 
+function GetQueryString (name) {
+  var reg = new RegExp('(^|&)' + name + '=([^&]*)(&|$)', 'i')
+  var r = window.location.search.substr(1).match(reg)
+  if (r !== null) {
+    return (r[2])
+  }
+  return null
+}
+
 // 获取域名id
 vueRouter.beforeEach((to, from, next) => {
   if (to.name === 'List') {
-    if (to.query.domain) {
-      store.dispatch('setDomain', to.query.domain)
+    store.dispatch('setCode', GetQueryString('code'))
+    let domain = ''
+    if (!!to.query.domain) {
+      domain = to.query.domain
     }
+    store.dispatch('setDomain', domain)
   }
   // 登录状态判断
   let loginStatus = store.state.user.loginStatus
