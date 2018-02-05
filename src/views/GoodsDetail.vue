@@ -641,7 +641,7 @@ export default {
         case 'XL':
           if (this.size1L !== '') {
             itemChild.sizeId = 'XL'
-            itemChild.amount = this.sizeXL
+            itemChild.amount = this.size1L
           }
           break
         case '2XL':
