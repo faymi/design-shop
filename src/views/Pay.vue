@@ -85,6 +85,8 @@ export default {
           if (res.code === 0) {
             this.$store.dispatch('setOpenid', res.body.openId)
             this.callpay()
+          } else {
+            this.$toast('获取用户信息失败，请重试')
           }
         })
       } else {

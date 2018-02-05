@@ -4,7 +4,7 @@
       付款成功！
     </div>
     <div class="back-home">
-      <router-link to="/list">
+      <router-link to="{path: '/', query: { pay: 'success' }}">
         <button>返回首页</button>
       </router-link>
     </div>

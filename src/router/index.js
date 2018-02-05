@@ -112,12 +112,14 @@ function GetQueryString (name) {
 // 获取域名id
 vueRouter.beforeEach((to, from, next) => {
   if (to.name === 'List') {
-    store.dispatch('setCode', GetQueryString('code'))
-    let domain = ''
-    if (!!to.query.domain) {
-      domain = to.query.domain
+    if (!to.query.pay) {
+      store.dispatch('setCode', GetQueryString('code'))
+      let domain = ''
+      if (!!to.query.domain) {
+        domain = to.query.domain
+      }
+      store.dispatch('setDomain', domain)
     }
-    store.dispatch('setDomain', domain)
   }
   // 登录状态判断
   let loginStatus = store.state.user.loginStatus
