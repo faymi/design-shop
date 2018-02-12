@@ -2,7 +2,7 @@
 ## 前言 ##
 项目为衣服定制微型商城，支持个性化定制、下单、微信支付等基本功能
 
-*预览地址：* [http://unique.vesstack.com][1]
+*手机预览地址：* [http://unique.vesstack.com][1]
 
 ## 技术栈 ##
 
