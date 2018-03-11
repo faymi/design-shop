@@ -24,7 +24,7 @@
         <div><b>{{userId}}</b>&nbsp;&nbsp;{{phone}}</div>
         <div>{{address}}</div>
       </div>
-      <div class="pay-btn">
+      <div class="pay-btn" v-if="status == '待付款'">
         <button>稍后付款</button>
         <button @click="weChatPay">微信支付</button>
       </div>
@@ -65,46 +65,34 @@ export default {
   computed: {
     ...mapGetters({
       shopcartList: 'shopcartList',
-      domain: 'domain',
-      openid: 'openid',
-      code: 'code'
-    }),
-    onBridgeReady () {
-      // let _this = this
-      let code = this.code
-      let params = {
-        code: code
-      }
-      // alert('code:' + code)
-      if (this.openid.length === 0) {
-        // 获取openID
-        api.getOpenId(params)
-        .then(res => {
-          // console.log(res)
-          // alert(JSON.stringify(res))
-          if (res.code === 0) {
-            this.$store.dispatch('setOpenid', res.body.openId)
-            this.callpay()
-          } else {
-            this.$toast('获取用户信息失败，请重试')
-          }
-        })
-      } else {
-        this.callpay()
-      }
-    },
-    callpay () {
+      domain: 'domain'
+    })
+  },
+  methods: {
+    weChatPay () {
       let _this = this
+      let openid = localStorage.getItem('openid')
       let wxParams = {
-        openId: this.openid,
+        openId: openid,
         orderId: this.orderId,
         goodsDetail: 'idea2t',
         totalFee: 1
       }
-      api.getPrepayData(wxParams)
-      .then(result => {
-        let payParams = result.body
-
+      let payParams = {}
+      let callpay = function () {
+        // 微信内H5调起支付
+        if (typeof WeixinJSBridge === 'undefined') {
+          if (document.addEventListener) {
+            document.addEventListener('WeixinJSBridgeReady', onBridgeReady, false)
+          } else if (document.attachEvent) {
+            document.attachEvent('WeixinJSBridgeReady', onBridgeReady)
+            document.attachEvent('onWeixinJSBridgeReady', onBridgeReady)
+          }
+        } else {
+          onBridgeReady()
+        }
+      }
+      let onBridgeReady = function () {
         WeixinJSBridge.invoke(
           'getBrandWCPayRequest',
           payParams,
@@ -114,22 +102,12 @@ export default {
             }  // 使用以上方式判断前端返回,微信团队郑重提示：res.err_msg 将在用户支付成功后返回ok，但并不保证它绝对可靠
           }
         )
-      })
-    }
-  },
-  methods: {
-    weChatPay () {
-      // 微信内H5调起支付
-      if (typeof WeixinJSBridge === 'undefined') {
-        if (document.addEventListener) {
-          document.addEventListener('WeixinJSBridgeReady', this.onBridgeReady, false)
-        } else if (document.attachEvent) {
-          document.attachEvent('WeixinJSBridgeReady', this.onBridgeReady)
-          document.attachEvent('onWeixinJSBridgeReady', this.onBridgeReady)
-        }
-      } else {
-        this.onBridgeReady()
       }
+      api.getPrepayData(wxParams)
+      .then(result => {
+        payParams = result.body
+        callpay()
+      })
     }
   },
   mounted () {
@@ -238,6 +216,9 @@ export default {
         font-size: 16px;
         &:nth-child(2) {
           background-color: #00cc33;
+          &:active {
+            background-color: #0a0;
+          }
         }
       }
     }

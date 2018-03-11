@@ -28,6 +28,7 @@
 
 <script>
 import {mapGetters} from 'vuex'
+import api from '@/api/fetch'
 import Footer from '@/components/Footer'
 import Header from '@/components/Header'
 export default {
@@ -47,7 +48,8 @@ export default {
       goodsList: 'goodsList',
       logo: 'logo',
       shopName: 'shopName',
-      domain: 'domain'
+      domain: 'domain',
+      code: 'code'
     })
   },
   methods: {
@@ -64,6 +66,29 @@ export default {
       goodsType: 0
     }
     this.$store.dispatch('getGoodsList', params)
+    let code = this.code
+    let data = {
+      code: code
+    }
+    let openid = localStorage.getItem('openid')
+    if (!!openid) {
+
+    } else {
+      // 获取openID
+      api.getOpenId(data)
+      .then(res => {
+        if (res.code === 0) {
+          // this.$store.dispatch('setOpenid', res.body.openId)
+          localStorage.setItem('openid', res.body.openId)
+          // 设置openID过期时间，7200秒和微信授权的access_token的过期时间一样
+          setTimeout(function () {
+            localStorage.removeItem('openid')
+          }, 1000 * 7200)
+        } else {
+          this.$toast('获取用户信息失败，请重试')
+        }
+      })
+    }
   }
 }
 </script>
