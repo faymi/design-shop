@@ -293,7 +293,11 @@ export default {
             originX: 'center',
             originY: 'center',
             scaleX: scale,
-            scaleY: scale
+            scaleY: scale,
+            cornerStyle: 'circle',
+            cornerStrokeColor: '#578ffe',
+            cornerColor: '#578ffe',
+            transparentCorners: false
           })
         }
         image.src = result
@@ -494,6 +498,7 @@ export default {
     }
   },
   mounted () {
+    fabric.isTouchSupported = true
     let mainDesign = document.getElementsByClassName('main-design')
     // 正反面底图高度
     let imgHeight = document.documentElement.clientHeight - 152
