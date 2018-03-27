@@ -20,6 +20,9 @@
     # install dependencies
     npm install
 
+	#启动前工作：将/static/fabric.js复制至/node_modules/fabric/dist/并覆盖原来的文件（因为static下的fabric.js是带有手势操作的）
+	#fabric文档：https://github.com/kangax/fabric.js/
+
 	# serve with hot reload at localhost:8080
 	npm run dev
 
