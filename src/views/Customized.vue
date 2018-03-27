@@ -498,7 +498,6 @@ export default {
     }
   },
   mounted () {
-    fabric.isTouchSupported = true
     let mainDesign = document.getElementsByClassName('main-design')
     // 正反面底图高度
     let imgHeight = document.documentElement.clientHeight - 152

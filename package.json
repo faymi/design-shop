@@ -12,7 +12,7 @@
   },
   "dependencies": {
     "axios": "^0.17.0",
-    "fabric": "^2.0.0-rc.1",
+    "fabric": "^2.2.2",
     "font-awesome": "^4.7.0",
     "fontfaceobserver": "^2.0.13",
     "mint-ui": "^2.2.13",
