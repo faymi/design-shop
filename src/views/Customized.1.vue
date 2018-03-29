@@ -14,43 +14,61 @@
         </router-link>
       </div>
     </div>
+    <div class="tools-bar">
+      <div class="tool-left">
+        <!-- <span>移动</span>
+        <span>缩放</span>
+        <span>旋转</span> -->
+      </div>
+      <div class="tool-right">
+        <span class="activeTouch" @click="add_font_show">字体</span>
+        <span class="activeTouch" @click="font_color_show">颜色</span>
+        <span class="activeTouch" @click="font_size_show">大小</span>
+        <div class="font-show">
+          <ul v-show="font_toggle">
+            <li class="activeTouch" v-for="item in fonts" @click="select_font(item.v)">
+              {{item.v}}
+            </li>
+          </ul>
+          <ul v-show="size_toggle">
+            <li class="activeTouch" v-for="item in font_size" @click="select_font_size(item.v)">
+              {{item.v}}
+            </li>
+          </ul>
+          <div class="color-div" v-show="color_toggle">
+            <color-picker v-model="color" :openToggle="openStatus" v-on:change="headleChangeColor"></color-picker>
+          </div>
+        </div>
+      </div>
+    </div>
     <div class="main">
       <div class="main-design" v-show="isActive">
-        <img :src="frontImg" class="img-cls">
+        <img :src="frontImg">
         <div class="canvas-wrap">
           <canvas id="c"></canvas>
         </div>
       </div>
       <div class="main-design" v-show="!isActive">
-        <img :src="backImg" class="img-cls">
+        <img :src="backImg">
         <div class="canvas-wrap">
           <canvas id="d"></canvas>
         </div>
       </div> 
     </div>
-    <div class="design-btn">
-      <button @click="design_btn" v-show="designBtnShow">点击定制</button>
-    </div>
     <div class="footer">
-      <div class="delete-btn" v-show="operatonBtn" @click="delete_item">
+      <div class="product activeTouch" @click="add_pic">
+        <i class="fa fa-picture-o"></i>
+        <router-link :to="{}">添加图片</router-link>        
+        <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
+      </div>
+      <div class="user activeTouch" @click="add_font">
+        <i class="fa fa-font"></i>
+        <router-link :to="{}">添加文字</router-link>
+      </div>
+      <div class="delete-btn" @click="delete_item">
         <i class="fa fa-trash-o fa-lg"></i>
       </div>
-      <div class="checked-btn" v-show="operatonBtn" @click="check_item">
-        <i class="fa fa-check fa-lg"></i>
-      </div>
-      <div class="operation" v-show="operatonBtn">
-        <div class="operation-btn" @click="add_pic">
-          <i class="fa fa-picture-o fa-lg"></i>
-          <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
-        </div>
-        <div class="operation-btn" @click="add_font">
-          <i class="fa fa-font fa-lg"></i>
-        </div>
-        <div class="operation-btn" @click="preview">
-          <i class="fa fa-eye fa-lg"></i>
-        </div>
-      </div>
-      <div class="side" v-show="!operatonBtn">
+      <div class="side">
         <button :class="{ active: isActive }" @click="toSide('front')">正面</button>
         <button :class="{ active: !isActive }" @click="toSide('back')">反面</button>
       </div>
@@ -69,9 +87,6 @@ export default {
   name: 'Customized',
   data () {
     return {
-      isChecked: false,
-      designBtnShow: true,
-      operatonBtn: false,
       isActive: true,
       hadSelect: false,
       font_toggle: false,
@@ -127,48 +142,6 @@ export default {
     })
   },
   methods: {
-    // checkBtn
-    check_item () {
-      this.isChecked = true
-    },
-    // previewBtn
-    preview () {
-      this.designBtnShow = true
-      this.operatonBtn = false
-      let imgDom = document.getElementsByClassName('img-cls')
-      if (this.isActive) {
-        imgDom[0].classList.remove('scale-img')
-      } else {
-        imgDom[1].classList.remove('scale-img')
-      }
-      let canvasDom = document.getElementsByClassName('canvas-wrap')
-      if (this.isChecked && this.isActive) {
-        canvasDom[0].classList.add('canvas-scale')
-        this.designBtnShow = false
-      } else {
-        canvasDom[0].style.display = 'none'
-      }
-      if (this.isChecked && !this.isActive) {
-        this.designBtnShow = false
-        canvasDom[1].classList.add('canvas-scale')
-      } else {
-        canvasDom[1].style.display = 'none'
-      }
-    },
-    // 点击定制
-    design_btn () {
-      this.designBtnShow = false
-      this.operatonBtn = true
-      let imgDom = document.getElementsByClassName('img-cls')
-      if (this.isActive) {
-        imgDom[0].classList.add('scale-img')
-      } else {
-        imgDom[1].classList.add('scale-img')
-      }
-      let canvasDom = document.getElementsByClassName('canvas-wrap')
-      canvasDom[0].style.display = 'block'
-      canvasDom[1].style.display = 'block'
-    },
     // 完成定制
     doneMade () {
       let data = {
@@ -259,6 +232,14 @@ export default {
         // Toast.error("文件大小不能超过10MB！", 2000, undefined, false);
         return
       }
+      // 判断是否是ios
+      // let u = navigator.userAgent
+      // let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+      // if (isiOS) {
+      //     // iOS
+      //   this.transformFileToFormData(file)
+      //   return
+      // }
       // 图片压缩之旅
       this.transformFileToDataUrl(file)
     },
@@ -280,6 +261,7 @@ export default {
     },
     transformFileToDataUrl (file) {
       let _this = this
+      const imgCompassMaxSize = 200 * 1024 // 超过 200k 就压缩
       // 存储文件相关信息
       this.imgFile.type = file.type || 'image/jpeg'   // 部分安卓出现获取不到type的情况
       this.imgFile.size = file.size
@@ -319,9 +301,75 @@ export default {
           })
         }
         image.src = result
+        if (result.length < imgCompassMaxSize) {
+          // compress(result, processData, false )    // 图片不压缩
+        } else {
+          // compress(result, processData)            // 图片压缩
+        }
       }
       reader.readAsDataURL(file)
     },
+    // compress (dataURL, callback, shouldCompress = true) {
+    //   const img = new window.Image()
+    //   img.src = dataURL
+    //   img.onload = function () {
+    //     const canvas = document.createElement('canvas')
+    //     const ctx = canvas.getContext('2d')
+    //     canvas.width = img.width
+    //     canvas.height = img.height
+    //     ctx.drawImage(img, 0, 0, canvas.width, canvas.height)
+    //     let compressedDataUrl
+    //     if (shouldCompress) {
+    //       compressedDataUrl = canvas.toDataURL(this.imgFile.type, 0.2)
+    //     } else {
+    //       compressedDataUrl = canvas.toDataURL(this.imgFile.type, 1)
+    //     }
+    //     callback(compressedDataUrl)
+    //   }
+    // },
+    // processData (dataURL) {
+    //   // 这里使用二进制方式处理dataUrl
+    //   const binaryString = window.atob(dataUrl.split(',')[1])
+    //   const arrayBuffer = new ArrayBuffer(binaryString.length)
+    //   const intArray = new Uint8Array(arrayBuffer)
+    //   const imgFile = this.imgFile
+
+    //   for (let i = 0, j = binaryString.length; i < j; i++) {
+    //     intArray[i] = binaryString.charCodeAt(i)
+    //   }
+    //   const data = [intArray]
+    //   let blob
+    //   try {
+    //     blob = new Blob(data, { type: imgFile.type })
+    //   } catch (error) {
+    //     window.BlobBuilder = window.BlobBuilder ||
+    //     window.WebKitBlobBuilder ||
+    //     window.MozBlobBuilder ||
+    //     window.MSBlobBuilder
+    //     if (error.name === 'TypeError' && window.BlobBuilder) {
+    //       const builder = new BlobBuilder()
+    //       builder.append(arrayBuffer)
+    //       blob = builder.getBlob(imgFile.type)
+    //     } else {
+    //       // Toast.error("版本过低，不支持上传图片", 2000, undefined, false);
+    //       throw new Error('版本过低，不支持上传图片')
+    //     }
+    //   }
+    //   // blob 转file
+    //   const fileOfBlob = new File([blob], imgFile.name)
+    //   const formData = new FormData()
+    //   // type
+    //   formData.append('type', imgFile.type)
+    //   // size
+    //   formData.append('size', fileOfBlob.size)
+    //   // name
+    //   formData.append('name', imgFile.name)
+    //   // lastModifiedDate
+    //   formData.append('lastModifiedDate', imgFile.lastModifiedDate)
+    //   // append 文件
+    //   formData.append('file', fileOfBlob)
+    //   // uploadImg(formData)
+    // },
     // 添加字体
     add_font () {
       if (this.isActive) {
@@ -407,6 +455,18 @@ export default {
       this.canvasFront = new fabric.Canvas('c') // 利用fabric找到我们的画布
       this.canvasFront.setWidth(canvasWidth)
       this.canvasFront.setHeight(canvasHeight)
+      // this.imgElement = document.getElementById('vue-img')
+      // this.imgInstance = new fabric.Image(this.dataUrl, {  // 设置图片在canvas中的位置和样子
+      //   left: 10,
+      //   top: 10,
+      //   width: 200,
+      //   height: 200,
+      //   angle: 30,
+      //   scaleX: 0.5,
+      //   scaleY: 0.5,
+      //   backgroundColor: '#ececec'
+      // })
+      // this.Text = new fabric.Text('I am in fonts', {fontFamily: this.fonts[0]})
       this.textboxFront = new fabric.Textbox('双击输入文字', {
         left: 30,
         top: 50,
@@ -440,28 +500,38 @@ export default {
   mounted () {
     let mainDesign = document.getElementsByClassName('main-design')
     // 正反面底图高度
-    let imgHeight = document.documentElement.clientHeight
+    let imgHeight = document.documentElement.clientHeight - 152
+    // 正反面底图比例是 2:3
+    let weight = 2 / 3
     // 定制区域相对正反图的缩小倍数 2:3
     let scale = 2 / 3
     // 屏幕宽度
     let deviceWidth = document.documentElement.clientWidth
 
-    let width, height
+    let width, height, imgWidth
+    imgWidth = imgHeight * weight
 
-    mainDesign[0].style.height = imgHeight + 'px'
-    mainDesign[1].style.height = imgHeight + 'px'
-    mainDesign[0].style.width = deviceWidth + 'px'
-    mainDesign[1].style.width = deviceWidth + 'px'
-    width = deviceWidth * scale
-    height = imgHeight * scale
+    // 首先，底图高度固定，通过屏幕宽度和转换后的底图宽度进行对比，若小于等于屏幕宽度时显示当前宽度，大于时底图以屏幕宽度固定算出底图高度
+    if (imgWidth <= deviceWidth) {
+      mainDesign[0].style.height = imgHeight + 'px'
+      mainDesign[1].style.height = imgHeight + 'px'
+      mainDesign[0].style.width = imgWidth + 'px'
+      mainDesign[1].style.width = imgWidth + 'px'
+      width = imgWidth * scale
+      height = imgHeight * scale
+    } else {
+      mainDesign[0].style.width = deviceWidth + 'px'
+      mainDesign[1].style.width = deviceWidth + 'px'
+      mainDesign[0].style.height = deviceWidth / weight + 'px'
+      mainDesign[1].style.height = deviceWidth / weight + 'px'
+      width = deviceWidth * scale
+      height = deviceWidth / weight * scale
+    }
 
     this.create_front_cavans(width, height)
     this.create_back_cavans(width, height)
   },
   activated () {
-    let canvasDom = document.getElementsByClassName('canvas-wrap')
-    canvasDom[0].style.display = 'none'
-    canvasDom[1].style.display = 'none'
     this.goodsColors = []
     let params = {
       domain: this.domain,
@@ -501,10 +571,10 @@ export default {
   .color-bar {
     width: 100%;
     height: px2rem(110px);
+    border-bottom: px2rem(2px) solid #ececec;
     display: flex;
     justify-content: space-between;
-    background: transparent;
-    position: absolute;
+    background: #e6e6e6;
     .div-ul {
       overflow: hidden;
       overflow-x:auto;
@@ -535,39 +605,80 @@ export default {
       width: px2rem(180px);
       height: px2rem(110px);
       border: none;
-      background: rgba(228,230,251,.5);
-      color: $btn-color;
+      background-color: $btn-color;
+      color: $btn-font-color;
       font-size: 16px;
-      :active {
-        background: rgba(228,230,251,.9);
+    }
+  }
+  .tools-bar {
+    height: px2rem(80px);
+    line-height: px2rem(80px);
+    text-align: left;
+    border-bottom: px2rem(2px) solid #ececec; 
+    display: flex;
+    justify-content: space-between;
+    .tool-right {
+      position: relative;
+      .font-show {
+        position: absolute;
+        top: px2rem(80px);
+        right: 0;
+        z-index: 999;
+        .color-div {
+          position: absolute;
+          top: px2rem(-44px);
+          right: px2rem(440px);
+        }
+        ul {
+          margin: 0 auto;
+          width: px2rem(300px);
+          height: px2rem(300px);
+          overflow-x: auto;
+          background-color: #fff;
+          li {
+            width: 100%;
+            height: px2rem(60px);
+            margin: px2rem(10px);
+            line-height: px2rem(60px);
+            border-bottom: px2rem(2px) solid #ececec;
+          }
+          &::-webkit-scrollbar{
+            display:none;
+          }
+        }
       }
+    }
+    span {
+      display: inline-block;
+      width: px2rem(60px);
+      height: px2rem(60px);
+      margin: px2rem(10px);
+      line-height: px2rem(60px);
     }
   }
   .main {
     width: 100%;
     max-height: 100%;
     .main-design {
+      // width: 96%;
+      // height: 100%;
+      padding-bottom: px2rem(110px);
       margin: 0 auto;
       background-size: cover;
-      overflow: hidden;
       img {
         width: 100%;
         height: 100%;
-        transition: all .7s ease;
-      }
-      .scale-img {
-        transform: scale(2);
-      }
-      .canvas-scale {
-        transform: translate(-50%, -50%) scale(0.5)!important;
       }
       .canvas-wrap {
+        // width: px2rem(400px);
+        // height: px2rem(600px);
         position: absolute;
         top: 50%;
+        /* right: 0; */
+        /* bottom: 0; */
         left: 50%;
         transform: translate(-50%,-50%);
         margin: px2rem(40px) auto;
-        transition: all .7s ease;
         #c {
           width: 100%;
           height: 100%;
@@ -581,105 +692,60 @@ export default {
       }
     }
   }
-  .delete-btn {
-    position: absolute;
-    left: px2rem(40px);
-    top: px2rem(20px);
-    width: px2rem(80px);
-    height: px2rem(80px);
-    line-height: px2rem(80px);
-    text-align: center;
-    border-radius: px2rem(40px);
-    background: rgba(228,230,251,.8);
-    color: $btn-color;
-    :active {
-      background-color: #ececec;
-      color: #999;
-    }
-  }
-  .checked-btn {
-    position: absolute;
-    right: px2rem(40px);
-    top: px2rem(20px);
-    width: px2rem(80px);
-    height: px2rem(80px);
-    line-height: px2rem(80px);
-    text-align: center;
-    border-radius: px2rem(40px);
-    background: rgba(228,230,251,.8);
-    color: $btn-color;
-    :active {
-      background-color: #ececec;
-      color: #999;
-    }
-  }
-  .operation {
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: px2rem(50px);
-    text-align: center;
-    color: $btn-font-color;
+  .footer {
+    width: 100%;
+    height: px2rem(110px);
     display: flex;
     justify-content: space-between;
-    .operation-btn {
+    background-color: #fff;
+    border-top: px2rem(2px) solid #ececec; 
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    .product, .user {
+      width: 50%;
+      text-align: center;
+      line-height: px2rem(110px);
+      color: #2f333c;
+      a {
+        color: #2f333c;
+      }
+    }
+    .delete-btn {
+      position: absolute;
+      right: px2rem(20px);
+      bottom: px2rem(130px);
       width: px2rem(80px);
       height: px2rem(80px);
       line-height: px2rem(80px);
+      text-align: center;
       border-radius: px2rem(40px);
       background-color: $btn-color;
-      margin: 0 px2rem(40px);
-      .add_picture {
-        background: url('../assets/icon/add_picture.png') no-repeat px2rem(4px) center;
-        width: 70%;
-        height: 70%;
-        background-size: cover;
-        margin: px2rem(10px) auto;
+      color: $btn-font-color;
+    }
+    .side {
+      position: absolute;
+      left: 50%;
+      transform: translate(-50%);
+      width: px2rem(200px);
+      height: px2rem(50px);
+      bottom: px2rem(150px);
+      color: $btn-font-color;
+      button {
+        border: none;
+        background: inherit;
+        color: inherit;
+        width: px2rem(80px);
+        height: 100%;
+        line-height: px2rem(50px);
+        border-radius: px2rem(10px);
+        background-color: $btn-color;
+        margin-right: px2rem(10px);
+        text-align: center;
       }
-    }
-  }
-  .side {
-    position: absolute;
-    left: 50%;
-    transform: translate(-50%);
-    width: px2rem(200px);
-    height: px2rem(50px);
-    bottom: px2rem(70px);
-    color: $btn-font-color;
-    button {  
-      border: none;
-      background: inherit;
-      color: inherit;
-      width: px2rem(80px);
-      height: 100%;
-      line-height: px2rem(50px);
-      border-radius: px2rem(10px);
-      background-color: $btn-color;
-      margin-right: px2rem(10px);
-      text-align: center;
-    }
-    .active {
-      color: #000;
-      background: #ececec;
-    }
-  }
-  .design-btn {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%,-50%);
-    button {
-      width: px2rem(170px);
-      height: px2rem(70px);
-      line-height: px2rem(70px);
-      border-radius: px2rem(6px);
-      border: none;
-      color: #000;
-      font-size: 14px;
-      background: rgba(228,230,251,.8);
-      &:active {
-        color: #999;
-        background: rgba(236,236,236,.9);
+      .active {
+        color: #000;
+        background: #ececec;
       }
     }
   }
