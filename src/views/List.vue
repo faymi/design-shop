@@ -85,7 +85,7 @@ export default {
             localStorage.removeItem('openid')
           }, 1000 * 7200)
         } else {
-          this.$toast('获取用户信息失败，请重试')
+          // this.$toast('获取用户信息失败，请重试')
         }
       })
     }

@@ -39,15 +39,35 @@
         <i class="fa fa-check fa-lg"></i>
       </div>
       <div class="operation" v-show="operatonBtn">
-        <div class="operation-btn" @click="add_pic">
+        <div class="operation-btn" v-show="!comActiveShow" @click="add_pic">
           <i class="fa fa-picture-o fa-lg"></i>
           <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
         </div>
-        <div class="operation-btn" @click="add_font">
+        <div class="operation-btn" v-show="!comActiveShow" @click="add_font">
           <i class="fa fa-font fa-lg"></i>
         </div>
-        <div class="operation-btn" @click="preview">
+        <div class="operation-btn" v-show="!comActiveShow" @click="preview">
           <i class="fa fa-eye fa-lg"></i>
+        </div>
+        <div class="operation-btn" v-show="comActiveShow" :class="{'operation-btn-disactive': !btnDisactive}" @click="rotate">
+          <i class="fa fa-rotate-left fa-lg"></i>
+          <div class="rotate-operation">
+            <div class="operation-btn" :class="{'rotateItemA': rotateItem}" @click="add_pic">
+              <i class="fa fa-picture-o fa-lg"></i>
+            </div>
+            <div class="operation-btn" :class="{'rotateItemB': rotateItem}" @click="add_pic">
+              <i class="fa fa-picture-o fa-lg"></i> 
+            </div>
+            <div class="operation-btn" :class="{'rotateItemC': rotateItem}" @click="add_pic">
+              <i class="fa fa-picture-o fa-lg"></i>
+            </div>
+            <div class="operation-btn" :class="{'rotateItemD': rotateItem}" @click="add_pic">
+              <i class="fa fa-picture-o fa-lg"></i>
+            </div>
+          </div>
+        </div>
+        <div class="operation-btn" :class="{'operation-btn-disactive': btnDisactive}" v-show="comActiveShow" @click="expand">
+          <i class="fa fa-expand fa-lg"></i>
         </div>
       </div>
       <div class="side" v-show="!operatonBtn">
@@ -69,6 +89,9 @@ export default {
   name: 'Customized',
   data () {
     return {
+      rotateItem: false,
+      btnDisactive: false,
+      comActiveShow: false,
       isChecked: false,
       designBtnShow: true,
       operatonBtn: false,
@@ -130,6 +153,9 @@ export default {
     // checkBtn
     check_item () {
       this.isChecked = true
+      this.canvasFront.getActiveObject().set({
+        'selectable': false
+      }).setCoords()
     },
     // previewBtn
     preview () {
@@ -154,6 +180,15 @@ export default {
       } else {
         canvasDom[1].style.display = 'none'
       }
+    },
+    // 旋转
+    rotate () {
+      this.btnDisactive = true
+      this.rotateItem = !this.rotateItem
+    },
+    // 放大缩小
+    expand () {
+      this.btnDisactive = false
     },
     // 点击定制
     design_btn () {
@@ -300,22 +335,19 @@ export default {
           scale = (150 / width)
           this.dataUrl = reader.result
           fabric.Image.fromURL(this.dataUrl, function (oImg) {
+            _this.comActiveShow = true
             if (_this.isActive) {
               _this.canvasFront.centerObject(oImg)
-              _this.canvasFront.add(oImg)
+              _this.canvasFront.add(oImg).setActiveObject(oImg)
             } else {
               _this.canvasBack.centerObject(oImg)
-              _this.canvasBack.add(oImg)
+              _this.canvasBack.add(oImg).setActiveObject(oImg)
             }
           }, {
             originX: 'center',
             originY: 'center',
             scaleX: scale,
-            scaleY: scale,
-            cornerStyle: 'circle',
-            cornerStrokeColor: '#578ffe',
-            cornerColor: '#578ffe',
-            transparentCorners: false
+            scaleY: scale
           })
         }
         image.src = result
@@ -438,6 +470,24 @@ export default {
     }
   },
   mounted () {
+    let optionsopt = {
+      'bl': true,
+      'br': true,
+      'mb': false,
+      'ml': false,
+      'mr': false,
+      'mt': false,
+      'tl': true,
+      'tr': true,
+      'mtr': true
+    }
+    fabric.Object.prototype.setControlsVisibility(optionsopt)
+    fabric.Object.prototype.set({
+      cornerStyle: 'circle',
+      cornerStrokeColor: '#578ffe',
+      cornerColor: '#578ffe',
+      transparentCorners: false
+    })
     let mainDesign = document.getElementsByClassName('main-design')
     // 正反面底图高度
     let imgHeight = document.documentElement.clientHeight
@@ -629,13 +679,49 @@ export default {
       border-radius: px2rem(40px);
       background-color: $btn-color;
       margin: 0 px2rem(40px);
-      .add_picture {
-        background: url('../assets/icon/add_picture.png') no-repeat px2rem(4px) center;
-        width: 70%;
-        height: 70%;
-        background-size: cover;
-        margin: px2rem(10px) auto;
-      }
+      transition: all .5 linear;
+    }
+  }
+  .rotate-operation {
+    position: absolute;
+    text-align: center;
+    color: $btn-font-color;
+    top: 6px;
+    .operation-btn {
+      position: absolute;
+      width: px2rem(60px);
+      height: px2rem(60px);
+      line-height: px2rem(60px);
+      border-radius: px2rem(30px);
+      background-color: $btn-color;
+      margin: 0 px2rem(10px);
+      transform: translate3d(0, 0, 0);
+      transition: all .5 ease-out;
+      z-index: -1;
+    }
+    .rotateItemA {
+      transform: translate3d(px2rem(-120px), px2rem(-80px), 0);
+      z-index: 1;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+    }
+    .rotateItemB {
+      transform: translate3d(px2rem(-40px), px2rem(-80px), 0);
+      z-index: 1;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+    }
+    .rotateItemC {
+      transform: translate3d(px2rem(40px), px2rem(-80px), 0);
+      z-index: 1;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+    }
+    .rotateItemD {
+      transform: translate3d(px2rem(120px), px2rem(-80px), 0);
+      z-index: 1;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
     }
   }
   .side {
@@ -686,5 +772,9 @@ export default {
 }
 .hadSelect {
   border: px2rem(2px) solid red;
+}
+.operation-btn-disactive {
+  background-color: rgb(228, 230, 251)!important;
+  color: #578ffe;
 }
 </style>
