@@ -17,13 +17,13 @@
     <div class="main">
       <div class="main-design" v-show="isActive">
         <img :src="frontImg" class="img-cls">
-        <div class="canvas-wrap">
+        <div @click="design_btn" class="canvas-wrap">
           <canvas id="c"></canvas>
         </div>
       </div>
       <div class="main-design" v-show="!isActive">
         <img :src="backImg" class="img-cls">
-        <div class="canvas-wrap">
+        <div @click="design_btn" class="canvas-wrap">
           <canvas id="d"></canvas>
         </div>
       </div> 
@@ -32,13 +32,13 @@
       <button @click="design_btn" v-show="designBtnShow">点击定制</button>
     </div>
     <div class="footer">
-      <div class="delete-btn" v-show="operatonBtn" @click="delete_item">
+      <div class="delete-btn" v-show="operationBtn" @click="delete_item">
         <i class="fa fa-trash-o fa-lg"></i>
       </div>
-      <div class="checked-btn" v-show="operatonBtn" @click="check_item">
+      <div class="checked-btn" v-show="operationBtn" @click="check_item">
         <i class="fa fa-check fa-lg"></i>
       </div>
-      <div class="operation" v-show="operatonBtn">
+      <div class="operation" v-show="operationBtn">
         <div class="operation-btn" v-show="!comActiveShow" @click="add_pic">
           <i class="fa fa-picture-o fa-lg"></i>
           <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
@@ -52,17 +52,17 @@
         <div class="operation-btn" v-show="comActiveShow" :class="{'operation-btn-disactive': !btnDisactive}" @click="rotate">
           <i class="fa fa-rotate-left fa-lg"></i>
           <div class="rotate-operation">
-            <div class="operation-btn" :class="{'rotateItemA': rotateItem}" @click="add_pic">
-              <i class="fa fa-picture-o fa-lg"></i>
+            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemA' : 'rotateItemBack']" @click="add_pic">
+              <i class="fa">-180°</i>
             </div>
-            <div class="operation-btn" :class="{'rotateItemB': rotateItem}" @click="add_pic">
-              <i class="fa fa-picture-o fa-lg"></i> 
+            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemB' : 'rotateItemBack']" @click="add_pic">
+              <i class="fa">&nbsp;-90°</i>
             </div>
-            <div class="operation-btn" :class="{'rotateItemC': rotateItem}" @click="add_pic">
-              <i class="fa fa-picture-o fa-lg"></i>
+            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemC' : 'rotateItemBack']" @click="add_pic">
+              <i class="fa">&nbsp;+90°</i>
             </div>
-            <div class="operation-btn" :class="{'rotateItemD': rotateItem}" @click="add_pic">
-              <i class="fa fa-picture-o fa-lg"></i>
+            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemD' : 'rotateItemBack']" @click="add_pic">
+              <i class="fa">+180°</i>
             </div>
           </div>
         </div>
@@ -70,7 +70,7 @@
           <i class="fa fa-expand fa-lg"></i>
         </div>
       </div>
-      <div class="side" v-show="!operatonBtn">
+      <div class="side" v-show="!operationBtn">
         <button :class="{ active: isActive }" @click="toSide('front')">正面</button>
         <button :class="{ active: !isActive }" @click="toSide('back')">反面</button>
       </div>
@@ -89,12 +89,14 @@ export default {
   name: 'Customized',
   data () {
     return {
+      isFrontImg: false, // 当前选中的是否为图片框，false: 选中文字框，true：选中图片框
+      isBackImg: false,
       rotateItem: false,
       btnDisactive: false,
       comActiveShow: false,
       isChecked: false,
       designBtnShow: true,
-      operatonBtn: false,
+      operationBtn: false,
       isActive: true,
       hadSelect: false,
       font_toggle: false,
@@ -150,9 +152,25 @@ export default {
     })
   },
   methods: {
+    typeChangeEvt (target, active) {
+      if (active) {
+        if (target.type === 'textbox') {
+          this.isFrontImg = false
+        } else {
+          this.isFrontImg = true
+        }
+      } else {
+        if (target.type === 'textbox') {
+          this.isBackImg = false
+        } else {
+          this.isBackImg = true
+        }
+      }
+    },
     // checkBtn
     check_item () {
       this.isChecked = true
+      this.comActiveShow = false
       this.canvasFront.getActiveObject().set({
         'selectable': false
       }).setCoords()
@@ -160,23 +178,25 @@ export default {
     // previewBtn
     preview () {
       this.designBtnShow = true
-      this.operatonBtn = false
+      this.operationBtn = false
       let imgDom = document.getElementsByClassName('img-cls')
       if (this.isActive) {
-        imgDom[0].classList.remove('scale-img')
+        imgDom[0].classList.remove('scale-img-20')
       } else {
-        imgDom[1].classList.remove('scale-img')
+        imgDom[1].classList.remove('scale-img-20')
       }
       let canvasDom = document.getElementsByClassName('canvas-wrap')
       if (this.isChecked && this.isActive) {
-        canvasDom[0].classList.add('canvas-scale')
         this.designBtnShow = false
+        canvasDom[0].classList.remove('canvas-scale-10')
+        canvasDom[0].classList.add('canvas-scale-05')
       } else {
         canvasDom[0].style.display = 'none'
       }
       if (this.isChecked && !this.isActive) {
         this.designBtnShow = false
-        canvasDom[1].classList.add('canvas-scale')
+        canvasDom[1].classList.remove('canvas-scale-10')
+        canvasDom[1].classList.add('canvas-scale-05')
       } else {
         canvasDom[1].style.display = 'none'
       }
@@ -193,14 +213,19 @@ export default {
     // 点击定制
     design_btn () {
       this.designBtnShow = false
-      this.operatonBtn = true
+      this.operationBtn = true
       let imgDom = document.getElementsByClassName('img-cls')
       if (this.isActive) {
-        imgDom[0].classList.add('scale-img')
+        imgDom[0].classList.add('scale-img-20')
       } else {
-        imgDom[1].classList.add('scale-img')
+        imgDom[1].classList.add('scale-img-20')
       }
       let canvasDom = document.getElementsByClassName('canvas-wrap')
+      if (this.isChecked && this.isActive) {
+        canvasDom[0].classList.add('canvas-scale-10')
+      } else if (this.isChecked && !this.isActive) {
+        canvasDom[1].classList.add('canvas-scale-10')
+      }
       canvasDom[0].style.display = 'block'
       canvasDom[1].style.display = 'block'
     },
@@ -339,9 +364,14 @@ export default {
             if (_this.isActive) {
               _this.canvasFront.centerObject(oImg)
               _this.canvasFront.add(oImg).setActiveObject(oImg)
+              // console.log(_this.canvasFront.getActiveObject().toJSON())
+              let target = _this.canvasFront.getActiveObject().toJSON()
+              _this.typeChangeEvt(target, true)
             } else {
               _this.canvasBack.centerObject(oImg)
               _this.canvasBack.add(oImg).setActiveObject(oImg)
+              let target = _this.canvasBack.getActiveObject().toJSON()
+              _this.typeChangeEvt(target, false)
             }
           }, {
             originX: 'center',
@@ -365,6 +395,8 @@ export default {
           textAlign: 'center'
         })
         this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront)
+        let target = this.canvasFront.getActiveObject().toJSON()
+        this.typeChangeEvt(target, true)
       } else {
         this.textboxBack = new fabric.Textbox('双击输入文字', {
           left: 30,
@@ -374,6 +406,8 @@ export default {
           textAlign: 'center'
         })
         this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack)
+        let target = this.canvasBack.getActiveObject().toJSON()
+        this.typeChangeEvt(target, false)
       }
     },
     add_font_show () {
@@ -431,6 +465,7 @@ export default {
       }
     },
     create_front_cavans (width, height) {
+      let _this = this
       let itemObj = document.getElementsByClassName('canvas-wrap')
       itemObj[0].style.width = width + 'px'
       itemObj[0].style.height = height + 'px'
@@ -448,8 +483,24 @@ export default {
       })
 
       this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront) // 加入到canvas中
+
+      // this.canvasFront.on('object:selected', function (e) {
+      //   console.log(e.target.toJSON())
+      // })
+      this.canvasFront.on('mouse:down', function (e) {
+        if (e.target !== null) {
+          // console.log(e.target.toJSON())
+          let target = e.target.toJSON()
+          if (target.type === 'textbox') {
+            _this.isFrontImg = false
+          } else {
+            _this.isFrontImg = true
+          }
+        }
+      })
     },
     create_back_cavans (width, height) {
+      let _this = this
       let itemObj = document.getElementsByClassName('canvas-wrap')
       itemObj[1].style.width = width + 'px'
       itemObj[1].style.height = height + 'px'
@@ -467,6 +518,17 @@ export default {
       })
 
       this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack) // 加入到canvas中
+
+      this.canvasBack.on('mouse:down', function (e) {
+        if (e.target !== null) {
+          let target = e.target.toJSON()
+          if (target.type === 'textbox') {
+            _this.isFrontImg = false
+          } else {
+            _this.isFrontImg = true
+          }
+        }
+      })
     }
   },
   mounted () {
@@ -536,6 +598,46 @@ export default {
         })
       }
     })
+  },
+  watch: {
+    btnDisactive: function (newV, oldV) {
+      let canvasSide = this.isActive ? 'canvasFront' : 'canvasBack'
+      if (newV) {
+        let optionsopt = {
+          'bl': false,
+          'br': false,
+          'mb': false,
+          'ml': false,
+          'mr': false,
+          'mt': false,
+          'tl': false,
+          'tr': false,
+          'mtr': true
+        }
+        this[canvasSide].getActiveObject().setControlsVisibility(optionsopt).setCoords()
+        this[canvasSide].requestRenderAll()
+      } else {
+        let optionsopt = {
+          'bl': true,
+          'br': true,
+          'mb': false,
+          'ml': false,
+          'mr': false,
+          'mt': false,
+          'tl': true,
+          'tr': true,
+          'mtr': false
+        }
+        this[canvasSide].getActiveObject().setControlsVisibility(optionsopt).setCoords()
+        this[canvasSide].requestRenderAll()
+      }
+    },
+    isFrontImg: function (newVal, oldVal) {
+      console.log(newVal)
+    },
+    isBackImg: function (newVal, oldVal) {
+      console.log(newVal)
+    }
   }
 }
 </script>
@@ -605,11 +707,17 @@ export default {
         height: 100%;
         transition: all .7s ease;
       }
-      .scale-img {
+      .scale-img-20 {
         transform: scale(2);
       }
-      .canvas-scale {
+      .scale-img-10 {
+        transform: scale(1);
+      }
+      .canvas-scale-05 {
         transform: translate(-50%, -50%) scale(0.5)!important;
+      }
+      .canvas-scale-10 {
+        transform: translate(-50%, -50%) scale(1)!important;
       }
       .canvas-wrap {
         position: absolute;
@@ -697,31 +805,42 @@ export default {
       margin: 0 px2rem(10px);
       transform: translate3d(0, 0, 0);
       transition: all .5 ease-out;
-      z-index: -1;
+      z-index: -99;
     }
     .rotateItemA {
-      transform: translate3d(px2rem(-120px), px2rem(-80px), 0);
-      z-index: 1;
-      transition-duration: 500ms;
-      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
-    }
-    .rotateItemB {
       transform: translate3d(px2rem(-40px), px2rem(-80px), 0);
       z-index: 1;
       transition-duration: 500ms;
       transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+      opacity: 1;
     }
-    .rotateItemC {
+    .rotateItemB {
       transform: translate3d(px2rem(40px), px2rem(-80px), 0);
       z-index: 1;
       transition-duration: 500ms;
       transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+      opacity: 1;
     }
-    .rotateItemD {
+    .rotateItemC {
       transform: translate3d(px2rem(120px), px2rem(-80px), 0);
       z-index: 1;
       transition-duration: 500ms;
       transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+      opacity: 1;
+    }
+    .rotateItemD {
+      transform: translate3d(px2rem(200px), px2rem(-80px), 0);
+      z-index: 1;
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.935, 0, 0.34, 1.33);
+      opacity: 1;
+    }
+    .rotateItemBack {
+      transform: translate3d(0, 0, 0);
+      transition-duration: 500ms;
+      transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);
+      z-index: -99;
+      opacity: 0;
     }
   }
   .side {
