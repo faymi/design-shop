@@ -15,13 +15,13 @@
       </div>
     </div>
     <div class="main">
-      <div class="main-design" v-show="isActive">
+      <div class="main-design" v-show="isFrontSide">
         <img :src="frontImg" class="img-cls">
         <div @click="design_btn" class="canvas-wrap">
           <canvas id="c"></canvas>
         </div>
       </div>
-      <div class="main-design" v-show="!isActive">
+      <div class="main-design" v-show="!isFrontSide">
         <img :src="backImg" class="img-cls">
         <div @click="design_btn" class="canvas-wrap">
           <canvas id="d"></canvas>
@@ -29,50 +29,83 @@
       </div> 
     </div>
     <div class="design-btn">
-      <button @click="design_btn" v-show="designBtnShow">点击定制</button>
+      <button @click="design_btn" v-show="isFrontSide && frontDesignBtnShow">点击定制</button>
     </div>
+    <div class="design-btn">
+      <button @click="design_btn" v-show="!isFrontSide && backDesignBtnShow">点击定制</button>
+    </div>
+    <!-- 按钮区 -->
     <div class="footer">
+      <!-- 删除、打钩按钮 -->
       <div class="delete-btn" v-show="operationBtn" @click="delete_item">
         <i class="fa fa-trash-o fa-lg"></i>
       </div>
       <div class="checked-btn" v-show="operationBtn" @click="check_item">
         <i class="fa fa-check fa-lg"></i>
       </div>
+      <!-- 底部按钮 -->
       <div class="operation" v-show="operationBtn">
+        <!-- 添加图片按钮 -->
         <div class="operation-btn" v-show="!comActiveShow" @click="add_pic">
           <i class="fa fa-picture-o fa-lg"></i>
           <input id="add_pic_ipt" type="file" name="image" accept="image/*" @change="handleInputChange" style="display: none;">
         </div>
+        <!-- 添加文字按钮 -->
         <div class="operation-btn" v-show="!comActiveShow" @click="add_font">
           <i class="fa fa-font fa-lg"></i>
         </div>
+        <!-- 预览按钮 -->
         <div class="operation-btn" v-show="!comActiveShow" @click="preview">
           <i class="fa fa-eye fa-lg"></i>
         </div>
-        <div class="operation-btn" v-show="comActiveShow" :class="{'operation-btn-disactive': !btnDisactive}" @click="rotate">
+        <!-- 编辑文字按钮 -->
+        <div class="operation-btn" :class="{'operation-btn-disactive': btnActiveIndex == 0}" v-show="comActiveShow && !isFrontImg" @click="is_editing(0)">
+          <i class="fa fa-pencil fa-lg"></i>
+        </div>
+        <!-- 选择字体按钮 -->
+        <div class="operation-btn" :class="{'operation-btn-disactive': btnActiveIndex == 1}" v-show="comActiveShow && !isFrontImg" @click="add_font_show(1)">
+          <i class="fa fa-font fa-lg"></i>
+        </div>
+        <!-- 选择颜色按钮 -->
+        <div class="operation-btn" :class="{'operation-btn-disactive': btnActiveIndex == 2}" v-show="comActiveShow && !isFrontImg" @click="font_color_show(2)">
+          <i class="fa fa-dashboard fa-lg"></i>
+        </div>
+        <!-- 旋转及其子按钮 -->
+        <div class="operation-btn" v-show="comActiveShow" :class="{'operation-btn-disactive': btnActiveIndex == 3}" @click="rotate(3)">
           <i class="fa fa-rotate-left fa-lg"></i>
           <div class="rotate-operation">
-            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemA' : 'rotateItemBack']" @click="add_pic">
-              <i class="fa">-180°</i>
+            <div class="operation-btn" :class="[btnActiveIndex == 3 ? 'rotateItemA' : 'rotateItemBack']" @click="rotate_angle('0')">
+              <i class="fa">0°</i>
             </div>
-            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemB' : 'rotateItemBack']" @click="add_pic">
-              <i class="fa">&nbsp;-90°</i>
+            <div class="operation-btn" :class="[btnActiveIndex == 3 ? 'rotateItemB' : 'rotateItemBack']" @click="rotate_angle('90')">
+              <i class="fa">&nbsp;90°</i>
             </div>
-            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemC' : 'rotateItemBack']" @click="add_pic">
-              <i class="fa">&nbsp;+90°</i>
+            <div class="operation-btn" :class="[btnActiveIndex == 3 ? 'rotateItemC' : 'rotateItemBack']" @click="rotate_angle('180')">
+              <i class="fa">&nbsp;180°</i>
             </div>
-            <div class="operation-btn" :class="[btnDisactive ? 'rotateItemD' : 'rotateItemBack']" @click="add_pic">
-              <i class="fa">+180°</i>
+            <div class="operation-btn" :class="[btnActiveIndex == 3 ? 'rotateItemD' : 'rotateItemBack']" @click="rotate_angle('270')">
+              <i class="fa">270°</i>
             </div>
           </div>
         </div>
-        <div class="operation-btn" :class="{'operation-btn-disactive': btnDisactive}" v-show="comActiveShow" @click="expand">
+        <!-- 缩放按钮 -->
+        <div class="operation-btn" :class="{'operation-btn-disactive': btnActiveIndex == 4}" v-show="comActiveShow" @click="expand(4)">
           <i class="fa fa-expand fa-lg"></i>
         </div>
+        <!-- 颜色选择器 -->
+        <div class="color-div" v-show="color_toggle">
+          <color-picker v-model="color" :openToggle="openStatus" v-on:change="headleChangeColor"></color-picker>
+        </div>
+        <!-- 字体选择 -->
+        <ul v-show="font_toggle">
+          <li class="activeTouch" v-for="item in fonts" v-bind:key="item.v" @click="select_font(item.v)">
+            {{item.v}}
+          </li>
+        </ul>
       </div>
       <div class="side" v-show="!operationBtn">
-        <button :class="{ active: isActive }" @click="toSide('front')">正面</button>
-        <button :class="{ active: !isActive }" @click="toSide('back')">反面</button>
+        <button :class="{ active: isFrontSide }" @click="toSide('front')">正面</button>
+        <button :class="{ active: !isFrontSide }" @click="toSide('back')">反面</button>
       </div>
     </div>
   </div>
@@ -89,15 +122,17 @@ export default {
   name: 'Customized',
   data () {
     return {
+      btnActiveIndex: 4,
       isFrontImg: false, // 当前选中的是否为图片框，false: 选中文字框，true：选中图片框
       isBackImg: false,
       rotateItem: false,
       btnDisactive: false,
       comActiveShow: false,
       isChecked: false,
-      designBtnShow: true,
+      frontDesignBtnShow: true,
+      backDesignBtnShow: true,
       operationBtn: false,
-      isActive: true,
+      isFrontSide: true,
       hadSelect: false,
       font_toggle: false,
       size_toggle: false,
@@ -105,6 +140,7 @@ export default {
       openStatus: false,
       color: '',
       currentIndex: 0,
+      currentCanvas: 'canvasFront',
       colorList: [
         {color: 'white', 'colorId': '1'},
         {color: 'black', 'colorId': '2'},
@@ -171,59 +207,74 @@ export default {
     check_item () {
       this.isChecked = true
       this.comActiveShow = false
-      this.canvasFront.getActiveObject().set({
-        'selectable': false
-      }).setCoords()
+      // this.canvasFront.getActiveObject().set({
+      //   'selectable': false
+      // }).setCoords()
     },
     // previewBtn
     preview () {
-      this.designBtnShow = true
+      // this.comActiveShow = true
       this.operationBtn = false
       let imgDom = document.getElementsByClassName('img-cls')
-      if (this.isActive) {
+      if (this.isFrontSide) {
         imgDom[0].classList.remove('scale-img-20')
       } else {
         imgDom[1].classList.remove('scale-img-20')
       }
       let canvasDom = document.getElementsByClassName('canvas-wrap')
-      if (this.isChecked && this.isActive) {
-        this.designBtnShow = false
+      if (this.isChecked && this.isFrontSide) {
+        this.frontDesignBtnShow = false
         canvasDom[0].classList.remove('canvas-scale-10')
         canvasDom[0].classList.add('canvas-scale-05')
-      } else {
-        canvasDom[0].style.display = 'none'
       }
-      if (this.isChecked && !this.isActive) {
-        this.designBtnShow = false
+      if (this.isChecked && !this.isFrontSide) {
+        this.backDesignBtnShow = false
         canvasDom[1].classList.remove('canvas-scale-10')
         canvasDom[1].classList.add('canvas-scale-05')
-      } else {
-        canvasDom[1].style.display = 'none'
       }
     },
+    // 进入编辑状态
+    is_editing (index) {
+      this.btnActiveIndex = index
+      this[this.currentCanvas].getActiveObject().enterEditing()
+    },
     // 旋转
-    rotate () {
+    rotate (index) {
+      this.btnActiveIndex = index
       this.btnDisactive = true
       this.rotateItem = !this.rotateItem
     },
+    // rotate angle
+    rotate_angle (angle) {
+      this[this.currentCanvas].getActiveObject().animate('angle', angle, {
+        duration: 1000,
+        easing: fabric.util.ease.easeOutBounce,
+        onChange: this[this.currentCanvas].renderAll.bind(this[this.currentCanvas])
+      })
+    },
     // 放大缩小
-    expand () {
+    expand (index) {
+      this.btnActiveIndex = index
       this.btnDisactive = false
     },
     // 点击定制
     design_btn () {
-      this.designBtnShow = false
+      if (this.isFrontSide) {
+        this.frontDesignBtnShow = false
+      } else {
+        this.backDesignBtnShow = false
+      }
       this.operationBtn = true
       let imgDom = document.getElementsByClassName('img-cls')
-      if (this.isActive) {
+      if (this.isFrontSide) {
         imgDom[0].classList.add('scale-img-20')
       } else {
         imgDom[1].classList.add('scale-img-20')
       }
       let canvasDom = document.getElementsByClassName('canvas-wrap')
-      if (this.isChecked && this.isActive) {
+      if (this.isChecked && this.isFrontSide) {
         canvasDom[0].classList.add('canvas-scale-10')
-      } else if (this.isChecked && !this.isActive) {
+      } else if (this.isChecked && !this.isFrontSide) {
         canvasDom[1].classList.add('canvas-scale-10')
       }
       canvasDom[0].style.display = 'block'
@@ -264,9 +315,9 @@ export default {
     // 点击正反面
     toSide (type) {
       if (type === 'front') {
-        this.isActive = true
+        this.isFrontSide = true
       } else {
-        this.isActive = false
+        this.isFrontSide = false
       }
     },
     // 组件间openStatus双向通信
@@ -275,24 +326,18 @@ export default {
     },
     // 颜色面板选择颜色  字体颜色
     headleChangeColor () {
-      if (this.isActive) {
-        this.canvasFront.getActiveObject().set({
-          'fill': this.color
-        }).setCoords()
-        this.canvasFront.requestRenderAll()
-      } else {
-        this.canvasBack.getActiveObject().set({
-          'fill': this.color
-        }).setCoords()
-        this.canvasBack.requestRenderAll()
-      }
+      this[this.currentCanvas].getActiveObject().set({
+        'fill': this.color
+      }).setCoords()
+      this[this.currentCanvas].requestRenderAll()
     },
     font_size_show () {
       this.font_toggle = false
       this.color_toggle = false
       this.size_toggle = !this.size_toggle
     },
-    font_color_show () {
+    font_color_show (index) {
+      this.btnActiveIndex = index
       this.openStatus = !this.openStatus
       this.font_toggle = false
       this.size_toggle = false
@@ -361,7 +406,7 @@ export default {
           this.dataUrl = reader.result
           fabric.Image.fromURL(this.dataUrl, function (oImg) {
             _this.comActiveShow = true
-            if (_this.isActive) {
+            if (_this.isFrontSide) {
               _this.canvasFront.centerObject(oImg)
               _this.canvasFront.add(oImg).setActiveObject(oImg)
               // console.log(_this.canvasFront.getActiveObject().toJSON())
@@ -386,10 +431,13 @@ export default {
     },
     // 添加字体
     add_font () {
-      if (this.isActive) {
+      this.comActiveShow = true
+      if (this.isFrontSide) {
+        let canvasWidth = this.canvasFront.getWidth()
+        let canvasHeight = this.canvasFront.getHeight()
         this.textboxFront = new fabric.Textbox('双击输入文字', {
-          left: 30,
-          top: 100,
+          left: canvasWidth / 2,
+          top: canvasHeight / 2,
           width: 150,
           fontSize: 20,
           textAlign: 'center'
@@ -398,9 +446,11 @@ export default {
         let target = this.canvasFront.getActiveObject().toJSON()
         this.typeChangeEvt(target, true)
       } else {
+        let canvasWidth = this.canvasBack.getWidth()
+        let canvasHeight = this.canvasBack.getHeight()
         this.textboxBack = new fabric.Textbox('双击输入文字', {
-          left: 30,
-          top: 100,
+          left: canvasWidth / 2,
+          top: canvasHeight / 2,
           width: 150,
           fontSize: 20,
           textAlign: 'center'
@@ -410,40 +460,30 @@ export default {
         this.typeChangeEvt(target, false)
       }
     },
-    add_font_show () {
+    add_font_show (index) {
+      this.btnActiveIndex = index
       this.color_toggle = false
       this.size_toggle = false
-      this.font_toggle = !this.font_toggle
+      this.font_toggle = true
     },
     // 清除active图层
     delete_item () {
-      if (this.isActive) {
-        this.canvasFront.remove(this.canvasFront.getActiveObject())
-      } else {
-        this.canvasBack.remove(this.canvasBack.getActiveObject())
-      }
+      this[this.currentCanvas].remove(this[this.currentCanvas].getActiveObject())
     },
     // 选择字体
     select_font (font) {
-      this.font_toggle = !this.font_toggle
+      this.font_toggle = false
       // alert(font)
       var myfont = new FontFaceObserver(font)
       var _this = this
       myfont.load()
         .then(function () {
-          if (_this.isActive) {
-            // when font is loaded, use it.
-            _this.canvasFront.getActiveObject().set({
-              'fontFamily': font // 设置font-family
-              // 'fill': 'yellowgreen'  // 设置字体颜色
-            })
-            _this.canvasFront.requestRenderAll()
-          } else {
-            _this.canvasBack.getActiveObject().set({
-              'fontFamily': font
-            })
-            _this.canvasBack.requestRenderAll()
-          }
+          // when font is loaded, use it.
+          _this[_this.currentCanvas].getActiveObject().set({
+            'fontFamily': font // 设置font-family
+            // 'fill': 'yellowgreen'  // 设置字体颜色
+          })
+          _this[_this.currentCanvas].requestRenderAll()
         }).catch(function (e) {
           // console.log(e)
           _.alert('请先选中文字！')
@@ -452,7 +492,7 @@ export default {
     // 选择字体大小
     select_font_size (fontSize) {
       this.size_toggle = !this.size_toggle
-      if (this.isActive) {
+      if (this.isFrontSide) {
         this.textboxFront.set({
           'fontSize': fontSize
         }).setCoords()
@@ -474,15 +514,15 @@ export default {
       this.canvasFront = new fabric.Canvas('c') // 利用fabric找到我们的画布
       this.canvasFront.setWidth(canvasWidth)
       this.canvasFront.setHeight(canvasHeight)
-      this.textboxFront = new fabric.Textbox('双击输入文字', {
-        left: 30,
-        top: 50,
-        width: 150,
-        fontSize: 20,
-        textAlign: 'center'
-      })
+      // this.textboxFront = new fabric.Textbox('双击输入文字', {
+      //   left: canvasWidth / 2,
+      //   top: canvasHeight / 2,
+      //   width: 150,
+      //   fontSize: 20,
+      //   textAlign: 'center'
+      // })
 
-      this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront) // 加入到canvas中
+      // this.canvasFront.add(this.textboxFront).setActiveObject(this.textboxFront) // 加入到canvas中
 
       // this.canvasFront.on('object:selected', function (e) {
       //   console.log(e.target.toJSON())
@@ -509,15 +549,15 @@ export default {
       this.canvasBack = new fabric.Canvas('d') // 利用fabric找到我们的画布
       this.canvasBack.setWidth(canvasWidth)
       this.canvasBack.setHeight(canvasHeight)
-      this.textboxBack = new fabric.Textbox('双击输入文字', {
-        left: 30,
-        top: 50,
-        width: 150,
-        fontSize: 20,
-        textAlign: 'center'
-      })
+      // this.textboxBack = new fabric.Textbox('双击输入文字', {
+      //   left: canvasWidth / 2,
+      //   top: canvasHeight / 2,
+      //   width: 150,
+      //   fontSize: 20,
+      //   textAlign: 'center'
+      // })
 
-      this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack) // 加入到canvas中
+      // this.canvasBack.add(this.textboxBack).setActiveObject(this.textboxBack) // 加入到canvas中
 
       this.canvasBack.on('mouse:down', function (e) {
         if (e.target !== null) {
@@ -548,7 +588,10 @@ export default {
       cornerStyle: 'circle',
       cornerStrokeColor: '#578ffe',
       cornerColor: '#578ffe',
-      transparentCorners: false
+      transparentCorners: false,
+      centeredRotation: true,
+      originX: 'center',
+      originY: 'center'
     })
     let mainDesign = document.getElementsByClassName('main-design')
     // 正反面底图高度
@@ -601,7 +644,7 @@ export default {
   },
   watch: {
     btnDisactive: function (newV, oldV) {
-      let canvasSide = this.isActive ? 'canvasFront' : 'canvasBack'
+      let canvasSide = this.isFrontSide ? 'canvasFront' : 'canvasBack'
       if (newV) {
         let optionsopt = {
           'bl': false,
@@ -637,6 +680,15 @@ export default {
     },
     isBackImg: function (newVal, oldVal) {
       console.log(newVal)
+    },
+    isFrontSide: function (newVal, oldVal) {
+      this.currentCanvas = newVal ? 'canvasFront' : 'canvasBack'
+    },
+    btnActiveIndex: function (newVal, oldVal) {
+      this.font_toggle = newVal === 1
+      if (newVal !== 0) {
+        this[this.currentCanvas].getActiveObject().exitEditing()
+      }
     }
   }
 }
@@ -729,12 +781,12 @@ export default {
         #c {
           width: 100%;
           height: 100%;
-          border: px2rem(2px) dashed #000;
+          border: px2rem(2px) dashed #999;
         }
         #d {
           width: 100%;
           height: 100%;
-          border: px2rem(2px) dashed #000;
+          border: px2rem(2px) dashed #999;
         }
       }
     }
@@ -786,8 +838,34 @@ export default {
       line-height: px2rem(80px);
       border-radius: px2rem(40px);
       background-color: $btn-color;
-      margin: 0 px2rem(40px);
+      margin: 0 px2rem(20px);
       transition: all .5 linear;
+    }
+    .color-div {
+      position: absolute;
+      top: px2rem(-480px);
+      right: px2rem(508px);
+    }
+    >ul {
+      margin: 0 auto;
+      width: px2rem(300px);
+      height: px2rem(300px);
+      overflow-x: auto;
+      background-color: #fff;
+      position: absolute;
+      top: px2rem(-320px);
+      left: px2rem(32px);
+      li {
+        width: 100%;
+        height: px2rem(60px);
+        margin: px2rem(10px);
+        line-height: px2rem(60px);
+        border-bottom: px2rem(2px) solid #ececec;
+        color: #000;
+      }
+      &::-webkit-scrollbar{
+        display:none;
+      }
     }
   }
   .rotate-operation {
