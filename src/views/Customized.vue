@@ -104,8 +104,8 @@
         </ul>
       </div>
       <div class="side" v-show="!operationBtn">
-        <button :class="{ active: isFrontSide }" @click="toSide('front')">正面</button>
-        <button :class="{ active: !isFrontSide }" @click="toSide('back')">反面</button>
+        <button :class="{ active: !isFrontSide }" @click="toSide('front')">正面</button>
+        <button :class="{ active: isFrontSide }" @click="toSide('back')">反面</button>
       </div>
     </div>
   </div>
@@ -204,30 +204,37 @@ export default {
       }
     },
     // checkBtn
-    check_item () {
+    check_item (e) {
       this.isChecked = true
       this.comActiveShow = false
-      // this.canvasFront.getActiveObject().set({
-      //   'selectable': false
-      // }).setCoords()
+      // 取消选择
+      this[this.currentCanvas]._discardActiveObject(e)
+      this[this.currentCanvas].requestRenderAll()
     },
     // previewBtn
     preview () {
-      // this.comActiveShow = true
       this.operationBtn = false
       let imgDom = document.getElementsByClassName('img-cls')
+      let canvasDom = document.getElementsByClassName('canvas-wrap')
+      let canvasHasObjects = this[this.currentCanvas].getObjects().length === 0
+      if (this.isFrontSide && canvasHasObjects) {
+        canvasDom[0].style.display = 'none'
+        this.frontDesignBtnShow = true
+      } else if (!this.isFrontSide && canvasHasObjects) {
+        canvasDom[1].style.display = 'none'
+        this.backDesignBtnShow = true
+      }
       if (this.isFrontSide) {
         imgDom[0].classList.remove('scale-img-20')
       } else {
         imgDom[1].classList.remove('scale-img-20')
       }
-      let canvasDom = document.getElementsByClassName('canvas-wrap')
-      if (this.isChecked && this.isFrontSide) {
+      if (this.isChecked && this.isFrontSide && !canvasHasObjects) {
         this.frontDesignBtnShow = false
         canvasDom[0].classList.remove('canvas-scale-10')
         canvasDom[0].classList.add('canvas-scale-05')
       }
-      if (this.isChecked && !this.isFrontSide) {
+      if (this.isChecked && !this.isFrontSide && !canvasHasObjects) {
         this.backDesignBtnShow = false
         canvasDom[1].classList.remove('canvas-scale-10')
         canvasDom[1].classList.add('canvas-scale-05')
@@ -246,7 +253,12 @@ export default {
     },
     // rotate angle
     rotate_angle (angle) {
-      this[this.currentCanvas].getActiveObject().animate('angle', angle, {
+      let currentRotateObject = this[this.currentCanvas].getActiveObject()
+      if (currentRotateObject === null) {
+        this.$toast('请先选中图层！')
+        return
+      }
+      currentRotateObject.animate('angle', angle, {
         duration: 1000,
         easing: fabric.util.ease.easeOutBounce,
         onChange: this[this.currentCanvas].renderAll.bind(this[this.currentCanvas])
@@ -259,10 +271,13 @@ export default {
     },
     // 点击定制
     design_btn () {
+      let canvasDom = document.getElementsByClassName('canvas-wrap')
       if (this.isFrontSide) {
         this.frontDesignBtnShow = false
+        canvasDom[0].style.display = 'block'
       } else {
         this.backDesignBtnShow = false
+        canvasDom[1].style.display = 'block'
       }
       this.operationBtn = true
       let imgDom = document.getElementsByClassName('img-cls')
@@ -271,14 +286,11 @@ export default {
       } else {
         imgDom[1].classList.add('scale-img-20')
       }
-      let canvasDom = document.getElementsByClassName('canvas-wrap')
       if (this.isChecked && this.isFrontSide) {
         canvasDom[0].classList.add('canvas-scale-10')
       } else if (this.isChecked && !this.isFrontSide) {
         canvasDom[1].classList.add('canvas-scale-10')
       }
-      canvasDom[0].style.display = 'block'
-      canvasDom[1].style.display = 'block'
     },
     // 完成定制
     doneMade () {
@@ -469,6 +481,7 @@ export default {
     // 清除active图层
     delete_item () {
       this[this.currentCanvas].remove(this[this.currentCanvas].getActiveObject())
+      this[this.currentCanvas].requestRenderAll()
     },
     // 选择字体
     select_font (font) {
@@ -615,8 +628,14 @@ export default {
   },
   activated () {
     let canvasDom = document.getElementsByClassName('canvas-wrap')
-    canvasDom[0].style.display = 'none'
-    canvasDom[1].style.display = 'none'
+    if (this.canvasFront.getObjects().length !== 0) {
+      canvasDom[0].style.display = 'block'
+    } else if (this.canvasBack.getObjects().length !== 0) {
+      canvasDom[0].style.display = 'block'
+    } else {
+      canvasDom[0].style.display = 'none'
+      canvasDom[1].style.display = 'none'
+    }
     this.goodsColors = []
     let params = {
       domain: this.domain,
@@ -686,8 +705,14 @@ export default {
     },
     btnActiveIndex: function (newVal, oldVal) {
       this.font_toggle = newVal === 1
+      // 文本框退出编辑状态
       if (newVal !== 0) {
-        this[this.currentCanvas].getActiveObject().exitEditing()
+        let objectArr = this[this.currentCanvas].getObjects()
+        for (let i in objectArr) {
+          if (objectArr[i].type === 'textbox') {
+            objectArr[i].exitEditing()
+          }
+        }
       }
     }
   }
@@ -840,6 +865,10 @@ export default {
       background-color: $btn-color;
       margin: 0 px2rem(20px);
       transition: all .5 linear;
+      &:active {
+        background-color: #e4e6fb !important;
+        color: #578ffe;
+      }
     }
     .color-div {
       position: absolute;
@@ -884,6 +913,10 @@ export default {
       transform: translate3d(0, 0, 0);
       transition: all .5 ease-out;
       z-index: -99;
+      &:active {
+        background-color: #e4e6fb !important;
+        color: #578ffe;
+      }
     }
     .rotateItemA {
       transform: translate3d(px2rem(-40px), px2rem(-80px), 0);
