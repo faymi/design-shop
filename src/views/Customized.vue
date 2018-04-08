@@ -9,9 +9,7 @@
         </ul>
       </div>
       <div class="done-btn">
-        <router-link to="/total">
-          <button @click="doneMade">完成</button>        
-        </router-link>
+          <button @click="doneMade">完成</button>
       </div>
     </div>
     <div class="main">
@@ -294,11 +292,16 @@ export default {
     },
     // 完成定制
     doneMade () {
+      if (this.canvasFront.getObjects().length === 0 && this.canvasBack.getObjects().length === 0) {
+        this.$toast('请先进行定制！')
+        return
+      }
       let data = {
         frontMadeImg: this.canvasFront.toDataURL({format: 'png', multiplier: 1}),
         backMadeImg: this.canvasBack.toDataURL({format: 'png', multiplier: 1})
       }
       this.$store.dispatch('setMadeImg', data)
+      this.$router.push({path: '/total'})
     },
     // 颜色选择
     selectColor (index, item) {
@@ -631,7 +634,7 @@ export default {
     if (this.canvasFront.getObjects().length !== 0) {
       canvasDom[0].style.display = 'block'
     } else if (this.canvasBack.getObjects().length !== 0) {
-      canvasDom[0].style.display = 'block'
+      canvasDom[1].style.display = 'block'
     } else {
       canvasDom[0].style.display = 'none'
       canvasDom[1].style.display = 'none'
