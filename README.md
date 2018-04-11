@@ -1,6 +1,8 @@
 # design-shop
 ## 前言 ##
 暂无
+
+*手机预览地址：* http://adminidea.vesstack.com
 ## 技术栈 ##
 
 前端：vue2 + vuex + vue-router + ES6/7 + fetch  + webpack
