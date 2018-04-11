@@ -1,6 +1,6 @@
 # design-shop
 ## 前言 ##
-暂无
+项目为衣服定制微型商城管理后台
 
 *手机预览地址：* http://adminidea.vesstack.com
 ## 技术栈 ##
