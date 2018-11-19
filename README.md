@@ -2,7 +2,12 @@
 ## 前言 ##
 项目为衣服定制微型商城，支持个性化定制、下单、微信支付等基本功能
 
-*手机预览地址：* [http://unique.vesstack.com][1]
+> [预览戳这里](http://www.eseeto.com/)（请用chrome手机模式预览）
+
+> 移动端预览地址
+
+<img src="https://raw.githubusercontent.com/faymi/static-repository/master/images/1542639064.png" width="250" height="250"/>
+
 
 ## 技术栈 ##
 
